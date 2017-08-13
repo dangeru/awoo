@@ -1,0 +1,14 @@
+{
+  "title": "Awoo test board",
+  "port": 80,
+
+  "boards": {
+    "test": {
+      "name": "test",
+      "desc": "Awoo testing grounds",
+
+      "janitor_login": "person",
+      "janitor_password": "andhispassword"
+    }
+  }
+}

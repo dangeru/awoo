@@ -8,4 +8,4 @@
 require File.dirname(__FILE__) + '/app'
 
 puts "Awoo is starting..."
-run Awoo
+Awoo.run!
