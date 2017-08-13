@@ -1,7 +1,7 @@
 ############################################
 # => config.ru - Rackup config file
 # => Awoo Textboard Engine
-# => Version 0.0.1
+# => Version 0.0.3
 # => (c) prefetcher & github commiters 2017
 #
 
