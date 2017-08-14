@@ -20,7 +20,7 @@ module Sinatra
 
           boards.each do |path|
             app.get "/" + path do
-              "/#{settings.config['boards'][path]['name']}/<br>#{settings.config['boards'][path]['desc']}"
+              erb :board, :locals => {:path => path}
             end
           end
         end

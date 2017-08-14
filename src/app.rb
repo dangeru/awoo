@@ -15,21 +15,15 @@ class Awoo < Sinatra::Base
   register Sinatra::Awoo::Routing::Boards
   register Sinatra::Awoo::Routing::Janitorial
   register Sinatra::Awoo::Routing::Errors
-  boards = "<br>"
-  settings.config['boards'].each do |key, array|
-    boards += '<a href="/' + settings.config['boards'][key]['name'] + '">' + settings.config['boards'][key]['name'] + '</a><br>'
-  end
   configure do
     set :bind, '0.0.0.0'
     set :port, config['port']
-    set :awoo_version, '0.0.4'
+    set :awoo_version, '0.1.0'
   end
   set :root, File.dirname(__FILE__)
   enable :sessions
 
-
   get '/' do
-    "#{settings.config['title']} is running Awoo #{settings.awoo_version}, currently avaiable boards: #{boards}"
+    erb :index
   end
-
 end
