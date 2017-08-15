@@ -3,10 +3,52 @@
   <head>
     <title>/<%= settings.config['boards'][path]['name'] %>/ - <%= settings.config['boards'][path]['desc'] %></title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+      #draggable { width: 320px; height: auto; padding: 0.5em; background-color: white; border: 1px solid black; visibility: hidden;}
+      textarea {resize: none; width: 312px; height: 130px;}
+    </style>
+
+    <script src="js/jquery-3.2.1.min.js"></script>
+    <script src="js/jquery-ui.min.js"></script>
+
+    <script>
+      $( function() {
+        $("#newthread").click(function(){
+          $( "#draggable" ).css('visibility', 'visible');
+        });
+        $( "#draggable" ).draggable({containment: "window"});
+        $("#comment").keyup(function(){
+          console.log($(this).val().length);
+          var len = $(this).val().length;
+          if(len > 500) {
+              $("#wordcount").css("color", "red");
+          }
+          else {
+            $("#wordcount").css("color", "black");
+          }
+          $("#wordcount").html(len + "/500");
+        });
+      });
+    </script>
   </head>
   <body>
     <h1>/<%= settings.config['boards'][path]['name'] %>/</h1>
-    <p><%= settings.config['boards'][path]['desc'] %></p>
+    <div><%= settings.config['boards'][path]['desc'] %></div>
+    
+    <a href="#" id="newthread">Start a new thread</a><br><br>
     <small>Awoo <%= settings.awoo_version %></small>
+
+    <div id="draggable" class="ui-widget-content">
+      <form action="/post" method="post" name="newthread">
+        <div>Title</div>
+        <input type="text" name="title" id="title" placeholder="Title">
+        <div>Comment</div>
+        <textarea name="comment" id="comment"></textarea>
+        <input type="submit" id="submit" name="submit" value="Send" style="float: right;">
+        <div id="wordcount">0/500</div>
+      </form>
+    </div>
+
   </body>
 </html>

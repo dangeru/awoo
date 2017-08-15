@@ -19,6 +19,7 @@ class Awoo < Sinatra::Base
     set :bind, '0.0.0.0'
     set :port, config['port']
     set :awoo_version, '0.1.0'
+    set :public_folder, './static'
   end
   set :root, File.dirname(__FILE__)
   enable :sessions
