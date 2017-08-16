@@ -26,6 +26,10 @@ module Sinatra
             app.post "/" + path + "/post" do
               "title: #{params[:title]}<br>body: #{params[:comment]}"
             end
+
+            app.get "/" + path + "/thread/:id" do |id|
+              erb :thread, :locals => {:id => id}
+            end
           end
         end
       end
