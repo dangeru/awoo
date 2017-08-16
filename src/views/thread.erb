@@ -6,6 +6,21 @@
   </head>
   <body>
     <h1><%= id %></h1>
+    <%
+      con.query("SELECT * FROM posts WHERE parent = #{id.to_i} OR post_id = #{id.to_i} ORDER BY post_id").each do |res|
+    %>
+      <% if res["title"] %>
+        <h2><%= res["title"] %></h2>
+      <% end %>
+      <%= res["content"] %>
+      <br /><br />
+    <% end %>
+    <form action='/reply' method='post'>
+      <input type='text' style='display: none' name='board' id='board' value='<%= path %>' />
+      <input type='text' style='display: none' name='parent' id='parent' value='<%= id %>' />
+      <input type='text' name='content' id='board' placeholder='Reply' />
+      <input type='submit' />
+    </form>
     <small>Awoo <%= settings.awoo_version %></small>
   </body>
 </html>

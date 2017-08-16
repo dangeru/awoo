@@ -4,6 +4,10 @@
 # => (c) prefetcher & github commiters 2017
 #
 
+require 'mysql2'
+
+
+
 module Sinatra
   module Awoo
     module Routing
@@ -18,17 +22,34 @@ module Sinatra
             boards << config['boards'][key]['name']
           end
 
+          con = Mysql2::Client.new(:host => "localhost", :username => "awoo", :password => "awoo", :database => "test")
+          app.post "/post" do
+            board = con.escape(params[:board])
+            title = con.escape(params[:title])
+            content = con.escape(params[:comment])
+            ip = con.escape("TODO")
+            # todo check if the IP is banned
+            # todo check for flooding/spam
+            con.query("INSERT INTO posts (board, title, content, ip) VALUES ('#{board}', '#{title}', '#{content}', '#{ip}')")
+            "title: #{params[:title]}<br>body: #{params[:comment]}"
+          end
+          app.post "/reply" do
+            board = con.escape(params[:board])
+            content = con.escape(params[:content])
+            parent = con.escape(params[:parent].to_i.to_s)
+            ip = con.escape("TODO")
+            # todo check if the IP is banned
+            # todo check for flooding/spam
+            con.query("INSERT INTO posts (board, parent, content, ip) VALUES ('#{board}', '#{parent}', '#{content}', '#{ip}')")
+            "reply submitted"
+          end
+
           boards.each do |path|
             app.get "/" + path do
-              erb :board, :locals => {:path => path}
+              erb :board, :locals => {:path => path, :con => con}
             end
-
-            app.post "/" + path + "/post" do
-              "title: #{params[:title]}<br>body: #{params[:comment]}"
-            end
-
             app.get "/" + path + "/thread/:id" do |id|
-              erb :thread, :locals => {:id => id}
+              erb :thread, :locals => {:path => path, :id => id, :con => con}
             end
           end
         end

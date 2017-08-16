@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <style>
-      #draggable { width: 320px; height: auto; padding: 0.5em; background-color: white; border: 1px solid black; visibility: hidden;}
+      #draggable { width: 320px; height: auto; padding: 0.5em; background-color: white; border: 1px solid black; display: none;}
       textarea {resize: none; width: 312px; height: 130px;}
     </style>
 
@@ -13,42 +13,51 @@
     <script src="js/jquery-ui.min.js"></script>
 
     <script>
-      $( function() {
-        $("#newthread").click(function(){
-          $( "#draggable" ).css('visibility', 'visible');
-        });
+      var newThread = function newThread() {
+        document.getElementById("draggable").style.display = "block";
         $( "#draggable" ).draggable({containment: "window"});
-        $("#comment").keyup(function(){
-          console.log($(this).val().length);
-          var len = $(this).val().length;
+      }
+      var ol = function ol() {
+        document.getElementById("comment").addEventListener("change", function() {
+          var comment = document.getElementById("comment");
+          console.log(comment.value.length);
+          var len = comment.value.length
+          var wc = document.getElementById("wordcount");
           if(len > 500) {
-              $("#wordcount").css("color", "red");
+            wc.style.color = "red";
           }
           else {
-            $("#wordcount").css("color", "black");
+            wc.style.color = "black";
           }
-          $("#wordcount").html(len + "/500");
+          wc.innerText = len + "/500";
         });
-      });
+      }
     </script>
   </head>
-  <body>
+  <body onLoad='ol();'>
     <h1>/<%= settings.config['boards'][path]['name'] %>/</h1>
     <div><%= settings.config['boards'][path]['desc'] %></div>
 
-    <a href="#" id="newthread">Start a new thread</a><br><br>
+    <button id="newthread" onClick='newThread();'>Start a new thread</button><br /><br />
     <small>Awoo <%= settings.awoo_version %></small>
 
     <div id="draggable" class="ui-widget-content">
-      <form action="/<%= path %>/post" method="post" name="newthread">
+      <form action="/post" method="post" name="newthread">
+        <input style='display: none;' type='text' name='board' id='board' value='<%= path %>' />
         <div>Title</div>
-        <input type="text" name="title" id="title" placeholder="Title">
+        <input type="text" name="title" id="title" placeholder="Title" />
         <div>Comment</div>
         <textarea name="comment" id="comment"></textarea>
-        <input type="submit" id="submit" name="submit" value="Send" style="float: right;">
+        <input type="submit" id="submit" name="submit" value="Send" style="float: right;" />
         <div id="wordcount">0/500</div>
       </form>
     </div>
+    <%
+      escaped = con.escape(path);
+      con.query("SELECT post_id, title, COALESCE(parent, post_id) AS effective_parent, COUNT(*)-1 AS number_of_replies FROM posts WHERE board = '#{escaped}' GROUP BY effective_parent ORDER BY post_id;").each do |res|
+    %>
+      <a data-replies="<%= res["number_of_replies"] %>" href="/<%= path %>/thread/<%= res["post_id"] %>"><%= res["title"] %></a><br />
+    <% end %>
 
   </body>
 </html>
