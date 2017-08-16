@@ -18,7 +18,7 @@
         $( "#draggable" ).draggable({containment: "window"});
       }
       var ol = function ol() {
-        document.getElementById("comment").addEventListener("change", function() {
+        document.getElementById("comment").addEventListener("keyup", function() {
           var comment = document.getElementById("comment");
           console.log(comment.value.length);
           var len = comment.value.length
@@ -39,7 +39,6 @@
     <div><%= settings.config['boards'][path]['desc'] %></div>
 
     <button id="newthread" onClick='newThread();'>Start a new thread</button><br /><br />
-    <small>Awoo <%= settings.awoo_version %></small>
 
     <div id="draggable" class="ui-widget-content">
       <form action="/post" method="post" name="newthread">
@@ -58,6 +57,8 @@
     %>
       <a data-replies="<%= res["number_of_replies"] %>" href="/<%= path %>/thread/<%= res["post_id"] %>"><%= res["title"] %></a><br />
     <% end %>
+    <br />
+    <small>Awoo <%= settings.awoo_version %></small>
 
   </body>
 </html>

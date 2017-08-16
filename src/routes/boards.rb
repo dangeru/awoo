@@ -30,8 +30,12 @@ module Sinatra
             ip = con.escape("TODO")
             # todo check if the IP is banned
             # todo check for flooding/spam
-            con.query("INSERT INTO posts (board, title, content, ip) VALUES ('#{board}', '#{title}', '#{content}', '#{ip}')")
-            "title: #{params[:title]}<br>body: #{params[:comment]}"
+            con.query("INSERT INTO posts (board, title, content, ip) VALUES ('#{board}', '#{title}', '#{content}', '#{ip}')");
+            thing = "Error? idk"
+            con.query("SELECT LAST_INSERT_ID() AS id").each do |res|
+              thing = "<a href='/" + params[:board] + "/thread/" + res["id"].to_s + "'>Go</a>"
+            end
+            thing
           end
           app.post "/reply" do
             board = con.escape(params[:board])
