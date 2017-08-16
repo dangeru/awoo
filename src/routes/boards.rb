@@ -45,7 +45,7 @@ module Sinatra
             # todo check if the IP is banned
             # todo check for flooding/spam
             con.query("INSERT INTO posts (board, parent, content, ip) VALUES ('#{board}', '#{parent}', '#{content}', '#{ip}')")
-            "reply submitted"
+            "<a href='/"+params[:board]+"/thread/"+params[:parent]+"'>Go</a>"
           end
 
           boards.each do |path|
