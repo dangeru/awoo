@@ -10,5 +10,6 @@
       "janitor_login": "person",
       "janitor_password": "andhispassword"
     }
-  }
+  },
+  "hostname": "niles.lain.city"
 }
