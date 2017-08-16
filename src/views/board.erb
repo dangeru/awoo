@@ -35,12 +35,12 @@
   <body>
     <h1>/<%= settings.config['boards'][path]['name'] %>/</h1>
     <div><%= settings.config['boards'][path]['desc'] %></div>
-    
+
     <a href="#" id="newthread">Start a new thread</a><br><br>
     <small>Awoo <%= settings.awoo_version %></small>
 
     <div id="draggable" class="ui-widget-content">
-      <form action="/post" method="post" name="newthread">
+      <form action="/<%= path %>/post" method="post" name="newthread">
         <div>Title</div>
         <input type="text" name="title" id="title" placeholder="Title">
         <div>Comment</div>

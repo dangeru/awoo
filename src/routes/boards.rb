@@ -22,6 +22,10 @@ module Sinatra
             app.get "/" + path do
               erb :board, :locals => {:path => path}
             end
+
+            app.post "/" + path + "/post" do
+              "title: #{params[:title]}<br>body: #{params[:comment]}"
+            end
           end
         end
       end
