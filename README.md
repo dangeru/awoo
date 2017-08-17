@@ -13,3 +13,4 @@ Running `sudo make install` will make a user named `awoo`, copy `src` to `/opt/a
 - Moderation for seeing all posts by an IP (`/ip/:addr`)
 - Automatic locking of posts that are beyond a certain age
 	- Scheduled (cron-like) task?
+- Rules for each board
