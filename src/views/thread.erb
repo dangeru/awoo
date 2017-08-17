@@ -4,8 +4,8 @@
     <link rel="stylesheet" type="text/css" href="../../static/dangeru.css">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="shortcut icon" href="static/favicon.ico">
-    <% results = con.query("SELECT * FROM posts WHERE parent = #{id.to_i} OR post_id = #{id.to_i} ORDER BY post_id") %>
     <title>Thread <%= id %> on danger/<%= path %>/ Loading...</title>
+    <script src="/static/common.js"></script>
   </head>
   <body>
     <div id="sitecorner">
@@ -13,7 +13,7 @@
       <%= last_date_modified = Time.new 0 %>
       <%= i = 0 %>
       <% is_locked = false %>
-      <% results.each do |res| %>
+      <% con.query("SELECT * FROM posts WHERE parent = #{id.to_i} OR post_id = #{id.to_i} ORDER BY post_id").each do |res| %>
         <% if i == 0 then %>
           <% is_locked = res["is_locked"] != 0 %>
           <div id="title"><%= Sanitize.clean(res["title"]) %></div>
@@ -22,6 +22,10 @@
           </script>
         <% end %>
         <div class="comment">
+          <% if moderator then %>
+            <button onClick='deletePost(<%= res["post_id"] %>)'>-</button>
+            <a style="display: inline-block; font-size: 50%;" href="/ip/<%= res["ip"] %>"><%= res["ip"] %></a>
+          <% end %>
           | 
           <% res["content"].split("\n").each do |line| %>
             <% line = line.chomp %>

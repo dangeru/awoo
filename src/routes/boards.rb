@@ -142,9 +142,11 @@ module Sinatra
           app.get "/delete/:post_id" do |post_id|
             board = nil;
             escaped = con.escape(post_id.to_i.to_s)
+            parent = nil
             # First, figure out which board that post is on
-            con.query("SELECT board FROM posts WHERE post_id = #{escaped}").each do |res|
+            con.query("SELECT board, parent FROM posts WHERE post_id = #{escaped}").each do |res|
               board = res["board"]
+              parent = res["parent"]
             end
             # Then, check if the currently logged in user has permission to moderate that board
             if not is_moderator(board, session)
@@ -152,7 +154,12 @@ module Sinatra
             end
             # Finally, delete the post
             con.query("DELETE FROM posts WHERE post_id = #{escaped} OR parent = #{escaped}")
-            "Success, probably."
+            if parent != nil then
+              href = "/" + board + "/thread/" + parent.to_s
+              redirect(href, 303);
+            else
+              return "Success, probably."
+            end
           end
 
           # Legacy api, see https://github.com/naomiEve/dangeruAPI
