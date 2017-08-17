@@ -20,7 +20,7 @@
           </script>
         <% end %>
         <div class="comment">
-        | <%= Sanitize.clean(res["content"]) %>
+          | <%= Sanitize.clean(res["content"]).gsub("\n", "<br />") %>
         </div>
         <br />
         <% last_date_modified = res["date_posted"] %>
