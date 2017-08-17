@@ -5,6 +5,7 @@
 #
 
 require 'mysql2'
+require 'sanitize'
 
 def new_banner(board)
   if not board.index ".."

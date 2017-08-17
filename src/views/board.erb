@@ -72,7 +72,7 @@
     <% con.query("SELECT post_id, title, COALESCE(parent, post_id) AS effective_parent, COUNT(*)-1 AS number_of_replies FROM posts WHERE board = '#{con.escape(path)}' GROUP BY effective_parent ORDER BY post_id DESC LIMIT 20 OFFSET #{offset.to_s};").each do |res| %>
       <% style = "" %>
       <% style = "style='color: grey'" if res["is_locked"] %>
-      <a <% if res["is_locked"] then "style='color: grey;'" else "" end %> data-replies="<%= res["number_of_replies"] %>" href="/<%= path %>/thread/<%= res["post_id"] %>"><%= res["title"] %></a><br />
+      <a <% if res["is_locked"] then "style='color: grey;'" else "" end %> data-replies="<%= res["number_of_replies"] %>" href="/<%= path %>/thread/<%= res["post_id"] %>"><%= Sanitize.clean(res["title"]) %></a><br />
     <% end %>
 
     <div id="pagecount_container">

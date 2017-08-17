@@ -9,18 +9,18 @@
   </head>
   <body>
     <div id="sitecorner">
-      <a href="index.php"><img src="<%= banner %>" alt="danger/u/"></a> 
+      <a href="/<%= path %>"><img src="<%= banner %>" alt="danger/u/"></a> 
       <%= last_date_modified = "Never!" %>
       <%= i = 0 %>
       <% results.each do |res| %>
         <% if i == 0 then %>
-          <div id="title"><%= res["title"] %></div>
+          <div id="title"><%= Sanitize.clean(res["title"]) %></div>
           <script>
             document.title = <%= JSON.dump(res["title"]) %> + " - /danger/" + <%= JSON.dump(res["board"]) %> + "/";
           </script>
         <% end %>
         <div class="comment">
-        | <%= res["content"] %>
+        | <%= Sanitize.clean(res["content"]) %>
         </div>
         <% last_date_modified = res["date_posted"] %>
         <% i += 1 %>
