@@ -128,7 +128,7 @@ module Sinatra
 
           # Each board has a listing of the posts there (board.erb) and a listing of the replies to a give post (thread.erb)
           boards.each do |path|
-            app.get "/" + path do
+            app.get "/" + path + "/?" do
               if not params[:page]
                 offset = 0;
               else
