@@ -12,7 +12,13 @@ def new_banner(board)
     return ""
   end
   dirs = Dir.entries(File.dirname(__FILE__) + "/../static/static/banners/" + board)
-  "/static/banners/" + board + "/" + dirs.slice(2, dirs.length).sample
+  fixed_dirs = []
+  dirs.each do |x|
+    if x[0] != "."
+      fixed_dirs.push x
+    end
+  end
+  "/static/banners/" + board + "/" + fixed_dirs.sample
 end
 
 
@@ -36,7 +42,7 @@ module Sinatra
             board = con.escape(params[:board])
             title = con.escape(params[:title])
             content = con.escape(params[:comment])
-            ip = con.escape("TODO")
+            ip = con.escape(request.ip)
             # todo check if the IP is banned
             # todo check for flooding/spam
             con.query("INSERT INTO posts (board, title, content, ip) VALUES ('#{board}', '#{title}', '#{content}', '#{ip}')");
@@ -50,7 +56,10 @@ module Sinatra
             board = con.escape(params[:board])
             content = con.escape(params[:content])
             parent = con.escape(params[:parent].to_i.to_s)
-            ip = con.escape("TODO")
+            ip = con.escape(request.ip)
+            if ip == "127.0.0.1" 
+              ip = env["HTTP_X_FORWARDED_FOR"]
+            end
             # todo check if the IP is banned
             # todo check for flooding/spam
             con.query("INSERT INTO posts (board, parent, content, ip) VALUES ('#{board}', '#{parent}', '#{content}', '#{ip}')")

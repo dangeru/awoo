@@ -22,11 +22,12 @@
         <div class="comment">
         | <%= Sanitize.clean(res["content"]) %>
         </div>
+        <br />
         <% last_date_modified = res["date_posted"] %>
         <% i += 1 %>
       <% end %>
 
-      <div style="font-size: 11px;" class="comment">Total number of posts: <%= i.to_s %>, last modified on: <%= last_date_modified %> &lt;-- TODO MAKE THAT PRETTY.</div> <br>
+      <div style="font-size: 11px;" class="comment">Total number of posts: <%= i.to_s %>, last modified on: <%= last_date_modified %> <!-- TODO MAKE THAT PRETTY. --></div> <br>
       <a href="javascript:location.reload();">Refresh</a>
       <form action='/reply' method='post'>
         <input type='text' style='display: none' name='board' id='board' value='<%= path %>' />

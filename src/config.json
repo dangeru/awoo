@@ -7,8 +7,16 @@
       "name": "cyb",
       "desc": "Awoo testing grounds",
 
-      "janitor_login": "person",
-      "janitor_password": "andhispassword"
+      "janitors": [
+        {
+          "username": "test",
+          "password": "test"
+        },
+        {
+          "username": "test2",
+          "password": "pass"
+        }
+      ]
     }
   },
   "hostname": "niles.lain.city"
