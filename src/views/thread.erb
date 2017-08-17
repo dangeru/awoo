@@ -12,10 +12,10 @@
       <a href="/<%= path %>"><img src="<%= banner %>" alt="danger/u/"></a> 
       <%= last_date_modified = "Never!" %>
       <%= i = 0 %>
-      <% is_closed = false %>
+      <% is_locked = false %>
       <% results.each do |res| %>
         <% if i == 0 then %>
-          <% is_closed = res["is_closed"] %>
+          <% is_locked = res["is_locked"] != 0 %>
           <div id="title"><%= Sanitize.clean(res["title"]) %></div>
           <script>
             document.title = <%= JSON.dump(res["title"]) %> + " - /danger/" + <%= JSON.dump(res["board"]) %> + "/";
@@ -29,9 +29,10 @@
         <% i += 1 %>
       <% end %>
 
-      <div style="font-size: 11px;" class="comment">Total number of posts: <%= i.to_s %>, last modified on: <%= last_date_modified %> <!-- TODO MAKE THAT PRETTY. --></div> <br>
-      <% if is_closed then %>
-        <div id="redtext" style="text-align: center;">This thread is closed.</div>
+      <div style="font-size: 11px;" class="comment">Total number of posts: <%= i.to_s %>, last modified on: <%= last_date_modified %> <!-- TODO MAKE THAT PRETTY. --></div>
+      <br />
+      <% if is_locked then %>
+        <div class="redtext" style="text-align: center;">This thread is closed.</div>
       <% else %>
         <a href="javascript:location.reload();">Refresh</a>
         <form action='/reply' method='post'>
