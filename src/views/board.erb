@@ -7,10 +7,11 @@
       width: 320px;
       height: auto;
       padding: 0.5em;
-      /*background-color: white;*/
+      background-color: black;
       border: 1px solid /* black */ white;
       display: none;
       text-align: center;
+      color: white;
     }
     textarea {
       resize: none;
@@ -32,12 +33,7 @@
           console.log(comment.value.length);
           var len = comment.value.length
           var wc = document.getElementById("wordcount");
-          if(len > 500) {
-            wc.style.color = "red";
-          }
-          else {
-            wc.style.color = "black";
-          }
+          wc.style.color = len > 500 ? "red" : "inherit";
           wc.innerText = len + "/500";
         });
       }
@@ -47,7 +43,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="shortcut icon" href="static/favicon.ico">
   </head>
-  <body>
+  <body onLoad='ol();'>
     <div id="boardcontainer">
       <% settings.config['boards'].each do |key, array| %>
         <a style='display: inline-block;' class="boarda" href="/<%= key %>">/<%= key %>/</a> 
