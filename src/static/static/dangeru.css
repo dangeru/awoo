@@ -114,3 +114,7 @@ textarea, #draggable > form > input[type='text'] {
 input[type=submit] {
     margin-top: 3px;
 }
+/* awoo version string at the bottom of each page */
+small {
+    color: white;
+}
