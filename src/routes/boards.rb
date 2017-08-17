@@ -63,7 +63,7 @@ module Sinatra
             content = con.escape(params[:comment])
             ip = con.escape(request.ip)
             ip = get_ip(con, request, env);
-            if looks_like_spam(con, ip, env) then
+            if looks_like_spam(con, ip, env, config) then
               return [403, "Flood detected, post discarded"]
             end
             # todo check if the IP is banned
@@ -79,7 +79,7 @@ module Sinatra
             content = con.escape(params[:content])
             parent = con.escape(params[:parent].to_i.to_s)
             ip = get_ip(con, request, env);
-            if looks_like_spam(con, ip, env) then
+            if looks_like_spam(con, ip, env, config) then
               return [403, "Flood detected, post discarded"]
             end
             # todo check if the IP is banned
