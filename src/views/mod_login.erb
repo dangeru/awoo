@@ -1,0 +1,26 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>Mod login</title>
+    <link rel="stylesheet" type="text/css" href="static/dangeru.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="static/favicon.ico">
+  </head>
+  <body>
+  <div id="sitecorner">
+    <a href="javascript:location.reload();"><img src="/static/logo.png" alt="danger/u/"></a>
+    <span id="newthread">Mod Login</span>
+    <form action="/mod" method="post" name="mod_login">
+      <input type="text" name="username" id="username" placeholder="Username" />
+      <br />
+      <input type="text" name="password" id="password" placeholder="Password" />
+      <br />
+      <input type="submit" id="submit" name="submit" value="Send" />
+    </form>
+  </div>
+  <footer class="comment" style="font-size: xx-small; text-align: center;">
+    <small>Awoo <%= settings.awoo_version %></small>
+  </footer>
+  </body>
+</html>
+

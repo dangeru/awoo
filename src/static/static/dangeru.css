@@ -1,0 +1,120 @@
+body {
+    background-color: #000000;
+}
+img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+    padding-bottom: 15px;
+}
+@media only screen and (max-width: 479px) {
+    #maincontainer {
+        width: 90%;
+    }
+}
+@font-face {
+    font-family: 'CyberpunkWaifus';
+    src: url('CyberpunkWaifus.eot');
+    src: url('CyberpunkWaifus.eot?#iefix') format('embedded-opentype'), url('CyberpunkWaifus.woff') format('woff'), url('CyberpunkWaifus.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+a {
+    text-decoration: none;
+    display: block;
+    text-align: center;
+    font-family: 'CyberpunkWaifus';
+    font-size: 20px;
+    color: #FFFFFF;
+}
+.boarda {
+    text-align: left;
+}
+.boardb {
+    text-align: right;
+}
+#newthread {
+    font-size: 30px;
+    color: white;
+    display: block;
+    text-decoration: none;
+    text-align: center;
+    font-family: 'CyberpunkWaifus';
+}
+a:hover {
+    text-decoration: underline;
+}
+.redtext {
+    color: #ED145B;
+    font-size: 18px;
+    font-family: 'CyberpunkWaifus';
+}
+div {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+#sitecorner {
+    border-radius: 25px;
+    border: 2px solid #FFFFFF;
+    padding: 20px;
+    width: 395px;
+    height: auto;
+}
+#maincontainer {
+    width: 100vw;
+    border-radius: 25px;
+    border: 2px solid #FFFFFF;
+    padding: 20px;
+    max-width: 568px;
+    height: auto;
+    margin: 0 auto;
+    position: relative;
+}
+textarea, #draggable > form > input[type='text'] {
+    resize: none;
+    background-color: #262626;
+    color: white;
+    border: none;
+    border-radius: 4px;
+}
+#title {
+    font-size: 30px;
+    color: #FFFFFF;
+    font-family: 'CyberpunkWaifus';
+    font-weight: 900;
+    padding-bottom: 15px;
+}
+.comment {
+    font-size: 18px;
+    color: #FFFFFF;
+    font-family: 'CyberpunkWaifus';
+}
+#boardtitle {
+    text-align: center;
+    font-family: 'CyberpunkWaifus';
+    color: white;
+    font-size: 19px;
+}
+#boardcontainer {
+    text-align: center;
+    width: auto;
+}
+#boardid {
+    display: inline;
+}
+#pagecount {
+    display: inline;
+    font-size: smaller;
+}
+#pagecount_container {
+    text-align: center;
+}
+input[type=submit] {
+    margin-top: 3px;
+}
+/* awoo version string at the bottom of each page */
+small {
+    color: white;
+}

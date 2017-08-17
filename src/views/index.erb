@@ -1,14 +1,29 @@
 <!DOCTYPE HTML>
-<html>
+<HTML>
   <head>
-    <title><%= settings.config['title']%></title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title><%= settings.config["title"] %></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" type="text/css" href="static/dangeru.css">
+    <meta name="description" content="danger/u/ - dangerous opinions. danger/u/ is a textboard based off danger/u/ from VA-11 HALL-A Cyberpunk Bartender Action.">
+    <link rel="shortcut icon" href="static/favicon.ico">
   </head>
   <body>
-    <h1><%= settings.config['title'] %></h1>
+    <img src="static/logo.png" alt="danger/u/" style="width: 395px; height: 130px;">
+    <div style="text-align: center;">
+      <span class="comment">Latest news:</span>
+      <span class="redtext">14/06/17: archive.dangeru.us is now operational!</span>
+    </div>
+    <br>
+    <div id="maincontainer" style="overflow: hidden;">
     <% settings.config['boards'].each do |key, array| %>
-      <a href="/<%= key %>"><%= key %></a><br>
+      <a class="boarda" href="/<%= key %>"><%= key %></a><br>
     <% end %>
-    <small>Awoo <%= settings.awoo_version %></small>
+    </div>
+    <div style="text-align: center;">
+    </div><br>
+    <footer class="comment" style="font-size: xx-small; text-align: center;">
+      <small>Awoo <%= settings.awoo_version %></small>
+    </footer>
   </body>
-</html>
+</HTML>
+
