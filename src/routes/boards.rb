@@ -140,7 +140,7 @@ module Sinatra
               erb :thread, :locals => {:path => path, :id => id, :con => con, :banner => new_banner(path), :moderator => is_moderator(path, session)}
             end
 
-            app.get "/" + path + "/rules" do
+            app.get "/" + path + "/rules/?" do
               erb :rules, :locals => {:rules => settings.config['boards'][path]['rules'], :moderator => is_moderator(path, session), :path => path, :banner => new_banner(path)}
             end
           end
