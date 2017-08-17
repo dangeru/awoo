@@ -118,6 +118,7 @@ module Sinatra
               return [403, "Flood detected, post discarded"]
             end
             # todo check if the IP is banned
+            # todo check if the thread is closed
             # Insert the new reply
             con.query("INSERT INTO posts (board, parent, content, ip, title) VALUES ('#{board}', '#{parent}', '#{content}', '#{ip}', NULL)")
             # Redirect them back to the post they just replied to
