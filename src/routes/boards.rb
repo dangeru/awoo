@@ -83,7 +83,7 @@ module Sinatra
           end
 
           # Make a new mysql connection
-          con = Mysql2::Client.new(:host => "localhost", :username => "awoo", :password => "awoo", :database => "test")
+          con = Mysql2::Client.new(:host => "localhost", :username => "awoo", :password => "awoo", :database => "awoo")
           # Route for making a new OP
           app.post "/post" do
             # OPs have a board, a title and a comment.
@@ -119,7 +119,7 @@ module Sinatra
             end
             # todo check if the IP is banned
             # Insert the new reply
-            con.query("INSERT INTO posts (board, parent, content, ip) VALUES ('#{board}', '#{parent}', '#{content}', '#{ip}')")
+            con.query("INSERT INTO posts (board, parent, content, ip, title) VALUES ('#{board}', '#{parent}', '#{content}', '#{ip}', NULL)")
             # Redirect them back to the post they just replied to
             href = "/" + params[:board] + "/thread/" + params[:parent]
             redirect(href, 303);
