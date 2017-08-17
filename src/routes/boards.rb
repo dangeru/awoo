@@ -21,6 +21,22 @@ def new_banner(board)
   "/static/banners/" + board + "/" + fixed_dirs.sample
 end
 
+def get_ip(con, request, env)
+  ip = con.escape(request.ip)
+  if ip == "127.0.0.1" 
+    ip = env["HTTP_X_FORWARDED_FOR"]
+  end
+  return ip
+end
+
+def looks_like_spam(con, ip, env)
+  con.query("SELECT date_posted, ip FROM posts WHERE ip = '#{ip}' ORDER BY post_id DESC LIMIT 1").each do |res|
+    if res["ip"] == ip and res["date_posted"] + config["max_posts_per_second"] > Time.new() then
+      return true
+    end
+    return false
+  end
+end
 
 module Sinatra
   module Awoo
@@ -43,8 +59,11 @@ module Sinatra
             title = con.escape(params[:title])
             content = con.escape(params[:comment])
             ip = con.escape(request.ip)
+            ip = get_ip(con, request, env);
+            if looks_like_spam(con, ip, env) then
+              return [403, "Flood detected, post discarded"]
+            end
             # todo check if the IP is banned
-            # todo check for flooding/spam
             con.query("INSERT INTO posts (board, title, content, ip) VALUES ('#{board}', '#{title}', '#{content}', '#{ip}')");
             con.query("SELECT LAST_INSERT_ID() AS id").each do |res|
               href = "/" + params[:board] + "/thread/" + res["id"].to_s
@@ -56,12 +75,11 @@ module Sinatra
             board = con.escape(params[:board])
             content = con.escape(params[:content])
             parent = con.escape(params[:parent].to_i.to_s)
-            ip = con.escape(request.ip)
-            if ip == "127.0.0.1" 
-              ip = env["HTTP_X_FORWARDED_FOR"]
+            ip = get_ip(con, request, env);
+            if looks_like_spam(con, ip, env) then
+              return [403, "Flood detected, post discarded"]
             end
             # todo check if the IP is banned
-            # todo check for flooding/spam
             con.query("INSERT INTO posts (board, parent, content, ip) VALUES ('#{board}', '#{parent}', '#{content}', '#{ip}')")
             href = "/" + params[:board] + "/thread/" + params[:parent]
             redirect(href, 303);
