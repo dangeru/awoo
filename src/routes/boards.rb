@@ -111,7 +111,15 @@ module Sinatra
               return [403, "Flood detected, post discarded"]
             end
             # todo check if the IP is banned
-            # todo check if the thread is closed
+            closed = nil
+            con.query("SELECT is_locked FROM posts WHERE post_id = #{parent}").each do |res|
+              closed = res["is_locked"]
+            end
+            if closed == nil then
+              return [400, "That thread doesn't exist"]
+            elsif closed != 0 then
+              return [400, "That thread has been closed"]
+            end
             # Insert the new reply
             con.query("INSERT INTO posts (board, parent, content, ip, title) VALUES ('#{board}', '#{parent}', '#{content}', '#{ip}', NULL)")
             # Redirect them back to the post they just replied to
@@ -225,6 +233,9 @@ module Sinatra
           app.get "/logout" do
             session[:moderates] = nil
             redirect("/mod", 303);
+          end
+          app.get "/ip/:addr" do |addr|
+            erb :ip_list, :locals => {:session => session, :addr => addr, :con => con}
           end
         end
       end

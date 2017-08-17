@@ -1,0 +1,48 @@
+<!DOCTYPE HTML>
+<HTML>
+  <head>
+    <title>Posts by IP address <%= addr %></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" type="text/css" href="/static/dangeru.css">
+    <link rel="shortcut icon" href="/static/favicon.ico">
+    <script>
+      var addr = <%= JSON.dump(addr) %>;
+      var ban = function ban(board) {
+        alert("You tried to ban " + addr + " from the board " + board + ", but it's not implemented yet");
+      }
+    </script>
+    <script src="/static/common.js"></script>
+  </head>
+  <body>
+    <img src="/static/logo.png" alt="danger/u/" style="width: 395px; height: 130px;">
+    <br />
+    <div id="maincontainer" style="overflow: hidden; color: white;">
+      <h2>Information for IP <%= Sanitize.clean(addr) %></h2>
+      <select id="board">
+      <% session[:moderates].each do |board| %>
+        <option value="<%= board %>"><%= board %></option>
+      <% end %>
+      </select>
+      <button onClick='ban(document.getElementById("board").selectedOptions[0].value)'>Ban</button>
+      <br />
+      <% boards = session[:moderates].map do |f| con.escape(f) end %>
+      <% boards = "('" + boards.join("', '") + "')" %>
+      <% con.query("SELECT posts.*, titles.title AS linked_title FROM posts LEFT JOIN posts titles ON posts.parent = titles.post_id WHERE posts.ip = '#{con.escape(addr)}' AND posts.board IN #{boards}").each do |res| %>
+        <% if res["parent"] then %>
+          Reply to <a style='display: inline-block;' href="/<%= res["board"] %>/thread/<%= res["parent"] %>"><%= Sanitize.clean(res["linked_title"]) %></a>
+        <% else %>
+          OP with title <a style='display: inline-block;' href="/<%= res["board"] %>/thread/<%= res["post_id"] %>"><%= res["title"] %></a>
+        <% end %>
+        in <%= res["board"] %> on <%= res["date_posted"] %>.
+        <button onClick='deletePost(<%= res["post_id"] %>)'>Delete</button><br />
+        <%= Sanitize.clean(res["content"]) %>
+        <br />
+        <br />
+      <% end %>
+    </div>
+    <footer class="comment" style="font-size: xx-small; text-align: center;">
+      <small>Awoo <%= settings.awoo_version %></small>
+    </footer>
+  </body>
+</HTML>
+
