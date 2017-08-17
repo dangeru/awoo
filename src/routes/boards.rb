@@ -31,7 +31,7 @@ end
 
 def looks_like_spam(con, ip, env)
   con.query("SELECT date_posted, ip FROM posts WHERE ip = '#{ip}' ORDER BY post_id DESC LIMIT 1").each do |res|
-    if res["ip"] == ip and res["date_posted"] + config["max_posts_per_second"] > Time.new() then
+    if res["ip"] == ip and res["date_posted"] + config["min_seconds_between_post_per_ip"] > Time.new() then
       return true
     end
     return false

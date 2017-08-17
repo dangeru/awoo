@@ -20,5 +20,5 @@
     }
   },
   "hostname": "niles.lain.city",
-  "max_posts_per_second": 30
+  "min_seconds_between_post_per_ip": 30
 }
