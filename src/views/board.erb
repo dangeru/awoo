@@ -83,8 +83,8 @@
     <% end %>
 
     <div id="pagecount_container">
-      <% con.query("SELECT COUNT(*) AS count FROM posts WHERE parent IS NULL").each do |res| ((res["count"]/20)+1).times do |i| %>
-        <a href="index.php?page=<%= i.to_s %>" id="pagecount"><%= (i + 1).to_s %></a>
+      <% con.query("SELECT COUNT(*) AS count FROM posts WHERE parent IS NULL AND board = '#{con.escape(path)}'").each do |res| ((res["count"]/20)+1).times do |i| %>
+        <a href="/<%= path %>?page=<%= i.to_s %>" id="pagecount"><%= (i + 1).to_s %></a>
       <% end end %>
     </div>
   </div>
