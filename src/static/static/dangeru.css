@@ -28,10 +28,10 @@ a {
     font-size: 20px;
     color: #FFFFFF;
 }
-#boarda {
+.boarda {
     text-align: left;
 }
-#boardb {
+.boardb {
     text-align: right;
 }
 #newthread {
@@ -45,7 +45,7 @@ a {
 a:hover {
     text-decoration: underline;
 }
-#redtext {
+.redtext {
     color: #ED145B;
     font-size: 18px;
     font-family: 'CyberpunkWaifus';
