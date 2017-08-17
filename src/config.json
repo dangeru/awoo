@@ -1,25 +1,25 @@
 {
   "title": "Awoo test board",
-  "port": 8033,
+  "port": 8080,
 
   "boards": {
-    "cyb": {
-      "name": "cyb",
+    "test": {
+      "name": "test",
       "desc": "Awoo testing grounds"
     }
   },
-  "hostname": "niles.lain.city",
+  "hostname": "example.com",
   "min_seconds_between_post_per_ip": 30,
   "janitors": [
     {
       "username": "test",
       "password": "test",
-      "boards": ["cyb"]
+      "boards": ["test"]
     },
     {
       "username": "test2",
       "password": "pass",
-      "boards": ["cyb"]
+      "boards": ["test"]
     }
   ]
 }
