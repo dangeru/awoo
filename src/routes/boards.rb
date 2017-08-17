@@ -8,10 +8,11 @@ require 'mysql2'
 require 'sanitize'
 
 def new_banner(board)
-  if not board.index ".."
+  if board.index("..") != nil
     return ""
   end
-  return Dir.entries(File.dirname(__FILE__) + "/static/" + board).sample
+  dirs = Dir.entries(File.dirname(__FILE__) + "/../static/static/banners/" + board)
+  "/static/banners/" + board + "/" + dirs.slice(2, dirs.length).sample
 end
 
 
