@@ -6,6 +6,7 @@
     "test": {
       "name": "test",
       "desc": "Awoo testing grounds"
+
     }
   },
   "hostname": "example.com",

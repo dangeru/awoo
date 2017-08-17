@@ -34,7 +34,7 @@ end
 # this function tries to get the IP from the request, and if we're behind a reverse proxy it tries to get it from the environment variables
 def get_ip(con, request, env)
   ip = con.escape(request.ip)
-  if ip == "127.0.0.1" 
+  if ip == "127.0.0.1"
     ip = env["HTTP_X_FORWARDED_FOR"]
   end
   return ip
@@ -83,7 +83,7 @@ module Sinatra
           end
 
           # Make a new mysql connection
-          con = Mysql2::Client.new(:host => "localhost", :username => "awoo", :password => "awoo", :database => "test")
+          con = Mysql2::Client.new(:host => "localhost", :username => "awoo", :password => "awoo", :database => "awoo")
           # Route for making a new OP
           app.post "/post" do
             # OPs have a board, a title and a comment.
@@ -137,6 +137,10 @@ module Sinatra
             end
             app.get "/" + path + "/thread/:id" do |id|
               erb :thread, :locals => {:path => path, :id => id, :con => con, :banner => new_banner(path), :moderator => is_moderator(path, session)}
+            end
+
+            app.get "/" + path + "/rules" do
+
             end
           end
 
