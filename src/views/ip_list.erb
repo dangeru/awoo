@@ -33,7 +33,7 @@
         <% else %>
           OP with title <a style='display: inline-block;' href="/<%= res["board"] %>/thread/<%= res["post_id"] %>"><%= res["title"] %></a>
         <% end %>
-        in <%= res["board"] %> on <%= res["date_posted"] %>.
+        in <%= res["board"] %> on <%= res["date_posted"].strftime '%c' %>.
         <button onClick='deletePost(<%= res["post_id"] %>)'>Delete</button><br />
         <%= Sanitize.clean(res["content"]) %>
         <br />
