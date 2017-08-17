@@ -1,0 +1,13 @@
+[Unit]
+Description=awoo
+
+[Install]
+WantedBy=multi-user.target
+
+[Service]
+Type=simple
+Restart=always
+User=awoo
+Group=awoo
+WorkingDirectory=/opt/awoo/src
+ExecStart=/usr/bin/env rackup

@@ -1,6 +1,6 @@
 {
   "title": "Awoo test board",
-  "port": 80,
+  "port": 8033,
 
   "boards": {
     "cyb": {
