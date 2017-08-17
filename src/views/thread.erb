@@ -30,9 +30,9 @@
       <% end %>
 
       <div style="font-size: 11px;" class="comment">Total number of posts: <%= i.to_s %>, last modified on: <%= last_date_modified %> <!-- TODO MAKE THAT PRETTY. --></div> <br>
-      <%= if is_closed then %>
+      <% if is_closed then %>
         <div id="redtext" style="text-align: center;">This thread is closed.</div>
-      <%= else %>
+      <% else %>
         <a href="javascript:location.reload();">Refresh</a>
         <form action='/reply' method='post'>
           <input type='text' style='display: none' name='board' id='board' value='<%= path %>' />
@@ -40,7 +40,7 @@
           <input type='text' name='content' id='board' placeholder='Reply' />
           <input type='submit' />
         </form>
-      <%= end %>
+      <% end %>
       <br />
     </div>
     <footer class="comment" style="font-size: xx-small; text-align: center;">
