@@ -22,7 +22,20 @@
           </script>
         <% end %>
         <div class="comment">
-          | <%= Sanitize.clean(res["content"]).gsub("\n", "<br />") %>
+          | 
+          <% res["content"].split("\n").each do |line| %>
+            <% line = line.chomp %>
+            <% depth = 0 %>
+            <% while line[depth] == ">" do depth += 1 end %>
+            <% if depth > 0 %>
+              <span class="redtext redtext-<%= depth %>">
+            <% end %>
+            <%= Sanitize.clean(line) %>
+            <% if depth > 0 %>
+              </span>
+            <% end %>
+            <br />
+          <% end %>
         </div>
         <br />
         <% last_date_modified = res["date_posted"] %>
