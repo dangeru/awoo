@@ -29,13 +29,16 @@ def get_ip(con, request, env)
   return ip
 end
 
-def looks_like_spam(con, ip, env)
+def looks_like_spam(con, ip, env, config)
+  result = false
   con.query("SELECT date_posted, ip FROM posts WHERE ip = '#{ip}' ORDER BY post_id DESC LIMIT 1").each do |res|
     if res["ip"] == ip and res["date_posted"] + config["min_seconds_between_post_per_ip"] > Time.new() then
-      return true
+      result = true
+    else
+      result = false
     end
-    return false
   end
+  return result
 end
 
 module Sinatra
