@@ -3,8 +3,8 @@
   "port": 80,
 
   "boards": {
-    "test": {
-      "name": "test",
+    "cyb": {
+      "name": "cyb",
       "desc": "Awoo testing grounds",
 
       "janitor_login": "person",

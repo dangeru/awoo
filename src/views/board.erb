@@ -2,15 +2,24 @@
 <html>
   <head>
     <title>/<%= settings.config['boards'][path]['name'] %>/ - <%= settings.config['boards'][path]['desc'] %></title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
     <style>
-      #draggable { width: 320px; height: auto; padding: 0.5em; background-color: white; border: 1px solid black; display: none;}
-      textarea {resize: none; width: 312px; height: 130px;}
+    #draggable {
+      width: 320px;
+      height: auto;
+      padding: 0.5em;
+      /*background-color: white;*/
+      border: 1px solid /* black */ white;
+      display: none;
+      text-align: center;
+    }
+    textarea {
+      resize: none;
+      width: 90%;
+      height: 130px;
+    }
     </style>
-
-    <script src="js/jquery-3.2.1.min.js"></script>
-    <script src="js/jquery-ui.min.js"></script>
+    <script src="static/js/jquery-3.2.1.min.js"></script>
+    <script src="static/js/jquery-ui.min.js"></script>
 
     <script>
       var newThread = function newThread() {
@@ -33,13 +42,20 @@
         });
       }
     </script>
+    <link rel="stylesheet" type="text/css" href="../static/dangeru.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="static/favicon.ico">
   </head>
-  <body onLoad='ol();'>
-    <h1>/<%= settings.config['boards'][path]['name'] %>/</h1>
-    <div><%= settings.config['boards'][path]['desc'] %></div>
+  <body>
+    <div id="boardcontainer">
+      <% settings.config['boards'].each do |key, array| %>
+        <a class="boarda" href="/<%= key %>">/<%= key %>/</a> 
+      <% end %>
+    </div>
 
-    <button id="newthread" onClick='newThread();'>Start a new thread</button><br /><br />
-
+  <div id="sitecorner">
+    <a href="javascript:location.reload();"><img src="<%= banner %>" alt="danger/u/"></a>
+    <span onClick='newThread()' id="newthread">Start a new thread</span>
     <div id="draggable" class="ui-widget-content">
       <form action="/post" method="post" name="newthread">
         <input style='display: none;' type='text' name='board' id='board' value='<%= path %>' />
@@ -51,14 +67,23 @@
         <div id="wordcount">0/500</div>
       </form>
     </div>
-    <%
-      escaped = con.escape(path);
-      con.query("SELECT post_id, title, COALESCE(parent, post_id) AS effective_parent, COUNT(*)-1 AS number_of_replies FROM posts WHERE board = '#{escaped}' GROUP BY effective_parent ORDER BY post_id;").each do |res|
-    %>
-      <a data-replies="<%= res["number_of_replies"] %>" href="/<%= path %>/thread/<%= res["post_id"] %>"><%= res["title"] %></a><br />
-    <% end %>
-    <br />
-    <small>Awoo <%= settings.awoo_version %></small>
 
+    <hr>
+    <% con.query("SELECT post_id, title, COALESCE(parent, post_id) AS effective_parent, COUNT(*)-1 AS number_of_replies FROM posts WHERE board = '#{con.escape(path)}' GROUP BY effective_parent ORDER BY post_id DESC LIMIT 20 OFFSET #{offset.to_s};").each do |res| %>
+      <% style = "" %>
+      <% style = "style='color: grey'" if res["is_locked"] %>
+      <a <% if res["is_locked"] then "style='color: grey;'" else "" end %> data-replies="<%= res["number_of_replies"] %>" href="/<%= path %>/thread/<%= res["post_id"] %>"><%= res["title"] %></a><br />
+    <% end %>
+
+    <div id="pagecount_container">
+      <% con.query("SELECT COUNT(*) AS count FROM posts WHERE parent IS NULL").each do |res| ((res["count"]/20)+1).times do |i| %>
+        <a href="index.php?page=<%= i.to_s %>" id="pagecount"><%= (i + 1).to_s %></a>
+      <% end end %>
+    </div>
+  </div>
+  <footer id="comment" style="font-size: xx-small; text-align: center;">
+    <small>Awoo <%= settings.awoo_version %></small>
+  </footer>
   </body>
 </html>
+

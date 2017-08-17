@@ -6,6 +6,12 @@
 
 require 'mysql2'
 
+def new_banner(board)
+  if not board.index ".."
+    return ""
+  end
+  return Dir.entries(File.dirname(__FILE__) + "/static/" + board).sample
+end
 
 
 module Sinatra
@@ -32,11 +38,11 @@ module Sinatra
             # todo check if the IP is banned
             # todo check for flooding/spam
             con.query("INSERT INTO posts (board, title, content, ip) VALUES ('#{board}', '#{title}', '#{content}', '#{ip}')");
-            thing = "Error? idk"
             con.query("SELECT LAST_INSERT_ID() AS id").each do |res|
-              thing = "<a href='/" + params[:board] + "/thread/" + res["id"].to_s + "'>Go</a>"
+              href = "/" + params[:board] + "/thread/" + res["id"].to_s
+              redirect(href, 303);
             end
-            thing
+            return "Error? idk"
           end
           app.post "/reply" do
             board = con.escape(params[:board])
@@ -46,15 +52,21 @@ module Sinatra
             # todo check if the IP is banned
             # todo check for flooding/spam
             con.query("INSERT INTO posts (board, parent, content, ip) VALUES ('#{board}', '#{parent}', '#{content}', '#{ip}')")
-            "<a href='/"+params[:board]+"/thread/"+params[:parent]+"'>Go</a>"
+            href = "/" + params[:board] + "/thread/" + params[:parent]
+            redirect(href, 303);
           end
 
           boards.each do |path|
             app.get "/" + path do
-              erb :board, :locals => {:path => path, :con => con}
+              if not params[:page]
+                offset = 0;
+              else
+                offset = params[:page].to_i * 20;
+              end
+              erb :board, :locals => {:path => path, :con => con, :offset => offset, :banner => new_banner(path)}
             end
             app.get "/" + path + "/thread/:id" do |id|
-              erb :thread, :locals => {:path => path, :id => id, :con => con}
+              erb :thread, :locals => {:path => path, :id => id, :con => con, :banner => new_banner(path)}
             end
           end
 

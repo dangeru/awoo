@@ -1,26 +1,41 @@
 <!DOCTYPE HTML>
 <html>
   <head>
-    <title><%= settings.config['title']%></title>
+    <link rel="stylesheet" type="text/css" href="../../static/dangeru.css">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="static/favicon.ico">
+    <% results = con.query("SELECT * FROM posts WHERE parent = #{id.to_i} OR post_id = #{id.to_i} ORDER BY post_id") %>
+    <title>Thread <%= id %> on danger/<%= path %>/ Loading...</title>
   </head>
   <body>
-    <h1><%= id %></h1>
-    <%
-      con.query("SELECT * FROM posts WHERE parent = #{id.to_i} OR post_id = #{id.to_i} ORDER BY post_id").each do |res|
-    %>
-      <% if res["title"] %>
-        <h2><%= res["title"] %></h2>
+    <div id="sitecorner">
+      <a href="index.php"><img src="<%= banner %>" alt="danger/u/"></a> 
+      <%= last_date_modified = "Never!" %>
+      <%= i = 0 %>
+      <% results.each do |res| %>
+        <% if i == 0 then %>
+          <div id="title"><%= res["title"] %></div>
+          <script>
+            document.title = <%= JSON.dump(res["title"]) %> + " - /danger/" + <%= JSON.dump(res["board"]) %> + "/";
+          </script>
+        <% end %>
+        <div class="comment">
+        | <%= res["content"] %>
+        </div>
+        <% last_date_modified = res["date_posted"] %>
+        <% i += 1 %>
       <% end %>
-      <%= res["content"] %>
-      <br /><br />
-    <% end %>
-    <form action='/reply' method='post'>
-      <input type='text' style='display: none' name='board' id='board' value='<%= path %>' />
-      <input type='text' style='display: none' name='parent' id='parent' value='<%= id %>' />
-      <input type='text' name='content' id='board' placeholder='Reply' />
-      <input type='submit' />
-    </form>
+
+      <div style="font-size: 11px;" class="comment">Total number of posts: <%= i.to_s %>, last modified on: <%= last_date_modified %> &lt;-- TODO MAKE THAT PRETTY.</div> <br>
+      <a href="javascript:location.reload();">Refresh</a>
+      <form action='/reply' method='post'>
+        <input type='text' style='display: none' name='board' id='board' value='<%= path %>' />
+        <input type='text' style='display: none' name='parent' id='parent' value='<%= id %>' />
+        <input type='text' name='content' id='board' placeholder='Reply' />
+        <input type='submit' />
+      </form>
+    </div>
     <small>Awoo <%= settings.awoo_version %></small>
   </body>
 </html>
+
