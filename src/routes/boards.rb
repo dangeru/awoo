@@ -17,14 +17,7 @@ def new_banner(board)
     # this will throw an exception if the folder doesn't exist, hence the rescue
     dirs = Dir.entries(File.dirname(__FILE__) + "/../static/static/banners/" + board)
     # we have to remove "." and ".." from the list, but this will also remove all hidden files
-    fixed_dirs = []
-    dirs.each do |x|
-      if x[0] != "."
-        fixed_dirs.push x
-      end
-    end
-    # pick a random banner out of fixed_dirs
-    return "/static/banners/" + board + "/" + fixed_dirs.sample
+    return "/static/banners/" + board + "/" + dirs.select {|f| !File.directory? f}.sample
   rescue
     # no banners for this board, just use the logo
     return "/static/logo.png"
