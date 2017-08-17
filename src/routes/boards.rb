@@ -140,7 +140,7 @@ module Sinatra
             end
 
             app.get "/" + path + "/rules" do
-
+              erb :rules, :locals => {:rules => settings.config['boards'][path]['rules'], :moderator => is_moderator(path, session), :path => path, :banner => new_banner(path)}
             end
           end
 

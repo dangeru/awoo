@@ -5,8 +5,9 @@
   "boards": {
     "test": {
       "name": "test",
-      "desc": "Awoo testing grounds"
+      "desc": "Awoo testing grounds",
 
+      "rules": "1. Test out stuff.\n2. Report bugs.\n3. Repeat."
     }
   },
   "hostname": "example.com",
