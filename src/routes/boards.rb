@@ -29,6 +29,13 @@ def get_ip(con, request, env)
   return ip
 end
 
+def is_moderator(board, session)
+  if session[:moderates] == nil
+    return false;
+  end
+  return session[:moderates].index(board) != nil
+end
+
 def looks_like_spam(con, ip, env, config)
   result = false
   con.query("SELECT date_posted, ip FROM posts WHERE ip = '#{ip}' ORDER BY post_id DESC LIMIT 1").each do |res|
@@ -95,11 +102,24 @@ module Sinatra
               else
                 offset = params[:page].to_i * 20;
               end
-              erb :board, :locals => {:path => path, :con => con, :offset => offset, :banner => new_banner(path)}
+              erb :board, :locals => {:path => path, :con => con, :offset => offset, :banner => new_banner(path), :moderator => is_moderator(path, session)}
             end
             app.get "/" + path + "/thread/:id" do |id|
-              erb :thread, :locals => {:path => path, :id => id, :con => con, :banner => new_banner(path)}
+              erb :thread, :locals => {:path => path, :id => id, :con => con, :banner => new_banner(path), :moderator => is_moderator(path, session)}
             end
+          end
+
+          app.get "/delete/:post_id" do |post_id|
+            board = nil;
+            escaped = con.escape(post_id.to_i.to_s)
+            con.query("SELECT board FROM posts WHERE post_id = #{escaped}").each do |res|
+              board = res["board"]
+            end
+            if not is_moderator(board, session)
+              return [403, "You are not logged in or you do not moderate " + board]
+            end
+            con.query("DELETE FROM posts WHERE post_id = #{escaped} OR parent = #{escaped}")
+            "Success, probably."
           end
 
           # Legacy api, see https://github.com/naomiEve/dangeruAPI
