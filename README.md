@@ -5,6 +5,5 @@ You'll need the `sinatra`, `mysql2` and `sanitize` gems, as well as a mysql serv
 
 ## Todo List
 
-- Flood detection
 - Moderation for deleting posts
 - Moderation for bans

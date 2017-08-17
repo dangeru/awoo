@@ -161,6 +161,7 @@ module Sinatra
           end
           app.get "/logout" do
             session[:moderates] = nil
+            redirect("/mod", 303);
           end
         end
       end
