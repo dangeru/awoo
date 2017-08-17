@@ -12,3 +12,9 @@ CREATE TABLE posts (
 	date_posted TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	title TEXT NOT NULL DEFAULT ''
 );
+CREATE TABLE bans (
+	ip TEXT NOT NULL,
+	board TEXT NOT NULL,
+	date_of_unban TIMESTAMP NOT NULL,
+	reason TEXT
+);
