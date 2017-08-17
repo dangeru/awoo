@@ -5,20 +5,21 @@
   "boards": {
     "cyb": {
       "name": "cyb",
-      "desc": "Awoo testing grounds",
-
-      "janitors": [
-        {
-          "username": "test",
-          "password": "test"
-        },
-        {
-          "username": "test2",
-          "password": "pass"
-        }
-      ]
+      "desc": "Awoo testing grounds"
     }
   },
   "hostname": "niles.lain.city",
-  "min_seconds_between_post_per_ip": 30
+  "min_seconds_between_post_per_ip": 30,
+  "janitors": [
+    {
+      "username": "test",
+      "password": "test",
+      "boards": ["cyb"]
+    },
+    {
+      "username": "test2",
+      "password": "pass",
+      "boards": ["cyb"]
+    }
+  ]
 }

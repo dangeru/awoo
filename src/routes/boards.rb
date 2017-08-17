@@ -142,6 +142,26 @@ module Sinatra
             JSON.dump(result)
           end
 
+          app.get "/mod" do
+            if session[:moderates] then
+              return "You are already logged in and you moderate " + session[:moderates].join(", ")
+            end
+            erb :mod_login, :locals => {:session => session}
+          end
+          app.post "/mod" do
+            username = params[:username]
+            password = params[:password]
+            config["janitors"].each do |janitor|
+              if janitor["username"] == username and janitor["password"] == password then
+                session[:moderates] = janitor["boards"]
+                return "You are now logged in as " + username + ", you moderate " + janitor["boards"].join(", ")
+              end
+            end
+            "Check your username and password"
+          end
+          app.get "/logout" do
+            session[:moderates] = nil
+          end
         end
       end
     end
