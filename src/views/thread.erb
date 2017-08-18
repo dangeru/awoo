@@ -2,6 +2,7 @@
 <html>
   <head>
     <link rel="stylesheet" type="text/css" href="../../static/dangeru.css">
+    <link rel="stylesheet" type="text/css" href="../static/css/font-awesome.min.css">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="shortcut icon" href="static/favicon.ico">
     <title>Thread <%= id %> on danger/<%= path %>/ Loading...</title>
@@ -33,7 +34,7 @@
   </head>
   <body onLoad='ol();'>
     <div id="sitecorner">
-      <a href="/<%= path %>"><img src="<%= banner %>" alt="danger/u/"></a> 
+      <a href="/<%= path %>"><img src="<%= banner %>" alt="danger/u/"></a>
       <%= last_date_modified = Time.new 0 %>
       <%= i = 0 %>
       <% is_locked = false %>
@@ -42,15 +43,15 @@
           <% is_locked = res["is_locked"] != 0 %>
           <div id="title"><%= Sanitize.clean(res["title"]) %></div>
           <script>
-            document.title = <%= JSON.dump(res["title"]) %> + " - /danger/" + <%= JSON.dump(res["board"]) %> + "/";
+            document.title = <%= JSON.dump(res["title"]) %> + " - danger/" + <%= JSON.dump(res["board"]) %> + "/";
           </script>
         <% end %>
         <div class="comment" id="comment-<%= res["post_id"] %>">
           <% if moderator then %>
-            <button onClick='deletePost(<%= res["post_id"] %>)'>-</button>
+            &nbsp;<i class="fa fa-trash" aria-hidden="true" onClick='deletePost(<%= res["post_id"] %>)'></i>
             <a style="display: inline-block; font-size: 50%;" href="/ip/<%= res["ip"] %>"><%= res["ip"] %></a>
           <% end %>
-          | 
+          |
           <% res["content"].split("\n").each do |line| %>
             <% line = line.chomp %>
             <%
@@ -108,7 +109,7 @@
       <% if is_locked then %>
         <div class="redtext" style="text-align: center;">This thread is closed.</div>
         <% if moderator %>
-          <button onClick='unlockPost(<%= id.to_i.to_s %>)'>Unlock</button>
+          <i class="fa fa-lock" aria-hidden="true" onClick='unlockPost(<%= id.to_i.to_s %>)'></i>
         <% end %>
       <% else %>
         <a href="javascript:location.reload();">Refresh</a>
@@ -119,8 +120,7 @@
           <input type='submit' />
         </form>
         <% if moderator %>
-          <br />
-          <button onClick='lockPost(<%= id.to_i.to_s %>)'>Lock</button>
+          <i class="fa fa-unlock-alt" aria-hidden="true" onClick='lockPost(<%= id.to_i.to_s %>)'></i>
         <% end %>
       <% end %>
       <br />

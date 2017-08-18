@@ -121,6 +121,10 @@ input[type=submit] {
   color: #FFF;
 }
 
+.fa:hover {
+  text-decoration: underline;
+}
+
 /* awoo version string at the bottom of each page */
 small {
     color: white;
