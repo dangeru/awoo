@@ -35,18 +35,16 @@
             var elem = document.getElementById("comment-" + id.toString());
             document.getElementById("hover").innerHTML = elem.innerHTML;
             document.getElementById("hover").style.display = "inline-block";
-            // TEMP UNTIL move() WORKS
             var hovered_elem = document.getElementById("comment-" + hovered.toString())
-            document.getElementById("hover").style.top = (hovered_elem.offsetTop + hovered_elem.clientHeight).toString() + "px";
-            document.getElementById("hover").style.left = hovered_elem.offsetLeft.toString() + "px";
+            hovered_elem.onmousemove = move;
           }
           var unhover = function unhover() {
             document.getElementById("hover").innerHTML = ""
             document.getElementById("hover").style.display = "none";
           }
-          var move = function move() {
-            //document.getElementById("hover").style.top = mouse.x;
-            //document.getElementById("hover").style.left = mouse.y;
+          var move = function move(e) {
+            document.getElementById("hover").style.top = e.clientY + 5 + "px";
+            document.getElementById("hover").style.left = e.clientX + 5 + "px";
           }
           var ol = function ol() {
             if (window.location.hash.indexOf("comment-") == 1) {
@@ -93,7 +91,7 @@
                     target = x.split(" ")[0].split("/")
                     if target.length == 1 then
                       # it's in the format >>1234
-                      %><a class="redtext" onMouseOver="hover(<%= target[0].to_i.to_s %>, <%= res["post_id"] %>)" onMouseOut="unhover()" onMouseMove="move()" onClick="select(<%= target[0].to_i.to_s %>)">&gt;<%= Sanitize.clean(x) %></a><%
+                      %><a class="redtext" onMouseOver="hover(<%= target[0].to_i.to_s %>, <%= res["post_id"] %>)" onMouseOut="unhover()" onClick="select(<%= target[0].to_i.to_s %>)">&gt;<%= Sanitize.clean(x) %></a><%
                     else
                       # it's in the format >>/board/1234, so extract `board` and `1234` and make the link
                       target_board = Sanitize.clean(target[1]).gsub("\"", "")
