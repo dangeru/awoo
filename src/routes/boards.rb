@@ -88,6 +88,9 @@ module Sinatra
             if looks_like_spam(con, ip, env, config) then
               return [403, "Flood detected, post discarded"]
             end
+            if title.length > 500 or content.length > 500 then
+              return [400, "Post too long (over 500 characters)"]
+            end
             # todo check if the IP is banned
             # Insert the new post into the database
             con.query("INSERT INTO posts (board, title, content, ip) VALUES ('#{board}', '#{title}', '#{content}', '#{ip}')");
@@ -105,6 +108,9 @@ module Sinatra
             board = con.escape(params[:board])
             content = con.escape(params[:content])
             parent = con.escape(params[:parent].to_i.to_s)
+            if content.length > 500 then
+              return [400, "Reply too long (over 500 characters)"]
+            end
             # Pull the IP address and check if it looks like spam
             ip = get_ip(con, request, env);
             if looks_like_spam(con, ip, env, config) then
