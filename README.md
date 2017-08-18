@@ -9,8 +9,8 @@ Running `sudo make install` will make a user named `awoo`, copy `src` to `/opt/a
 
 - Moderation for bans
 	- prefetcher
-- Moderation for moving posts between boards
-	- prefetcher
+- Make `/move/:post` prettier
+	- should janitors move posts only inbetween the boards they moderate?
 - Make `/ip/:addr` prettier
 	- add ban duration
 - Rules for each board
