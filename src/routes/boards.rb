@@ -256,14 +256,39 @@ module Sinatra
             session[:moderates] = nil
             redirect("/mod", 303);
           end
+          # Gets all post by IP, and let's you ban it
           app.get "/ip/:addr" do |addr|
             erb :ip_list, :locals => {:session => session, :addr => addr, :con => con}
           end
+
+          # Either locks or unlocks the specified thread
           app.get "/lock/:post/?" do |post|
             return lock_or_unlock(post, "TRUE", con, session)
           end
           app.get "/unlock/:post/?" do |post|
             return lock_or_unlock(post, "FALSE", con, session)
+          end
+
+          # Moves thread from board to board
+          app.get "/move/:post/?" do |post|
+            if session[:moderates] then
+              erb :move, :locals => {:post => post}
+            end
+            else
+              return [403, "You have no janitor priviledges."]
+            end
+          end
+          app.post "/move/:post/?" do |post|
+            if session[:moderates] then
+              id = con.escape(post)
+              board = con.escape(params[:board])
+              con.query("UPDATE posts SET board = '#{board}' WHERE post_id = #{id} OR parent = #{id}")
+              href = "/" + board + "/thread/" + id
+              redirect href
+            end
+            else
+              return [403, "You have no janitor priviledges."]
+            end
           end
         end
       end
