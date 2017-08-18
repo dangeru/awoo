@@ -72,14 +72,14 @@ def get_ban_info(ip, board, con)
   return nil
 end
 
-# This function fires off a request to the database to figure out when the last post by the given IP was
-# and if it was in the last 30 seconds, it returns true (it is flooding), otherwise it returns false
-# the 30 second figure is adjustable in the config.json
+# This function fires off a request to the database to figure out how many posts this IP has made in the last
+# 30 seconds, and if it was greater than or equal to 4, it returns true (it is flooding), otherwise it returns false
+# the 30 second and 4 posts figures are adjustable in the config.json
 def looks_like_spam(con, ip, env, config)
   # if the user has never posted, the block in con.query.each won't be run, so by default it's not spam
   result = false
   con.query("SELECT COUNT(*) AS count FROM posts WHERE ip = '#{ip}' AND UNIX_TIMESTAMP(date_posted) > #{Time.new.strftime('%s').to_i - config["period_length"]}").each do |res|
-    if res["count"] > config["max_posts_per_period"] then
+    if res["count"] >= config["max_posts_per_period"] then
       result = true
     else
       result = false
