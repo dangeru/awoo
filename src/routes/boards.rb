@@ -58,6 +58,20 @@ def lock_or_unlock(post, bool, con, session)
   return redirect(href, 303);
 end
 
+def get_ban_info(ip, board, con)
+  if ip == nil then # fix for connecting from 127.0.0.1 when not behind a reverse proxy
+    return nil
+  end
+  ip = con.escape(ip)
+  board = con.escape(board)
+  con.query("SELECT date_of_unban, reason FROM bans WHERE ip = #{ip} AND board = #{board} date_of_unban > CURRENT_TIMESTAMP()").each do |res|
+    reason = Sanitize.clean(res["reason"])
+    date_of_unban = Sanitize.clean(res["date_of_unban"])
+    return [403, "You are banned. Reason given: #{reason}. Expiration: #{date_of_unban}"]
+  end
+  return nil
+end
+
 # This function fires off a request to the database to figure out when the last post by the given IP was
 # and if it was in the last 30 seconds, it returns true (it is flooding), otherwise it returns false
 # the 30 second figure is adjustable in the config.json
@@ -107,7 +121,9 @@ module Sinatra
             if title.length > 500 or content.length > 500 then
               return [400, "Post too long (over 500 characters)"]
             end
-            # todo check if the IP is banned
+            # Check if the IP is banned
+            banned = get_ban_info(ip, board, con)
+            if banned then return banned end
             # Insert the new post into the database
             con.query("INSERT INTO posts (board, title, content, ip) VALUES ('#{board}', '#{title}', '#{content}', '#{ip}')");
             # Then get the ID of the just-inserted post and redirect the user to their new thread
@@ -132,7 +148,9 @@ module Sinatra
             if looks_like_spam(con, ip, env, config) then
               return [403, "Flood detected, post discarded"]
             end
-            # todo check if the IP is banned
+            # Check if the IP is banned
+            banned = get_ban_info(ip, board, con)
+            if banned then return banned end
             closed = nil
             con.query("SELECT is_locked FROM posts WHERE post_id = #{parent}").each do |res|
               closed = res["is_locked"]
