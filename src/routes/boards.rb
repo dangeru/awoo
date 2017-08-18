@@ -64,7 +64,7 @@ def get_ban_info(ip, board, con)
   end
   ip = con.escape(ip)
   board = con.escape(board)
-  con.query("SELECT date_of_unban, reason FROM bans WHERE ip = '#{ip}' AND board = '#{board}' date_of_unban > CURRENT_TIMESTAMP()").each do |res|
+  con.query("SELECT date_of_unban, reason FROM bans WHERE ip = '#{ip}' AND board = '#{board}' AND date_of_unban > CURRENT_TIMESTAMP()").each do |res|
     reason = Sanitize.clean(res["reason"])
     date_of_unban = Sanitize.clean(res["date_of_unban"])
     return [403, "You are banned. Reason given: #{reason}. Expiration: #{date_of_unban}"]
