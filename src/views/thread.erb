@@ -58,7 +58,7 @@
   <body onLoad='ol();'>
     <div id="sitecorner">
       <a href="/<%= path %>"><img src="<%= banner %>" alt="danger/u/"></a>
-      <span id="hover" style="display: none"></span>
+      <span id="hover" class="comment" style="display: none"></span>
       <%= last_date_modified = Time.new 0 %>
       <%= i = 0 %>
       <% is_locked = false %>
@@ -93,11 +93,11 @@
                     target = x.split(" ")[0].split("/")
                     if target.length == 1 then
                       # it's in the format >>1234
-                      %><a class="redtext" onMouseOver="hover(<%= target[0] %>, <%= res["post_id"] %>)" onMouseOut="unhover()" onMouseMove="move()" onClick="select(<%= target[0] %>)">&gt;<%= Sanitize.clean(x) %></a><%
+                      %><a class="redtext" onMouseOver="hover(<%= target[0].to_i.to_s %>, <%= res["post_id"] %>)" onMouseOut="unhover()" onMouseMove="move()" onClick="select(<%= target[0].to_i.to_s %>)">&gt;<%= Sanitize.clean(x) %></a><%
                     else
                       # it's in the format >>/board/1234, so extract `board` and `1234` and make the link
-                      target_board = target[1]
-                      target_thread = target[2]
+                      target_board = Sanitize.clean(target[1]).gsub("\"", "")
+                      target_thread = target[2].to_i.to_s
                       href = "/" + target_board.to_s + "/thread/" + target_thread.to_s
                       %><a class="redtext" href="<%= href %>">&gt;<%= Sanitize.clean(x) %></a><%
                     end
@@ -157,17 +157,18 @@
         </div>
       <% else %>
         <a href="javascript:location.reload();">Refresh</a>
-        <form action='/reply' method='post'>
+        <form action='/reply' method='post' style="text-align: center;">
           <input type='text' style='display: none' name='board' id='board' value='<%= path %>' />
           <input type='text' style='display: none' name='parent' id='parent' value='<%= id %>' />
-          <input type='text' name='content' id='board' placeholder='Reply' />
+          <textarea name='content' style="width: 100%;" placeholder='Reply'></textarea>
+          <br />
           <input type='submit' />
         </form>
         <% if moderator %>
-          <i class="fa fa-unlock-alt" aria-hidden="true" onClick='lockPost(<%= id.to_i.to_s %>)'></i>
+          <br />
+          <i class="fa fa-unlock-alt" aria-hidden="true" style="display: block; text-align: center;" onClick='lockPost(<%= id.to_i.to_s %>)'></i>
         <% end %>
       <% end %>
-      <br />
     </div>
     <footer class="comment" style="font-size: xx-small; text-align: center;">
       <small>Awoo <%= settings.awoo_version %></small>

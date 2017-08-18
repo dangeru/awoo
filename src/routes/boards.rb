@@ -307,8 +307,9 @@ module Sinatra
             end
           end
           app.post "/move/:post/?" do |post|
+            # We allow the move if the person moderates at least one board, no matter which boards
             if session[:moderates] then
-              id = con.escape(post)
+              id = con.escape(post.to_i.to_s)
               board = con.escape(params[:board])
               con.query("UPDATE posts SET board = '#{board}' WHERE post_id = #{id} OR parent = #{id}")
               href = "/" + board + "/thread/" + id
