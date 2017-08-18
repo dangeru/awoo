@@ -17,3 +17,4 @@ Running `sudo make install` will make a user named `awoo`, copy `src` to `/opt/a
 	- prefetcher already wrote the routes and views
 	- Mystery is working on the text
 - Multiple levels of moderation - janitors shouldn't be able to ban people
+- images on burg
