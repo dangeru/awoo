@@ -68,7 +68,7 @@ def sticky_unsticky(id, setting, con, session)
   if is_moderator(board, session) then
     id = con.escape(id)
     con.query("UPDATE posts SET sticky = #{setting} WHERE post_id = #{id}")
-    return redirect("/" + board + "/" + id, 303)
+    return redirect("/" + board + "/thread/" + id, 303)
   else
     return [403, "You have no janitor privileges."]
   end
