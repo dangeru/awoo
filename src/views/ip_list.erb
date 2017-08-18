@@ -39,6 +39,18 @@
         <br />
         <br />
       <% end %>
+      <h2>IP Notes</h2>
+      <% con.query("SELECT content FROM ip_notes WHERE ip = '#{con.escape(addr)}' ORDER BY created").each do |res| %>
+        <div style="border-left: 2px solid grey; padding-left: 10px;">
+          <%= Sanitize.clean(res["content"]).gsub("\n", "<br />") %>
+        </div>
+        <br />
+      <% end %>
+      <form action="/ip_note/<%= addr %>" method="post" id="ip-note-form">
+        <textarea name="content" placeholder="New note for this IP"></textarea>
+        <br />
+        <button onClick="document.getElementById('ip-note-form').submit()">Submit</button>
+      </form>
     </div>
     <footer class="comment" style="font-size: xx-small; text-align: center;">
       <small>Awoo <%= settings.awoo_version %></small>

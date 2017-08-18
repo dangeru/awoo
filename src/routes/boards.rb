@@ -200,6 +200,17 @@ module Sinatra
             if not is_moderator(board, session)
               return [403, "You are not logged in or you do not moderate " + board]
             end
+            # Insert an IP note with the content of the deleted post
+            con.query("SELECT content, title, ip FROM posts WHERE post_id = #{escaped}").each do |res|
+              escaped_addr = con.escape(res["ip"])
+              content = "Post Deleted - "
+              if res["title"] then
+                content += "OP with title: " + res["title"] + " - and "
+              end
+              content += "comment: " + res["comment"]
+              escaped_content = con.escape(content);
+              con.query("INSERT INTO ip_notes (ip, content) VALUES ('#{escaped_addr}', '#{escaped_content}')")
+            end
             # Finally, delete the post
             con.query("DELETE FROM posts WHERE post_id = #{escaped} OR parent = #{escaped}")
             if parent != nil then
@@ -303,8 +314,17 @@ module Sinatra
               href = "/" + board + "/thread/" + id
               redirect href
             else
-              return [403, "You have no janitor priviledges."]
+              return [403, "You have no janitor privileges."]
             end
+          end
+          app.post "/ip_note/:addr" do |addr|
+            if session[:moderates] == nil then
+              return [403, "You have no janitor privileges"]
+            end
+            addr = con.escape(addr)
+            content = con.escape(params[:content])
+            con.query("INSERT INTO ip_notes (ip, content) VALUES ('#{addr}', '#{content}')")
+            return redirect("/ip/" + addr, 303)
           end
         end
       end
