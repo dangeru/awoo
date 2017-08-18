@@ -59,7 +59,7 @@ def lock_or_unlock(post, bool, con, session)
   return redirect(href, 303);
 end
 
-def sticky_unsticky(id, setting)
+def sticky_unsticky(id, setting, con)
   if session[:moderates] then
     id = con.escape(id)
     con.query("UPDATE posts SET sticky = #{setting} WHERE post_id = #{id} OR parent = #{id}")
@@ -343,10 +343,10 @@ module Sinatra
 
           # Sticky / Unsticky posts
           app.get "/sticky/:id/?" do |post_id|
-            sticky_unsticky(con.escape(post_id), 1)
+            sticky_unsticky(post_id, 1, con)
           end
           app.get "/unsticky/:id/?" do |post_id|
-            sticky_unsticky(con.escape(post_id), 0)
+            sticky_unsticky(post_id, 0, con)
           end
         end
       end
