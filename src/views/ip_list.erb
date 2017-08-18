@@ -12,6 +12,12 @@
       }
     </script>
     <script src="/static/common.js"></script>
+<style>
+.entry {
+  border-left: 2px solid grey;
+  padding-left: 10px;
+}
+</style>
   </head>
   <body>
     <img src="/static/logo.png" alt="danger/u/" style="width: 395px; height: 130px;">
@@ -27,16 +33,22 @@
       <br />
       <% boards = session[:moderates].map do |f| con.escape(f) end %>
       <% boards = "('" + boards.join("', '") + "')" %>
+      <%# We're actually left joining the table `posts` on itself here to get the title of the OP the comment is replying to, if there is one %>
       <% con.query("SELECT posts.*, titles.title AS linked_title FROM posts LEFT JOIN posts titles ON posts.parent = titles.post_id WHERE posts.ip = '#{con.escape(addr)}' AND posts.board IN #{boards}").each do |res| %>
         <% if res["parent"] then %>
-          Reply to <a style='display: inline-block;' href="/<%= res["board"] %>/thread/<%= res["parent"] %>"><%= Sanitize.clean(res["linked_title"]) %></a>
+          Reply to
+          <%# Links directly to highlight that reply in the thread %>
+          <a style='display: inline-block;' href="/<%= res["board"] %>/thread/<%= res["parent"] %>#comment=<%= res["post_id"] %>">
+            <%= Sanitize.clean(res["linked_title"]) %>
+          </a>
         <% else %>
           OP with title <a style='display: inline-block;' href="/<%= res["board"] %>/thread/<%= res["post_id"] %>"><%= res["title"] %></a>
         <% end %>
         in <%= res["board"] %> on <%= res["date_posted"].strftime '%c' %>.
-        <button onClick='deletePost(<%= res["post_id"] %>)'>Delete</button><br />
-        <%= Sanitize.clean(res["content"]) %>
-        <br />
+        <button onClick='deletePost(<%= res["post_id"] %>)'>Delete</button>
+        <div class="entry">
+          <%= Sanitize.clean(res["content"]).gsub("\n", "<br />") %>
+        </div>
         <br />
       <% end %>
       <h2>IP Notes</h2>
@@ -44,7 +56,7 @@
         <div style="font-size: 50%;">
           <%= res["created"].strftime '%c' %>
         </div>
-        <div style="border-left: 2px solid grey; padding-left: 10px;">
+        <div class="entry">
           <%= Sanitize.clean(res["content"]).gsub("\n", "<br />") %>
         </div>
         <br />
