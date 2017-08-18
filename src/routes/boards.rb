@@ -17,14 +17,7 @@ def new_banner(board)
     # this will throw an exception if the folder doesn't exist, hence the rescue
     dirs = Dir.entries(File.dirname(__FILE__) + "/../static/static/banners/" + board)
     # we have to remove "." and ".." from the list, but this will also remove all hidden files
-    fixed_dirs = []
-    dirs.each do |x|
-      if x[0] != "."
-        fixed_dirs.push x
-      end
-    end
-    # pick a random banner out of fixed_dirs
-    return "/static/banners/" + board + "/" + fixed_dirs.sample
+    return "/static/banners/" + board + "/" + dirs.select {|f| !File.directory? f}.sample
   rescue
     # no banners for this board, just use the logo
     return "/static/logo.png"
@@ -47,6 +40,22 @@ def is_moderator(board, session)
     return false;
   end
   return session[:moderates].index(board) != nil
+end
+def lock_or_unlock(post, bool, con, session)
+  board = nil
+  escaped = con.escape(post.to_i.to_s)
+  con.query("SELECT board FROM posts WHERE post_id = #{escaped}").each do |res|
+    board = res["board"]
+  end
+  if board == nil then
+    return [400, "Post not found"]
+  end
+  if not is_moderator(board, session) then
+    return [403, "You do not moderate " + board]
+  end
+  con.query("UPDATE posts SET is_locked = #{con.escape(bool)} WHERE post_id = #{escaped}")
+  href = "/" + board + "/thread/" + escaped
+  return redirect(href, 303);
 end
 
 # This function fires off a request to the database to figure out when the last post by the given IP was
@@ -95,6 +104,9 @@ module Sinatra
             if looks_like_spam(con, ip, env, config) then
               return [403, "Flood detected, post discarded"]
             end
+            if title.length > 500 or content.length > 500 then
+              return [400, "Post too long (over 500 characters)"]
+            end
             # todo check if the IP is banned
             # Insert the new post into the database
             con.query("INSERT INTO posts (board, title, content, ip) VALUES ('#{board}', '#{title}', '#{content}', '#{ip}')");
@@ -112,14 +124,26 @@ module Sinatra
             board = con.escape(params[:board])
             content = con.escape(params[:content])
             parent = con.escape(params[:parent].to_i.to_s)
+            if content.length > 500 then
+              return [400, "Reply too long (over 500 characters)"]
+            end
             # Pull the IP address and check if it looks like spam
             ip = get_ip(con, request, env);
             if looks_like_spam(con, ip, env, config) then
               return [403, "Flood detected, post discarded"]
             end
             # todo check if the IP is banned
+            closed = nil
+            con.query("SELECT is_locked FROM posts WHERE post_id = #{parent}").each do |res|
+              closed = res["is_locked"]
+            end
+            if closed == nil then
+              return [400, "That thread doesn't exist"]
+            elsif closed != 0 then
+              return [400, "That thread has been closed"]
+            end
             # Insert the new reply
-            con.query("INSERT INTO posts (board, parent, content, ip) VALUES ('#{board}', '#{parent}', '#{content}', '#{ip}')")
+            con.query("INSERT INTO posts (board, parent, content, ip, title) VALUES ('#{board}', '#{parent}', '#{content}', '#{ip}', NULL)")
             # Redirect them back to the post they just replied to
             href = "/" + params[:board] + "/thread/" + params[:parent]
             redirect(href, 303);
@@ -127,7 +151,7 @@ module Sinatra
 
           # Each board has a listing of the posts there (board.erb) and a listing of the replies to a give post (thread.erb)
           boards.each do |path|
-            app.get "/" + path do
+            app.get "/" + path + "/?" do
               if not params[:page]
                 offset = 0;
               else
@@ -148,9 +172,11 @@ module Sinatra
           app.get "/delete/:post_id" do |post_id|
             board = nil;
             escaped = con.escape(post_id.to_i.to_s)
+            parent = nil
             # First, figure out which board that post is on
-            con.query("SELECT board FROM posts WHERE post_id = #{escaped}").each do |res|
+            con.query("SELECT board, parent FROM posts WHERE post_id = #{escaped}").each do |res|
               board = res["board"]
+              parent = res["parent"]
             end
             # Then, check if the currently logged in user has permission to moderate that board
             if not is_moderator(board, session)
@@ -158,7 +184,12 @@ module Sinatra
             end
             # Finally, delete the post
             con.query("DELETE FROM posts WHERE post_id = #{escaped} OR parent = #{escaped}")
-            "Success, probably."
+            if parent != nil then
+              href = "/" + board + "/thread/" + parent.to_s
+              redirect(href, 303);
+            else
+              return "Success, probably."
+            end
           end
 
           # Legacy api, see https://github.com/naomiEve/dangeruAPI
@@ -224,6 +255,15 @@ module Sinatra
           app.get "/logout" do
             session[:moderates] = nil
             redirect("/mod", 303);
+          end
+          app.get "/ip/:addr" do |addr|
+            erb :ip_list, :locals => {:session => session, :addr => addr, :con => con}
+          end
+          app.get "/lock/:post/?" do |post|
+            return lock_or_unlock(post, "TRUE", con, session)
+          end
+          app.get "/unlock/:post/?" do |post|
+            return lock_or_unlock(post, "FALSE", con, session)
           end
         end
       end

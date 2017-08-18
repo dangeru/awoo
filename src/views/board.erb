@@ -7,10 +7,11 @@
       width: 320px;
       height: auto;
       padding: 0.5em;
-      /*background-color: white;*/
+      background-color: black;
       border: 1px solid /* black */ white;
       display: none;
       text-align: center;
+      color: white;
     }
     textarea {
       resize: none;
@@ -32,24 +33,17 @@
           console.log(comment.value.length);
           var len = comment.value.length
           var wc = document.getElementById("wordcount");
-          if(len > 500) {
-            wc.style.color = "red";
-          }
-          else {
-            wc.style.color = "black";
-          }
+          wc.style.color = len > 500 ? "red" : "inherit";
           wc.innerText = len + "/500";
         });
       }
-      var deletePost = function deletePost(id) {
-        window.open("/delete/" + id.toString());
-      }
     </script>
+    <script src="/static/common.js"></script>
     <link rel="stylesheet" type="text/css" href="../static/dangeru.css">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="shortcut icon" href="static/favicon.ico">
   </head>
-  <body>
+  <body onLoad='ol();'>
     <div id="boardcontainer">
       <% settings.config['boards'].each do |key, array| %>
         <a style='display: inline-block;' class="boarda" href="/<%= key %>">/<%= key %>/</a> 
@@ -72,8 +66,13 @@
     </div>
 
     <hr>
-    <% con.query("SELECT post_id, title, ip, COALESCE(parent, post_id) AS effective_parent, COUNT(*)-1 AS number_of_replies FROM posts WHERE board = '#{con.escape(path)}' GROUP BY effective_parent ORDER BY post_id DESC LIMIT 20 OFFSET #{offset.to_s};").each do |res| %>
+    <% con.query("SELECT post_id, title, ip, is_locked, COALESCE(parent, post_id) AS effective_parent, COUNT(*)-1 AS number_of_replies FROM posts WHERE board = '#{con.escape(path)}' GROUP BY effective_parent ORDER BY post_id DESC LIMIT 20 OFFSET #{offset.to_s};").each do |res| %>
       <% if moderator %>
+        <% if res["is_locked"] == 0 %>
+          <button onClick='lockPost(<%= res["post_id"] %>)'>Lock</button>
+        <% else %>
+          <button onClick='unlockPost(<%= res["post_id"] %>)'>Unlock</button>
+        <% end %>
         <button onClick='deletePost(<%= res["post_id"] %>)'>-</button>
         <a style="display: inline-block; font-size: 50%;" href="/ip/<%= res["ip"] %>"><%= res["ip"] %></a>
       <% end %>

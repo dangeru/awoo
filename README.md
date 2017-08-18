@@ -7,10 +7,14 @@ Running `sudo make install` will make a user named `awoo`, copy `src` to `/opt/a
 
 ## Todo List
 
-- Moderation for deleting posts
 - Moderation for bans
-- Moderation for moving posts between boards (EASY!)
-- Moderation for seeing all posts by an IP (`/ip/:addr`)
-- Automatic locking of posts that are beyond a certain age
-	- Scheduled (cron-like) task?
+	- prefetcher
+- Moderation for moving posts between boards
+	- prefetcher
+- Make `/ip/:addr` prettier
+	- add ban duration
 - Rules for each board
+	- prefetcher already wrote the routes and views
+	- Mystery is working on the text
+- Multiple levels of moderation - janitors shouldn't be able to ban people
+- images on burg

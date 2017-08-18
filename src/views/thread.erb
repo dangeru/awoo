@@ -4,37 +4,126 @@
     <link rel="stylesheet" type="text/css" href="../../static/dangeru.css">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="shortcut icon" href="static/favicon.ico">
-    <% results = con.query("SELECT * FROM posts WHERE parent = #{id.to_i} OR post_id = #{id.to_i} ORDER BY post_id") %>
     <title>Thread <%= id %> on danger/<%= path %>/ Loading...</title>
+    <script src="/static/common.js"></script>
+<style>
+.redtext {
+  display: inline-block;
+}
+.selected {
+  border: 2px solid gold;
+}
+</style>
+        <script>
+          var select = function select(id) {
+            window.location.hash = "#"; // bugfix for webkit
+            window.location.hash = "#comment-" + id.toString();
+            var elems = document.getElementsByClassName("selected");
+            for (var i = 0; i < elems.length; i++) {
+              elems[i].classList.toggle("selected")
+            }
+            document.getElementById("comment-" + id.toString()).classList.add("selected")
+          }
+          var ol = function ol() {
+            if (window.location.hash.indexOf("comment-") == 1) {
+              select(window.location.hash.split("comment-")[1]);
+            }
+          }
+        </script>
   </head>
-  <body>
+  <body onLoad='ol();'>
     <div id="sitecorner">
       <a href="/<%= path %>"><img src="<%= banner %>" alt="danger/u/"></a> 
-      <%= last_date_modified = "Never!" %>
+      <%= last_date_modified = Time.new 0 %>
       <%= i = 0 %>
-      <% results.each do |res| %>
+      <% is_locked = false %>
+      <% con.query("SELECT * FROM posts WHERE parent = #{id.to_i} OR post_id = #{id.to_i} ORDER BY post_id").each do |res| %>
         <% if i == 0 then %>
+          <% is_locked = res["is_locked"] != 0 %>
           <div id="title"><%= Sanitize.clean(res["title"]) %></div>
           <script>
             document.title = <%= JSON.dump(res["title"]) %> + " - /danger/" + <%= JSON.dump(res["board"]) %> + "/";
           </script>
         <% end %>
-        <div class="comment">
-          | <%= Sanitize.clean(res["content"]).gsub("\n", "<br />") %>
+        <div class="comment" id="comment-<%= res["post_id"] %>">
+          <% if moderator then %>
+            <button onClick='deletePost(<%= res["post_id"] %>)'>-</button>
+            <a style="display: inline-block; font-size: 50%;" href="/ip/<%= res["ip"] %>"><%= res["ip"] %></a>
+          <% end %>
+          | 
+          <% res["content"].split("\n").each do |line| %>
+            <% line = line.chomp %>
+            <%
+              consecutive = 1
+              i = 0
+              line.split(">").each do |x|
+                if i == 0
+                  %><%= Sanitize.clean(x) %><%
+                else
+                  if x.length > 0 and consecutive == 3
+                    target = x.split(" ")[0].split("/")
+                    if target.length == 1 then
+                      %><a class="redtext" onClick="select(<%= target[0] %>)">&gt;<%= Sanitize.clean(x) %></a><%
+                    else
+                      target_board = target[1]
+                      target_thread = target[2]
+                      href = "/" + target_board.to_s + "/thread/" + target_thread.to_s
+                      %><a class="redtext" href="<%= href %>">&gt;<%= Sanitize.clean(x) %></a><%
+                    end
+                  elsif x.length > 0 and consecutive == 4 then
+                    target_board = x.split(" ")[0].split("/")[1]
+                    %><a class="redtext" href="/<%= target_board %>">&gt;<%= Sanitize.clean(x) %></a><%
+                  else
+                    %><span class="redtext redtext-<%= consecutive %>">&gt;<%= Sanitize.clean(x) %></span><%
+                  end
+                end
+                if x.length == 0 then
+                  consecutive += 1
+                else
+                  consecutive = 2
+                end
+                i += 1
+              end
+            %>
+            <br />
+          <% end %>
         </div>
         <br />
         <% last_date_modified = res["date_posted"] %>
         <% i += 1 %>
       <% end %>
 
-      <div style="font-size: 11px;" class="comment">Total number of posts: <%= i.to_s %>, last modified on: <%= last_date_modified %> <!-- TODO MAKE THAT PRETTY. --></div> <br>
-      <a href="javascript:location.reload();">Refresh</a>
-      <form action='/reply' method='post'>
-        <input type='text' style='display: none' name='board' id='board' value='<%= path %>' />
-        <input type='text' style='display: none' name='parent' id='parent' value='<%= id %>' />
-        <input type='text' name='content' id='board' placeholder='Reply' />
-        <input type='submit' />
-      </form>
+      <div style="font-size: 11px;" class="comment">
+        Total number of posts: <%= i.to_s %>,
+        last modified on:
+        <span id='date_last_modified'>
+          <%= last_date_modified.strftime '%c' %>
+        </span>
+      </div>
+      <script>
+        var d = new Date(parseInt(<%= JSON.dump(last_date_modified.strftime '%s') %> + "000"));
+        document.getElementById("date_last_modified").innerHTML = d.toString();
+      </script>
+      <br />
+      <% if is_locked then %>
+        <div class="redtext" style="text-align: center;">This thread is closed.</div>
+        <% if moderator %>
+          <button onClick='unlockPost(<%= id.to_i.to_s %>)'>Unlock</button>
+        <% end %>
+      <% else %>
+        <a href="javascript:location.reload();">Refresh</a>
+        <form action='/reply' method='post'>
+          <input type='text' style='display: none' name='board' id='board' value='<%= path %>' />
+          <input type='text' style='display: none' name='parent' id='parent' value='<%= id %>' />
+          <input type='text' name='content' id='board' placeholder='Reply' />
+          <input type='submit' />
+        </form>
+        <% if moderator %>
+          <br />
+          <button onClick='lockPost(<%= id.to_i.to_s %>)'>Lock</button>
+        <% end %>
+      <% end %>
+      <br />
     </div>
     <footer class="comment" style="font-size: xx-small; text-align: center;">
       <small>Awoo <%= settings.awoo_version %></small>
