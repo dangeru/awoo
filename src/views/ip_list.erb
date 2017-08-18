@@ -54,8 +54,7 @@
         <% else %>
           <div class="comment">OP with title <a style='display: inline-block;' href="/<%= res["board"] %>/thread/<%= res["post_id"] %>"><%= res["title"] %></a>
         <% end %>
-        in /<%= res["board"] %>/ on <%= res["date_posted"].strftime '%c' %>.</div>
-        <i class="fa fa-trash" aria-hidden="true" onClick='deletePost(<%= res["post_id"] %>)'></i>
+        in /<%= res["board"] %>/ on <%= res["date_posted"].strftime '%c' %>.<i class="fa fa-trash" aria-hidden="true" onClick='deletePost(<%= res["post_id"] %>)'></i></div>
         <div class="entry">
           <div class="comment"><%= Sanitize.clean(res["content"]).gsub("\n", "<br />") %></div>
         </div>
