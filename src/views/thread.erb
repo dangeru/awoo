@@ -10,7 +10,17 @@
 .redtext {
   display: inline-block;
 }
+.selected {
+  border: 2px solid gold;
+}
 </style>
+        <script>
+          var select = function select(id) {
+            window.location.hash = "#"; // bugfix for webkit
+            window.location.hash = "#comment-" + id.toString();
+            document.getElementById("comment-" + id.toString()).classList.add("selected")
+          }
+        </script>
   </head>
   <body>
     <div id="sitecorner">
@@ -26,7 +36,7 @@
             document.title = <%= JSON.dump(res["title"]) %> + " - /danger/" + <%= JSON.dump(res["board"]) %> + "/";
           </script>
         <% end %>
-        <div class="comment">
+        <div class="comment" id="comment-<%= res["post_id"] %>">
           <% if moderator then %>
             <button onClick='deletePost(<%= res["post_id"] %>)'>-</button>
             <a style="display: inline-block; font-size: 50%;" href="/ip/<%= res["ip"] %>"><%= res["ip"] %></a>
@@ -44,7 +54,7 @@
                   if x.length > 0 and consecutive == 3
                     target = x.split(" ")[0].split("/")
                     if target.length == 1 then
-                      %><a class="redtext" data-target="<%= target[0] %>">&gt;<%= Sanitize.clean(x) %></a><%
+                      %><a class="redtext" onClick="select(<%= target[0] %>)">&gt;<%= Sanitize.clean(x) %></a><%
                     else
                       target_board = target[1]
                       target_thread = target[2]
