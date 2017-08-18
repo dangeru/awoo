@@ -66,8 +66,13 @@
     </div>
 
     <hr>
-    <% con.query("SELECT post_id, title, ip, COALESCE(parent, post_id) AS effective_parent, COUNT(*)-1 AS number_of_replies FROM posts WHERE board = '#{con.escape(path)}' GROUP BY effective_parent ORDER BY post_id DESC LIMIT 20 OFFSET #{offset.to_s};").each do |res| %>
+    <% con.query("SELECT post_id, title, ip, is_locked, COALESCE(parent, post_id) AS effective_parent, COUNT(*)-1 AS number_of_replies FROM posts WHERE board = '#{con.escape(path)}' GROUP BY effective_parent ORDER BY post_id DESC LIMIT 20 OFFSET #{offset.to_s};").each do |res| %>
       <% if moderator %>
+        <% if res["is_locked"] == 0 %>
+          <button onClick='lockPost(<%= res["post_id"] %>)'>Lock</button>
+        <% else %>
+          <button onClick='unlockPost(<%= res["post_id"] %>)'>Unlock</button>
+        <% end %>
         <button onClick='deletePost(<%= res["post_id"] %>)'>-</button>
         <a style="display: inline-block; font-size: 50%;" href="/ip/<%= res["ip"] %>"><%= res["ip"] %></a>
       <% end %>

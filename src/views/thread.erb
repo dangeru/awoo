@@ -107,6 +107,9 @@
       <br />
       <% if is_locked then %>
         <div class="redtext" style="text-align: center;">This thread is closed.</div>
+        <% if moderator %>
+          <button onClick='unlockPost(<%= id.to_i.to_s %>)'>Unlock</button>
+        <% end %>
       <% else %>
         <a href="javascript:location.reload();">Refresh</a>
         <form action='/reply' method='post'>
@@ -115,6 +118,10 @@
           <input type='text' name='content' id='board' placeholder='Reply' />
           <input type='submit' />
         </form>
+        <% if moderator %>
+          <br />
+          <button onClick='lockPost(<%= id.to_i.to_s %>)'>Lock</button>
+        <% end %>
       <% end %>
       <br />
     </div>

@@ -41,6 +41,22 @@ def is_moderator(board, session)
   end
   return session[:moderates].index(board) != nil
 end
+def lock_or_unlock(post, bool, con, session)
+  board = nil
+  escaped = con.escape(post.to_i.to_s)
+  con.query("SELECT board FROM posts WHERE post_id = #{escaped}").each do |res|
+    board = res["board"]
+  end
+  if board == nil then
+    return [400, "Post not found"]
+  end
+  if not is_moderator(board, session) then
+    return [403, "You do not moderate " + board]
+  end
+  con.query("UPDATE posts SET is_locked = #{con.escape(bool)} WHERE post_id = #{escaped}")
+  href = "/" + board + "/thread/" + escaped
+  return redirect(href, 303);
+end
 
 # This function fires off a request to the database to figure out when the last post by the given IP was
 # and if it was in the last 30 seconds, it returns true (it is flooding), otherwise it returns false
@@ -242,6 +258,12 @@ module Sinatra
           end
           app.get "/ip/:addr" do |addr|
             erb :ip_list, :locals => {:session => session, :addr => addr, :con => con}
+          end
+          app.get "/lock/:post/?" do |post|
+            return lock_or_unlock(post, "TRUE", con, session)
+          end
+          app.get "/unlock/:post/?" do |post|
+            return lock_or_unlock(post, "FALSE", con, session)
           end
         end
       end
