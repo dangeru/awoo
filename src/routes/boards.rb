@@ -285,7 +285,6 @@ module Sinatra
               con.query("UPDATE posts SET board = '#{board}' WHERE post_id = #{id} OR parent = #{id}")
               href = "/" + board + "/thread/" + id
               redirect href
-            end
             else
               return [403, "You have no janitor priviledges."]
             end
