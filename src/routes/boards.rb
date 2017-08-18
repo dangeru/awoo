@@ -207,7 +207,7 @@ module Sinatra
               if res["title"] then
                 content += "OP with title: " + res["title"] + " - and "
               end
-              content += "comment: " + res["comment"]
+              content += "comment: " + res["content"]
               escaped_content = con.escape(content);
               con.query("INSERT INTO ip_notes (ip, content) VALUES ('#{escaped_addr}', '#{escaped_content}')")
             end
