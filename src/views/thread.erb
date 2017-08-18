@@ -58,31 +58,49 @@
               consecutive = 1
               i = 0
               line.split(">").each do |x|
+                # If we haven't hit the first > yet, then display it normally (no red text)
                 if i == 0
                   %><%= Sanitize.clean(x) %><%
                 else
+                  # If we've hit the second > in a row, and it's not immediately followed by a third >, it's a link to a thread
+                  # either in the format >>1234 or >>/board/1234, where the first one must be in the current thread and the second
+                  # one must be an OP on that board
                   if x.length > 0 and consecutive == 3
                     target = x.split(" ")[0].split("/")
                     if target.length == 1 then
+                      # it's in the format >>1234
                       %><a class="redtext" onClick="select(<%= target[0] %>)">&gt;<%= Sanitize.clean(x) %></a><%
                     else
+                      # it's in the format >>/board/1234, so extract `board` and `1234` and make the link
                       target_board = target[1]
                       target_thread = target[2]
                       href = "/" + target_board.to_s + "/thread/" + target_thread.to_s
                       %><a class="redtext" href="<%= href %>">&gt;<%= Sanitize.clean(x) %></a><%
                     end
                   elsif x.length > 0 and consecutive == 4 then
-                    target_board = x.split(" ")[0].split("/")[1]
+                    # If we've hit the third > in a row, and it's not immediately followed by a fourth >, it's a link to another board
+                    # in the format >>/board/ or >>board
+                    target_board_split = x.split(" ")[0].split("/")
+                    # Assume >>/board/ at first
+                    target_board = target_board_split[1]
+                    if target_board_split.length == 1 then
+                      # if there were no slashes in the first word, assume >>board
+                      target_board = target_board_split[0]
+                    end
+                    # make the link
                     %><a class="redtext" href="/<%= target_board %>">&gt;<%= Sanitize.clean(x) %></a><%
                   else
+                    # it's some other form of red text, just display it as red text
                     %><span class="redtext redtext-<%= consecutive %>">&gt;<%= Sanitize.clean(x) %></span><%
                   end
                 end
+                # calculations for the number of consecutive > characters
                 if x.length == 0 then
                   consecutive += 1
                 else
                   consecutive = 2
                 end
+                # counter, largely unused now that I have the `consecutive` variable
                 i += 1
               end
             %>
