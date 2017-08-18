@@ -343,10 +343,10 @@ module Sinatra
 
           # Sticky / Unsticky posts
           app.get "/sticky/:id/?" do |post_id|
-            sticky_unsticky(con.sanitize(post_id), 1)
+            sticky_unsticky(con.escape(post_id), 1)
           end
           app.get "/unsticky/:id/?" do |post_id|
-            sticky_unsticky(con.sanitize(post_id), 0)
+            sticky_unsticky(con.escape(post_id), 0)
           end
         end
       end
