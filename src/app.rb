@@ -8,7 +8,6 @@ require 'sinatra/base'
 require 'json'
 
 require_relative 'routes/boards'
-require_relative 'routes/janitor_tools'
 require_relative 'routes/errors'
 
 class Awoo < Sinatra::Base
