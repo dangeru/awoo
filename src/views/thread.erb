@@ -6,6 +6,11 @@
     <link rel="shortcut icon" href="static/favicon.ico">
     <title>Thread <%= id %> on danger/<%= path %>/ Loading...</title>
     <script src="/static/common.js"></script>
+<style>
+.redtext {
+  display: inline-block;
+}
+</style>
   </head>
   <body>
     <div id="sitecorner">
@@ -29,12 +34,38 @@
           | 
           <% res["content"].split("\n").each do |line| %>
             <% line = line.chomp %>
-            <% split = line.split(">") %>
-            <%= Sanitize.clean(split[0]) %><%
-              if split.length > 1
-              split = split.reverse(); split.pop; split = split.reverse()
-              %><span class="redtext redtext-<%= split.length %>">&gt;<%= Sanitize.clean(split.join(">")) %></span>
-            <% end %>
+            <%
+              consecutive = 1
+              i = 0
+              line.split(">").each do |x|
+                if i == 0
+                  %><%= Sanitize.clean(x) %><%
+                else
+                  if x.length > 0 and consecutive == 3
+                    target = x.split(" ")[0].split("/")
+                    if target.length == 1 then
+                      %><a class="redtext" data-target="<%= target[0] %>">&gt;<%= Sanitize.clean(x) %></a><%
+                    else
+                      target_board = target[1]
+                      target_thread = target[2]
+                      href = "/" + target_board.to_s + "/thread/" + target_thread.to_s
+                      %><a class="redtext" href="<%= href %>">&gt;<%= Sanitize.clean(x) %></a><%
+                    end
+                  elsif x.length > 0 and consecutive == 4 then
+                    target_board = x.split(" ")[0].split("/")[1]
+                    %><a class="redtext" href="/<%= target_board %>">&gt;<%= Sanitize.clean(x) %></a><%
+                  else
+                    %><span class="redtext redtext-<%= consecutive %>">&gt;<%= Sanitize.clean(x) %></span><%
+                  end
+                end
+                if x.length == 0 then
+                  consecutive += 1
+                else
+                  consecutive = 2
+                end
+                i += 1
+              end
+            %>
             <br />
           <% end %>
         </div>
