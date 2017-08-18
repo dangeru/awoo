@@ -78,6 +78,7 @@
           &nbsp;<i class="fa fa-lock" aria-hidden="true" onClick='unlockPost(<%= res["post_id"] %>)'></i>
         <% end %>
         <i class="fa fa-trash" aria-hidden="true" onClick='deletePost(<%= res["post_id"] %>)'></i>
+        <a href="/move/<%= res['post_id'] %>"><i class="fa fa-refresh" aria-hidden="true"></i></a>
         <a style="display: inline-block; font-size: 50%;" href="/ip/<%= res["ip"] %>"><%= res["ip"] %></a>
       <% end %>
       <br />
