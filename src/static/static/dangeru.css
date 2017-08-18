@@ -129,3 +129,9 @@ input[type=submit] {
 small {
     color: white;
 }
+
+/* To offset the lock, unlock and delete buttons from the thread title */
+.fa-unlock-alt, .fa-lock, .offset-left {
+	margin-left: 6px;
+}
+

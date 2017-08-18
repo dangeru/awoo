@@ -73,9 +73,9 @@
       <a style="display: inline-block;" <%= extras %> data-replies="<%= res["number_of_replies"] %>" href="/<%= path %>/thread/<%= res["post_id"] %>"><%= Sanitize.clean(res["title"]) %></a>
       <% if moderator %>
         <% if res["is_locked"] == 0 %>
-          &nbsp;<i class="fa fa-unlock-alt" aria-hidden="true" onClick='lockPost(<%= res["post_id"] %>)'></i>
+          <i class="fa fa-unlock-alt" aria-hidden="true" onClick='lockPost(<%= res["post_id"] %>)'></i>
         <% else %>
-          &nbsp;<i class="fa fa-lock" aria-hidden="true" onClick='unlockPost(<%= res["post_id"] %>)'></i>
+          <i class="fa fa-lock" aria-hidden="true" onClick='unlockPost(<%= res["post_id"] %>)'></i>
         <% end %>
         <i class="fa fa-trash" aria-hidden="true" onClick='deletePost(<%= res["post_id"] %>)'></i>
         <i class="fa fa-refresh" aria-hidden="true" onClick="window.location.replace('/move/<%= res['post_id'] %>');"></i>

@@ -48,7 +48,7 @@
         <% end %>
         <div class="comment" id="comment-<%= res["post_id"] %>">
           <% if moderator then %>
-            &nbsp;<i class="fa fa-trash" aria-hidden="true" onClick='deletePost(<%= res["post_id"] %>)'></i>
+            <i class="fa fa-trash offset-left" aria-hidden="true" onClick='deletePost(<%= res["post_id"] %>)'></i>
             <a style="display: inline-block; font-size: 50%;" href="/ip/<%= res["ip"] %>"><%= res["ip"] %></a>
           <% end %>
           |
