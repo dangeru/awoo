@@ -29,14 +29,11 @@
           | 
           <% res["content"].split("\n").each do |line| %>
             <% line = line.chomp %>
-            <% depth = 0 %>
-            <% while line[depth] == ">" do depth += 1 end %>
-            <% if depth > 0 %>
-              <span class="redtext redtext-<%= depth %>">
-            <% end %>
-            <%= Sanitize.clean(line) %>
-            <% if depth > 0 %>
-              </span>
+            <% split = line.split(">") %>
+            <%= Sanitize.clean(split[0]) %>
+            <% if split.length > 1 %>
+              <% split = split.reverse(); split.pop; split = split.reverse() %>
+              <span class="redtext redtext-<%= split.length %>">&gt;<%= Sanitize.clean(split.join(">")) %></span>
             <% end %>
             <br />
           <% end %>
