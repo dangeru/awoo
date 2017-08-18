@@ -246,7 +246,7 @@ module Sinatra
             config["janitors"].each do |janitor|
               if janitor["username"] == username and janitor["password"] == password then
                 session[:moderates] = janitor["boards"]
-                return "You are now logged in as " + username + ", you moderate " + janitor["boards"].join(", ")
+                return "You are now logged in as " + username + ", you moderate " + janitor["boards"].join(", ") + '&nbsp;<a href="/logout">Log out</a>'
               end
             end
             "Check your username and password"
