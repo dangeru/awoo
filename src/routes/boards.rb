@@ -41,6 +41,7 @@ def is_moderator(board, session)
   end
   return session[:moderates].index(board) != nil
 end
+
 def lock_or_unlock(post, bool, con, session)
   board = nil
   escaped = con.escape(post.to_i.to_s)
@@ -56,6 +57,16 @@ def lock_or_unlock(post, bool, con, session)
   con.query("UPDATE posts SET is_locked = #{con.escape(bool)} WHERE post_id = #{escaped}")
   href = "/" + board + "/thread/" + escaped
   return redirect(href, 303);
+end
+
+def sticky_unsticky(id, setting)
+  if session[:moderates] then
+    id = con.escape(id)
+    con.query("UPDATE posts SET sticky = #{setting} WHERE post_id = #{id} OR parent = #{id}")
+    return [200, "Success, i think."]
+  else
+    return [403, "You have no janitor privileges."]
+  end
 end
 
 def get_ban_info(ip, board, con)
@@ -264,7 +275,7 @@ module Sinatra
           # Moderator log in page, (mod_login.erb)
           app.get "/mod" do
             if session[:moderates] then
-              return "You are already logged in and you moderate " + session[:moderates].join(", ")
+              return "You are already logged in and you moderate " + session[:moderates].join(", ") + '&nbsp;<a href="/logout">Log out</a>'
             end
             erb :mod_login, :locals => {:session => session}
           end
@@ -318,6 +329,8 @@ module Sinatra
               return [403, "You have no janitor privileges."]
             end
           end
+
+          # Leave notes on an ip address
           app.post "/ip_note/:addr" do |addr|
             if session[:moderates] == nil then
               return [403, "You have no janitor privileges"]
@@ -326,6 +339,14 @@ module Sinatra
             content = con.escape(params[:content])
             con.query("INSERT INTO ip_notes (ip, content) VALUES ('#{addr}', '#{content}')")
             return redirect("/ip/" + addr, 303)
+          end
+
+          # Sticky / Unsticky posts
+          app.get "/sticky/:id/?" do |post_id|
+            sticky_unsticky(con.sanitize(post_id), 1)
+          end
+          app.get "/unsticky/:id/?" do |post_id|
+            sticky_unsticky(con.sanitize(post_id), 0)
           end
         end
       end
