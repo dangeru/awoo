@@ -273,7 +273,6 @@ module Sinatra
           app.get "/move/:post/?" do |post|
             if session[:moderates] then
               erb :move, :locals => {:post => post}
-            end
             else
               return [403, "You have no janitor priviledges."]
             end
