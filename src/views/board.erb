@@ -69,9 +69,9 @@
     <hr>
     <% con.query("SELECT post_id, title, ip, is_locked, sticky, COALESCE(parent, post_id) AS effective_parent, COUNT(*)-1 AS number_of_replies FROM posts WHERE board = '#{con.escape(path)}' GROUP BY effective_parent ORDER BY (-1 * sticky), post_id DESC LIMIT 20 OFFSET #{offset.to_s};").each do |res| %>
       <% extras = "" %>
-      <% if res["is_locked"] then extras += "style='color: grey'" end %>
-      <% if res["sticky"] then extras += "style='color: #006400'" end %>
-      <a style="display: inline-block;" <%= extras %> data-replies="<%= res["number_of_replies"] %>" href="/<%= path %>/thread/<%= res["post_id"] %>"><%= Sanitize.clean(res["title"]) %></a>
+      <% if res["is_locked"] then extras += "color: grey" end %>
+      <% if res["sticky"] then extras += "color: #006400" end %>
+      <a style="display: inline-block;" style='<%= extras %>' data-replies="<%= res["number_of_replies"] %>" href="/<%= path %>/thread/<%= res["post_id"] %>"><%= Sanitize.clean(res["title"]) %></a>
       <% if moderator %>
         <% if res["is_locked"] == 0 %>
           <i class="fa fa-unlock-alt" aria-hidden="true" onClick='lockPost(<%= res["post_id"] %>)'></i>
