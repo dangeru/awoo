@@ -14,6 +14,12 @@
 .selected {
   border: 2px solid gold;
 }
+#hover {
+  position: absolute;
+  z-index: 10;
+  background-color: black;
+  border: 2px solid gold;
+}
 </style>
         <script>
           var select = function select(id) {
@@ -25,6 +31,23 @@
             }
             document.getElementById("comment-" + id.toString()).classList.add("selected")
           }
+          var hover = function hover(id, hovered) {
+            var elem = document.getElementById("comment-" + id.toString());
+            document.getElementById("hover").innerHTML = elem.innerHTML;
+            document.getElementById("hover").style.display = "inline-block";
+            // TEMP UNTIL move() WORKS
+            var hovered_elem = document.getElementById("comment-" + hovered.toString())
+            document.getElementById("hover").style.top = (hovered_elem.offsetTop + hovered_elem.clientHeight).toString() + "px";
+            document.getElementById("hover").style.left = hovered_elem.offsetLeft.toString() + "px";
+          }
+          var unhover = function unhover() {
+            document.getElementById("hover").innerHTML = ""
+            document.getElementById("hover").style.display = "none";
+          }
+          var move = function move() {
+            //document.getElementById("hover").style.top = mouse.x;
+            //document.getElementById("hover").style.left = mouse.y;
+          }
           var ol = function ol() {
             if (window.location.hash.indexOf("comment-") == 1) {
               select(window.location.hash.split("comment-")[1]);
@@ -35,6 +58,7 @@
   <body onLoad='ol();'>
     <div id="sitecorner">
       <a href="/<%= path %>"><img src="<%= banner %>" alt="danger/u/"></a>
+      <span id="hover" style="display: none"></span>
       <%= last_date_modified = Time.new 0 %>
       <%= i = 0 %>
       <% is_locked = false %>
@@ -69,7 +93,7 @@
                     target = x.split(" ")[0].split("/")
                     if target.length == 1 then
                       # it's in the format >>1234
-                      %><a class="redtext" onClick="select(<%= target[0] %>)">&gt;<%= Sanitize.clean(x) %></a><%
+                      %><a class="redtext" onMouseOver="hover(<%= target[0] %>, <%= res["post_id"] %>)" onMouseOut="unhover()" onMouseMove="move()" onClick="select(<%= target[0] %>)">&gt;<%= Sanitize.clean(x) %></a><%
                     else
                       # it's in the format >>/board/1234, so extract `board` and `1234` and make the link
                       target_board = target[1]
