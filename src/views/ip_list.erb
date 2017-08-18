@@ -40,7 +40,10 @@
         <br />
       <% end %>
       <h2>IP Notes</h2>
-      <% con.query("SELECT content FROM ip_notes WHERE ip = '#{con.escape(addr)}' ORDER BY created").each do |res| %>
+      <% con.query("SELECT content, created FROM ip_notes WHERE ip = '#{con.escape(addr)}' ORDER BY created").each do |res| %>
+        <div style="font-size: 50%;">
+          <%= res["created"].strftime '%c' %>
+        </div>
         <div style="border-left: 2px solid grey; padding-left: 10px;">
           <%= Sanitize.clean(res["content"]).gsub("\n", "<br />") %>
         </div>
