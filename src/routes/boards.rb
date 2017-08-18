@@ -78,8 +78,8 @@ end
 def looks_like_spam(con, ip, env, config)
   # if the user has never posted, the block in con.query.each won't be run, so by default it's not spam
   result = false
-  con.query("SELECT date_posted, ip FROM posts WHERE ip = '#{ip}' ORDER BY post_id DESC LIMIT 1").each do |res|
-    if res["ip"] == ip and res["date_posted"] + config["min_seconds_between_post_per_ip"] > Time.new() then
+  con.query("SELECT COUNT(*) AS count FROM posts WHERE ip = '#{ip}' AND UNIX_TIMESTAMP(date_posted) > #{Time.new.strftime('%s').to_i - config["period_length"]}").each do |res|
+    if res["count"] > config["max_posts_per_period"] then
       result = true
     else
       result = false
