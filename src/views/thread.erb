@@ -107,10 +107,12 @@
       </script>
       <br />
       <% if is_locked then %>
-        <div class="redtext" style="text-align: center;">This thread is closed.</div>
-        <% if moderator %>
-          <i class="fa fa-lock" aria-hidden="true" onClick='unlockPost(<%= id.to_i.to_s %>)'></i>
-        <% end %>
+        <div id="lockedcontainer" style="text-align: center;">
+          <div class="redtext">This thread is closed.</div>
+          <% if moderator %>
+            <i class="fa fa-lock" aria-hidden="true" onClick='unlockPost(<%= id.to_i.to_s %>)'></i>
+          <% end %>
+        </div>
       <% else %>
         <a href="javascript:location.reload();">Refresh</a>
         <form action='/reply' method='post'>
