@@ -14,6 +14,12 @@
 .selected {
   border: 2px solid gold;
 }
+#hover {
+  position: absolute;
+  z-index: 10;
+  background-color: black;
+  border: 2px solid gold;
+}
 </style>
         <script>
           var select = function select(id) {
@@ -25,6 +31,23 @@
             }
             document.getElementById("comment-" + id.toString()).classList.add("selected")
           }
+          var hover = function hover(id, hovered) {
+            var elem = document.getElementById("comment-" + id.toString());
+            document.getElementById("hover").innerHTML = elem.innerHTML;
+            document.getElementById("hover").style.display = "inline-block";
+            // TEMP UNTIL move() WORKS
+            var hovered_elem = document.getElementById("comment-" + hovered.toString())
+            document.getElementById("hover").style.top = (hovered_elem.offsetTop + hovered_elem.clientHeight).toString() + "px";
+            document.getElementById("hover").style.left = hovered_elem.offsetLeft.toString() + "px";
+          }
+          var unhover = function unhover() {
+            document.getElementById("hover").innerHTML = ""
+            document.getElementById("hover").style.display = "none";
+          }
+          var move = function move() {
+            //document.getElementById("hover").style.top = mouse.x;
+            //document.getElementById("hover").style.left = mouse.y;
+          }
           var ol = function ol() {
             if (window.location.hash.indexOf("comment-") == 1) {
               select(window.location.hash.split("comment-")[1]);
@@ -35,6 +58,7 @@
   <body onLoad='ol();'>
     <div id="sitecorner">
       <a href="/<%= path %>"><img src="<%= banner %>" alt="danger/u/"></a>
+      <span id="hover" class="comment" style="display: none"></span>
       <%= last_date_modified = Time.new 0 %>
       <%= i = 0 %>
       <% is_locked = false %>
@@ -56,34 +80,52 @@
             <% line = line.chomp %>
             <%
               consecutive = 1
-              i = 0
+              j = 0
               line.split(">").each do |x|
-                if i == 0
+                # If we haven't hit the first > yet, then display it normally (no red text)
+                if j == 0
                   %><%= Sanitize.clean(x) %><%
                 else
+                  # If we've hit the second > in a row, and it's not immediately followed by a third >, it's a link to a thread
+                  # either in the format >>1234 or >>/board/1234, where the first one must be in the current thread and the second
+                  # one must be an OP on that board
                   if x.length > 0 and consecutive == 3
                     target = x.split(" ")[0].split("/")
                     if target.length == 1 then
-                      %><a class="redtext" onClick="select(<%= target[0] %>)">&gt;<%= Sanitize.clean(x) %></a><%
+                      # it's in the format >>1234
+                      %><a class="redtext" onMouseOver="hover(<%= target[0].to_i.to_s %>, <%= res["post_id"] %>)" onMouseOut="unhover()" onMouseMove="move()" onClick="select(<%= target[0].to_i.to_s %>)">&gt;<%= Sanitize.clean(x) %></a><%
                     else
-                      target_board = target[1]
-                      target_thread = target[2]
+                      # it's in the format >>/board/1234, so extract `board` and `1234` and make the link
+                      target_board = Sanitize.clean(target[1]).gsub("\"", "")
+                      target_thread = target[2].to_i.to_s
                       href = "/" + target_board.to_s + "/thread/" + target_thread.to_s
                       %><a class="redtext" href="<%= href %>">&gt;<%= Sanitize.clean(x) %></a><%
                     end
                   elsif x.length > 0 and consecutive == 4 then
-                    target_board = x.split(" ")[0].split("/")[1]
+                    # If we've hit the third > in a row, and it's not immediately followed by a fourth >, it's a link to another board
+                    # in the format >>/board/ or >>board
+                    target_board_split = x.split(" ")[0].split("/")
+                    # Assume >>/board/ at first
+                    target_board = target_board_split[1]
+                    if target_board_split.length == 1 then
+                      # if there were no slashes in the first word, assume >>board
+                      target_board = target_board_split[0]
+                    end
+                    # make the link
                     %><a class="redtext" href="/<%= target_board %>">&gt;<%= Sanitize.clean(x) %></a><%
                   else
+                    # it's some other form of red text, just display it as red text
                     %><span class="redtext redtext-<%= consecutive %>">&gt;<%= Sanitize.clean(x) %></span><%
                   end
                 end
+                # calculations for the number of consecutive > characters
                 if x.length == 0 then
                   consecutive += 1
                 else
                   consecutive = 2
                 end
-                i += 1
+                # counter, largely unused now that I have the `consecutive` variable
+                j += 1
               end
             %>
             <br />
@@ -115,17 +157,18 @@
         </div>
       <% else %>
         <a href="javascript:location.reload();">Refresh</a>
-        <form action='/reply' method='post'>
+        <form action='/reply' method='post' style="text-align: center;">
           <input type='text' style='display: none' name='board' id='board' value='<%= path %>' />
           <input type='text' style='display: none' name='parent' id='parent' value='<%= id %>' />
-          <input type='text' name='content' id='board' placeholder='Reply' />
+          <textarea name='content' style="width: 100%;" placeholder='Reply'></textarea>
+          <br />
           <input type='submit' />
         </form>
         <% if moderator %>
-          <i class="fa fa-unlock-alt" aria-hidden="true" onClick='lockPost(<%= id.to_i.to_s %>)'></i>
+          <br />
+          <i class="fa fa-unlock-alt" aria-hidden="true" style="display: block; text-align: center;" onClick='lockPost(<%= id.to_i.to_s %>)'></i>
         <% end %>
       <% end %>
-      <br />
     </div>
     <footer class="comment" style="font-size: xx-small; text-align: center;">
       <small>Awoo <%= settings.awoo_version %></small>

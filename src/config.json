@@ -11,7 +11,8 @@
     }
   },
   "hostname": "example.com",
-  "min_seconds_between_post_per_ip": 30,
+  "period_length": 30,
+  "max_posts_per_period": 4,
   "janitors": [
     {
       "username": "test",

@@ -10,9 +10,15 @@ Running `sudo make install` will make a user named `awoo`, copy `src` to `/opt/a
 - Moderation for bans
 	- prefetcher
 - Make `/move/:post` prettier
-	- should janitors move posts only inbetween the boards they moderate?
+	- should janitors move posts only in between the boards they moderate?
+	- currently the frontend only lets them move posts to boards they moderate, but the backend lets them move it to any board
 - Make `/ip/:addr` prettier
+	- partially done, now links directly to reply in OP, and IP notes work
+	- maybe let people select more than one board at a time to ban the IP from?
 	- add ban duration
+- Stickied posts
+	- Add an icon for them in `board.erb`
+	- Add buttons for moderators to sticky/unsticky posts
 - Rules for each board
 	- prefetcher already wrote the routes and views
 	- Mystery is working on the text
