@@ -18,11 +18,20 @@
           var select = function select(id) {
             window.location.hash = "#"; // bugfix for webkit
             window.location.hash = "#comment-" + id.toString();
+            var elems = document.getElementsByClassName("selected");
+            for (var i = 0; i < elems.length; i++) {
+              elems[i].classList.toggle("selected")
+            }
             document.getElementById("comment-" + id.toString()).classList.add("selected")
+          }
+          var ol = function ol() {
+            if (window.location.hash.indexOf("comment-") == 1) {
+              select(window.location.hash.split("comment-")[1]);
+            }
           }
         </script>
   </head>
-  <body>
+  <body onLoad='ol();'>
     <div id="sitecorner">
       <a href="/<%= path %>"><img src="<%= banner %>" alt="danger/u/"></a> 
       <%= last_date_modified = Time.new 0 %>
