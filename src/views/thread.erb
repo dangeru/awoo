@@ -56,10 +56,10 @@
             <% line = line.chomp %>
             <%
               consecutive = 1
-              i = 0
+              j = 0
               line.split(">").each do |x|
                 # If we haven't hit the first > yet, then display it normally (no red text)
-                if i == 0
+                if j == 0
                   %><%= Sanitize.clean(x) %><%
                 else
                   # If we've hit the second > in a row, and it's not immediately followed by a third >, it's a link to a thread
@@ -101,7 +101,7 @@
                   consecutive = 2
                 end
                 # counter, largely unused now that I have the `consecutive` variable
-                i += 1
+                j += 1
               end
             %>
             <br />
