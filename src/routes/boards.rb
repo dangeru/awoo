@@ -312,7 +312,7 @@ module Sinatra
           # Moves thread from board to board
           app.get "/move/:post/?" do |post|
             if session[:moderates] then
-              erb :move, :locals => {:post => post}
+              erb :move, :locals => {:post => post, :boards => boards}
             else
               return [403, "You have no janitor priviledges."]
             end

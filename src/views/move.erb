@@ -11,11 +11,9 @@
     <div id="maincontainer" style="overflow: hidden; color: white;">
       <h2>You're about to move thread <%= post %></h2>
       <form method="post" action="/move/<%= post %>">
-        <%# should the moderator be able to only move threads between the board they moderate? if not change it to all boards. %>
-        <%# Currently, the backend (boards.rb) will let them move a thread to/from ANY board as long as they moderate AT LEAST ONE board. %>
         <div class="comment">Select destination</div>
         <select name="board" id="board">
-          <% session[:moderates].each do |board| %>
+          <% boards.each do |board| %>
             <option value="<%= board %>"><%= board %></option>
           <% end %>
         </select>
