@@ -9,7 +9,7 @@
     <img src="/static/logo.png" alt="danger/u/" style="width: 395px; height: 130px;">
     <br />
     <div id="maincontainer" style="overflow: hidden; color: white;">
-      <h2>You're about to move thread <%= post %></h2>
+      <div id="title">You're about to move thread <%= post %></div>
       <form method="post" action="/move/<%= post %>">
         <div class="comment">Select destination</div>
         <select name="board" id="board">

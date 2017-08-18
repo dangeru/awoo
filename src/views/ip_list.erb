@@ -4,6 +4,7 @@
     <title>Posts by IP address <%= addr %></title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <link rel="stylesheet" type="text/css" href="/static/dangeru.css">
+    <link rel="stylesheet" type="text/css" href="../static/css/font-awesome.min.css">
     <link rel="shortcut icon" href="/static/favicon.ico">
     <script>
       var addr = <%= JSON.dump(addr) %>;
@@ -26,7 +27,7 @@
     <img src="/static/logo.png" alt="danger/u/" style="width: 395px; height: 130px;">
     <br />
     <div id="maincontainer" style="overflow: hidden; color: white;">
-      <h2>Information for IP <%= Sanitize.clean(addr) %></h2>
+      <div id="title" style="color: #ED145B;">Information for IP <%= Sanitize.clean(addr) %></div>
       <select id="board">
       <% session[:moderates].each do |board| %>
         <option value="<%= board %>"><%= board %></option>
@@ -45,28 +46,27 @@
       <%# We're actually left joining the table `posts` on itself here to get the title of the OP the comment is replying to, if there is one %>
       <% con.query("SELECT posts.*, titles.title AS linked_title FROM posts LEFT JOIN posts titles ON posts.parent = titles.post_id WHERE posts.ip = '#{con.escape(addr)}' AND posts.board IN #{boards}").each do |res| %>
         <% if res["parent"] then %>
-          Reply to
+          <div class="comment">Reply to
           <%# Links directly to highlight that reply in the thread %>
           <a style='display: inline-block;' href="/<%= res["board"] %>/thread/<%= res["parent"] %>#comment-<%= res["post_id"] %>">
             <%= Sanitize.clean(res["linked_title"]) %>
           </a>
         <% else %>
-          OP with title <a style='display: inline-block;' href="/<%= res["board"] %>/thread/<%= res["post_id"] %>"><%= res["title"] %></a>
+          <div class="comment">OP with title <a style='display: inline-block;' href="/<%= res["board"] %>/thread/<%= res["post_id"] %>"><%= res["title"] %></a>
         <% end %>
-        in <%= res["board"] %> on <%= res["date_posted"].strftime '%c' %>.
-        <button onClick='deletePost(<%= res["post_id"] %>)'>Delete</button>
+        in /<%= res["board"] %>/ on <%= res["date_posted"].strftime '%c' %>.<i class="fa fa-trash" aria-hidden="true" onClick='deletePost(<%= res["post_id"] %>)'></i></div>
         <div class="entry">
-          <%= Sanitize.clean(res["content"]).gsub("\n", "<br />") %>
+          <div class="comment"><%= Sanitize.clean(res["content"]).gsub("\n", "<br />") %></div>
         </div>
         <br />
       <% end %>
-      <h2>IP Notes</h2>
+      <div id="title" style="color: #ED145B;">IP Notes</div>
       <% con.query("SELECT content, created FROM ip_notes WHERE ip = '#{con.escape(addr)}' ORDER BY created").each do |res| %>
         <div style="font-size: 50%;">
-          <%= res["created"].strftime '%c' %>
+          <div class="comment"><%= res["created"].strftime '%c' %></div>
         </div>
         <div class="entry">
-          <%= Sanitize.clean(res["content"]).gsub("\n", "<br />") %>
+          <div class="comment"><%= Sanitize.clean(res["content"]).gsub("\n", "<br />") %></div>
         </div>
         <br />
       <% end %>
@@ -81,4 +81,3 @@
     </footer>
   </body>
 </HTML>
-
