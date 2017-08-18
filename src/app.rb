@@ -13,7 +13,6 @@ require_relative 'routes/errors'
 
 class Awoo < Sinatra::Base
   register Sinatra::Awoo::Routing::Boards
-  register Sinatra::Awoo::Routing::Janitorial
   register Sinatra::Awoo::Routing::Errors
   configure do
     set :bind, '0.0.0.0'
