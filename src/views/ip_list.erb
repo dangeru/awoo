@@ -38,7 +38,7 @@
         <% if res["parent"] then %>
           Reply to
           <%# Links directly to highlight that reply in the thread %>
-          <a style='display: inline-block;' href="/<%= res["board"] %>/thread/<%= res["parent"] %>#comment=<%= res["post_id"] %>">
+          <a style='display: inline-block;' href="/<%= res["board"] %>/thread/<%= res["parent"] %>#comment-<%= res["post_id"] %>">
             <%= Sanitize.clean(res["linked_title"]) %>
           </a>
         <% else %>
