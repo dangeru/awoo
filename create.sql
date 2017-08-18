@@ -18,3 +18,8 @@ CREATE TABLE bans (
 	date_of_unban TIMESTAMP NOT NULL,
 	reason TEXT
 );
+CREATE TABLE ip_notes (
+	ip TEXT NOT NULL,
+	content TEXT NOT NULL,
+	created TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
