@@ -27,7 +27,7 @@
     <img src="/static/logo.png" alt="danger/u/" style="width: 395px; height: 130px;">
     <br />
     <div id="maincontainer" style="overflow: hidden; color: white;">
-      <div id="title" style="color: #ED145B;">Information for IP <%= Sanitize.clean(addr) %></div>
+      <div class="title" style="color: #ED145B;">Information for IP <%= Sanitize.clean(addr) %></div>
       <select id="board">
       <% session[:moderates].each do |board| %>
         <option value="<%= board %>"><%= board %></option>
@@ -60,7 +60,7 @@
         </div>
         <br />
       <% end %>
-      <div id="title" style="color: #ED145B;">IP Notes</div>
+      <div class="title" style="color: #ED145B;">IP Notes</div>
       <% con.query("SELECT content, created FROM ip_notes WHERE ip = '#{con.escape(addr)}' ORDER BY created").each do |res| %>
         <div style="font-size: 50%;">
           <div class="comment"><%= res["created"].strftime '%c' %></div>

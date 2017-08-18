@@ -59,11 +59,16 @@ def lock_or_unlock(post, bool, con, session)
   return redirect(href, 303);
 end
 
-def sticky_unsticky(id, setting, con)
-  if session[:moderates] then
+def sticky_unsticky(id, setting, con, session)
+  board = nil
+  id = con.escape(id.to_i.to_s)
+  con.query("SELECT board FROM posts WHERE post_id = #{id}").each do |res|
+    board = res["board"]
+  end
+  if is_moderator(board, session) then
     id = con.escape(id)
-    con.query("UPDATE posts SET sticky = #{setting} WHERE post_id = #{id} OR parent = #{id}")
-    return [200, "Success, i think."]
+    con.query("UPDATE posts SET sticky = #{setting} WHERE post_id = #{id}")
+    return redirect("/" + board + "/thread/" + id, 303)
   else
     return [403, "You have no janitor privileges."]
   end
@@ -343,10 +348,10 @@ module Sinatra
 
           # Sticky / Unsticky posts
           app.get "/sticky/:id/?" do |post_id|
-            sticky_unsticky(post_id, 1, con)
+            sticky_unsticky(post_id, "TRUE", con, session)
           end
           app.get "/unsticky/:id/?" do |post_id|
-            sticky_unsticky(post_id, 0, con)
+            sticky_unsticky(post_id, "FALSE", con, session)
           end
         end
       end

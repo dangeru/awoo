@@ -11,9 +11,7 @@ Running `sudo make install` will make a user named `awoo`, copy `src` to `/opt/a
 	- prefetcher
 - Make `/move/:post` prettier
 	- prefetcher
-	- should janitors move posts only in between the boards they moderate?
-	- currently the frontend only lets them move posts to boards they moderate, but the backend lets them move it to any board
-		- there's already an `is_moderator` function that takes a board, would have to select the board from the passed post id and check that too
+	- right now both the frontend and backend let janitors move threads to/from ANY board whether they moderate it or not
 - Make `/ip/:addr` prettier
 	- prefetcher
 	- partially done, now links directly to reply in OP, and IP notes work

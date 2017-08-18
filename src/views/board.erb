@@ -18,6 +18,15 @@
       width: 90%;
       height: 130px;
     }
+    #hover {
+      position: fixed;
+      background-color: rgba(255, 255, 255, 0.6);
+      font-size: 70%;
+      border-radius: 4px;
+      padding: 4px;
+      color: black;
+      z-index: 10;
+    }
     </style>
     <script src="static/js/jquery-3.2.1.min.js"></script>
     <script src="static/js/jquery-ui.min.js"></script>
@@ -36,6 +45,38 @@
           wc.style.color = len > 500 ? "red" : "inherit";
           wc.innerText = len + "/500";
         });
+        Array.prototype.slice.call(document.getElementsByClassName("fa"), 0).forEach(function(elem) {
+          elem.onmousemove = function(e) { move(e) }; // SHOULDN'T NEED THE WRAPPING FUNCTION BUT I DO
+          elem.onmouseover = function() {hover(elem);};
+          elem.onmouseout = function() { unhover() };
+        });
+        var hover = function(elem) {
+          var tooltip = document.getElementById("hover");
+          tooltip.style.display = "inline-block";
+          if (elem.classList.contains("fa-lock")) {
+            tooltip.innerText = "Unlock thread"
+          } else if (elem.classList.contains("fa-unlock-alt")) {
+            tooltip.innerText = "Lock thread"
+          } else if (elem.classList.contains("fa-ban")) {
+            tooltip.innerText = "Unsticky thread"
+          } else if (elem.classList.contains("fa-trash")) {
+            tooltip.innerText = "Delete thread"
+          } else if (elem.classList.contains("fa-refresh")) {
+            tooltip.innerText = "Move thread"
+          } else {
+            tooltip.innerText = "Sticky thread"
+          }
+          console.log(tooltip.innerText)
+        }
+        var move = function move(e) {
+          var tooltip = document.getElementById("hover");
+          tooltip.style.top = e.clientY + 5 + "px"
+          tooltip.style.left = e.clientX + 5 + "px"
+          console.log(tooltip.style.display)
+        }
+        var unhover = function() {
+          document.getElementById("hover").style.display = "none";
+        }
       }
     </script>
     <script src="/static/common.js"></script>
@@ -50,7 +91,7 @@
         <a style='display: inline-block;' class="boarda" href="/<%= key %>">/<%= key %>/</a>
       <% end %>
     </div>
-
+    <div id="hover" style="display: none;"></div>
   <div id="sitecorner" style="text-align: center;">
     <a href="javascript:location.reload();"><img src="<%= banner %>" alt="danger/u/"></a>
     <span onClick='newThread()' id="newthread">Start a new thread</span>
