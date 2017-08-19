@@ -5,29 +5,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <link rel="stylesheet" type="text/css" href="/static/dangeru.css">
     <link rel="stylesheet" type="text/css" href="../static/css/font-awesome.min.css">
+    <script src="static/js/jquery-3.2.1.min.js"></script>
+    <script src="static/js/jquery-ui.min.js"></script>
     <link rel="shortcut icon" href="/static/favicon.ico">
     <script src="/static/common.js"></script>
+    <style>
+      .entry {
+        border-left: 2px solid grey;
+        padding-left: 10px;
+      }
+    </style>
     <script>
-      var addr = <%= JSON.dump(addr) %>;
+      $( function() {
+        $( "#datepicker" ).datepicker();
+      });
     </script>
-<style>
-.entry {
-  border-left: 2px solid grey;
-  padding-left: 10px;
-}
-</style>
   </head>
   <body>
     <img src="/static/logo.png" alt="danger/u/" style="width: 395px; height: 130px;">
     <br />
     <div id="maincontainer" style="overflow: hidden; color: white;">
       <div class="title" style="color: #ED145B;">Information for IP <%= Sanitize.clean(addr) %></div>
-      <select id="board">
-      <% session[:moderates].each do |board| %>
-        <option value="<%= board %>"><%= board %></option>
-      <% end %>
-      </select>
-      <button onClick='ban(addr, document.getElementById("board").selectedOptions[0].value)'>Ban</button>
+      <form action="/ban/<%= JSON.dump(addr) %>" method="post">
+        <select id="board" name="board">
+          <% session[:moderates].each do |board| %>
+            <option value="<%= board %>"><%= board %></option>
+          <% end %>
+        </select>
+        <input type="text" id="datepicker" name="date"/>
+        <input type="text" id="reason" name="reason" placeholder="Reason" />
+        <input type="submit" name="submit" value="ban" />
+      </form>
       <br />
       <% boards = session[:moderates].map do |f| con.escape(f) end %>
       <% boards = "('" + boards.join("', '") + "')" %>
