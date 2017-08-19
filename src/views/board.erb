@@ -101,6 +101,7 @@
     <div id="hover" style="display: none;"></div>
   <div id="sitecorner" style="text-align: center;">
     <a href="javascript:location.reload();"><img src="<%= banner %>" alt="danger/u/"></a>
+    <div id="boardtitle">/<%= settings.config['boards'][path]['name'] %>/ - <%= settings.config['boards'][path]['desc'] %></div>
     <span onClick='newThread()' id="newthread">Start a new thread</span>
     <div id="draggable" class="ui-widget-content">
       <form action="/post" method="post" name="newthread">
