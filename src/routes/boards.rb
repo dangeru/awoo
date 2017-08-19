@@ -363,6 +363,17 @@ module Sinatra
               date = old_date[2] + "-" + old_date[0] + "-" + old_date[1] + " 00:00:00"
               reason = con.escape(params[:reason])
               con.query("INSERT INTO bans (ip, board, date_of_unban, reason) VALUES ('#{ip}', '#{board}', '#{date}', '#{reason}')");
+              redirect "/ip/#{ip}"
+            else
+              return [403, "You have no janitor privileges"]
+            end
+          end
+          app.post "/unban/:ip" do |author_ip|
+            if is_moderator(params[:board], session) then
+              ip = con.escape(author_ip)
+              board = con.escape(params[:board])
+              con.query("DELETE FROM bans WHERE ip = #{ip} AND board = #{board}")
+              redirect "/ip/#{ip}"
             else
               return [403, "You have no janitor privileges"]
             end

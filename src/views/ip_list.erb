@@ -33,9 +33,9 @@
             <option value="<%= board %>"><%= board %></option>
           <% end %>
         </select>
-        <input type="text" id="datepicker" name="date"/>
+        <input type="text" id="datepicker" name="date" placeholder="Date"/>
         <input type="text" id="reason" name="reason" placeholder="Reason" />
-        <input type="submit" name="submit" value="ban" />
+        <input type="submit" name="submit" value="Ban" />
       </form>
       <br />
       <% boards = session[:moderates].map do |f| con.escape(f) end %>
@@ -43,7 +43,7 @@
       <% con.query("SELECT reason, board, date_of_unban FROM bans WHERE ip = '#{con.escape(addr)}' AND board IN #{boards} AND date_of_unban > CURRENT_TIMESTAMP()").each do |res| %>
         <h3 class="redtext">
           Banned from <%= res["board"] %> until <%= res["date_of_unban"].strftime '%c' %> for reason "<%= Sanitize.clean(res["reason"]) %>"
-          <button onClick="unban(addr, '<%= res["board"] %>')">Unban</button>
+          <form action="/unban/<%= addr %>" method="post"><input type="hidden" name="board" value="<%= res["board"] %>" /><input type="submit" name="submit" value="Unban" /></form>
         </h3>
       <% end %>
       <%# We're actually left joining the table `posts` on itself here to get the title of the OP the comment is replying to, if there is one %>
