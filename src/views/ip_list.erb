@@ -6,16 +6,10 @@
     <link rel="stylesheet" type="text/css" href="/static/dangeru.css">
     <link rel="stylesheet" type="text/css" href="../static/css/font-awesome.min.css">
     <link rel="shortcut icon" href="/static/favicon.ico">
+    <script src="/static/common.js"></script>
     <script>
       var addr = <%= JSON.dump(addr) %>;
-      var ban = function ban(board) {
-        alert("You tried to ban " + addr + " from the board " + board + ", but it's not implemented yet");
-      }
-      var unban = function unban(board) {
-        alert("You tried to unban " + addr + " from the board " + board + ", but it's not implemented yet");
-      }
     </script>
-    <script src="/static/common.js"></script>
 <style>
 .entry {
   border-left: 2px solid grey;
@@ -33,14 +27,14 @@
         <option value="<%= board %>"><%= board %></option>
       <% end %>
       </select>
-      <button onClick='ban(document.getElementById("board").selectedOptions[0].value)'>Ban</button>
+      <button onClick='ban(addr, document.getElementById("board").selectedOptions[0].value)'>Ban</button>
       <br />
       <% boards = session[:moderates].map do |f| con.escape(f) end %>
       <% boards = "('" + boards.join("', '") + "')" %>
       <% con.query("SELECT reason, board, date_of_unban FROM bans WHERE ip = '#{con.escape(addr)}' AND board IN #{boards} AND date_of_unban > CURRENT_TIMESTAMP()").each do |res| %>
         <h3 class="redtext">
           Banned from <%= res["board"] %> until <%= res["date_of_unban"].strftime '%c' %> for reason "<%= Sanitize.clean(res["reason"]) %>"
-          <button onClick="unban('<%= res["board"] %>')">Unban</button>
+          <button onClick="unban(addr, '<%= res["board"] %>')">Unban</button>
         </h3>
       <% end %>
       <%# We're actually left joining the table `posts` on itself here to get the title of the OP the comment is replying to, if there is one %>
