@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <link rel="stylesheet" type="text/css" href="/static/dangeru.css">
     <link rel="stylesheet" type="text/css" href="../static/css/font-awesome.min.css">
-    <script src="static/js/jquery-3.2.1.min.js"></script>
-    <script src="static/js/jquery-ui.min.js"></script>
+    <script src="../static/js/jquery-3.2.1.min.js"></script>
+    <script src="../static/js/jquery-ui.min.js"></script>
     <link rel="shortcut icon" href="/static/favicon.ico">
     <script src="/static/common.js"></script>
     <style>
@@ -26,7 +26,7 @@
     <br />
     <div id="maincontainer" style="overflow: hidden; color: white;">
       <div class="title" style="color: #ED145B;">Information for IP <%= Sanitize.clean(addr) %></div>
-      <form action="/ban/<%= JSON.dump(addr) %>" method="post">
+      <form action="/ban/<%= addr %>" method="post">
         <select id="board" name="board">
           <% session[:moderates].each do |board| %>
             <option value="<%= board %>"><%= board %></option>
