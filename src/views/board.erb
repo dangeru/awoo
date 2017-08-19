@@ -57,12 +57,12 @@
     <div id="draggable" class="ui-widget-content">
       <form action="/post" method="post" name="newthread">
         <input style='display: none;' type='text' name='board' id='board' value='<%= path %>' />
-        <div>Title</div>
+        <div class="comment">Title</div>
         <input type="text" name="title" id="title" placeholder="Title" />
-        <div>Comment</div>
+        <div class="comment">Comment</div>
         <textarea name="comment" id="comment"></textarea>
         <input type="submit" id="submit" name="submit" value="Send" style="float: right;" />
-        <div id="wordcount">0/500</div>
+        <div id="wordcount" class="comment">0/500</div>
       </form>
     </div>
 
