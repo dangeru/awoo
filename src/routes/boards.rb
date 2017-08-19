@@ -201,7 +201,7 @@ module Sinatra
             app.get "/" + path + "/rules/?" do
               erb :rules, :locals => {:rules => settings.config['boards'][path]['rules'], :moderator => is_moderator(path, session), :path => path, :banner => new_banner(path)}
             end
-            app.post "/" + path "/rules/edit/?" do
+            app.post "/" + path + "/rules/edit/?" do
               "#{params[:rules].to_json}"
             end
           end
