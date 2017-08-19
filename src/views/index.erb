@@ -16,7 +16,7 @@
     <br>
     <div id="maincontainer" style="overflow: hidden;">
       <div style="float: left;">
-        <span id="redtext" style="text-decoration: underline;">General</span>
+        <span class="redtext" style="text-decoration: underline;">General</span>
         <% settings.config['boards'].each do |key, array| %>
           <a class="boarda" href="/<%= key %>"><div id="comment"><%= key %></div></a><br>
         <% end %>
