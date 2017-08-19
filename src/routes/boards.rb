@@ -197,8 +197,12 @@ module Sinatra
               erb :thread, :locals => {:path => path, :id => id, :con => con, :banner => new_banner(path), :moderator => is_moderator(path, session)}
             end
 
+            # Rules & Editing rules
             app.get "/" + path + "/rules/?" do
               erb :rules, :locals => {:rules => settings.config['boards'][path]['rules'], :moderator => is_moderator(path, session), :path => path, :banner => new_banner(path)}
+            end
+            app.post "/" + path "/rules/edit/?" do
+              "#{params[:rules].to_json}"
             end
           end
 
