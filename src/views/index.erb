@@ -18,7 +18,7 @@
       <div style="float: left;">
         <span class="redtext" style="text-decoration: underline;">General</span>
         <% settings.config['boards'].each do |key, array| %>
-          <a class="boarda" href="/<%= key %>"><div id="comment"><%= key %></div></a><br>
+          <a class="boarda" href="/<%= key %>"><div id="comment"><%= settings.config['boards'][key]['desc'] %></div></a>
         <% end %>
       </div>
     </div>
