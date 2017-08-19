@@ -203,7 +203,7 @@ module Sinatra
             end
             app.post "/" + path + "/rules/edit/?" do
               if is_moderator(path, session)
-                settings.config['boards'][path]['rules'] = Sanitize.clean(params[:rules]).to_json
+                settings.config['boards'][path]['rules'] = Sanitize.clean(params[:rules])
                 File.open("config.json", "w") do |f|
                   f.write(JSON.pretty_generate(settings.config))
                 end
