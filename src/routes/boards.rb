@@ -362,7 +362,7 @@ module Sinatra
               old_date = con.escape(params[:date]).split('/')
               date = old_date[2] + "-" + old_date[0] + "-" + old_date[1] + " 00:00:00"
               reason = con.escape(params[:reason])
-              con.query("INSERT INTO bans (ip, board, date_of_unban, reason) VALUES ('#{ip}, '#{board}', '#{date}', '#{reason}')");
+              con.query("INSERT INTO bans (ip, board, date_of_unban, reason) VALUES ('#{ip}', '#{board}', '#{date}', '#{reason}')");
             else
               return [403, "You have no janitor privileges"]
             end
