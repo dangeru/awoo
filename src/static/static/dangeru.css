@@ -42,6 +42,9 @@ a {
     text-align: center;
     font-family: 'CyberpunkWaifus';
 }
+#newthread:hover {
+    text-decoration: underline;
+}
 a:hover {
     text-decoration: underline;
 }
@@ -134,4 +137,3 @@ small {
 .fa-unlock-alt, .fa-lock, .offset-left {
 	margin-left: 6px;
 }
-

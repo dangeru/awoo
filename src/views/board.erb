@@ -33,8 +33,15 @@
 
     <script>
       var newThread = function newThread() {
-        document.getElementById("draggable").style.display = "block";
-        $( "#draggable" ).draggable({containment: "window"});
+        if(document.getElementById("draggable").style.display == "none") {
+          document.getElementById("draggable").style.display = "block";
+          document.getElementById("newthread").innerHTML = "Close";
+          $( "#draggable" ).draggable({containment: "window"});
+        }
+        else {
+          document.getElementById("newthread").innerHTML = "Start a new thread";
+          document.getElementById("draggable").style.display = "none";
+        }
       }
       var ol = function ol() {
         document.getElementById("comment").addEventListener("keyup", function() {
