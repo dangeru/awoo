@@ -15,9 +15,12 @@
     </div>
     <br>
     <div id="maincontainer" style="overflow: hidden;">
-    <% settings.config['boards'].each do |key, array| %>
-      <a class="boarda" href="/<%= key %>"><%= key %></a><br>
-    <% end %>
+      <div style="float: left;">
+        <span id="redtext" style="text-decoration: underline;">General</span>
+        <% settings.config['boards'].each do |key, array| %>
+          <a class="boarda" href="/<%= key %>"><div id="comment"><%= key %></div></a><br>
+        <% end %>
+      </div>
     </div>
     <div style="text-align: center;">
     </div><br>
@@ -26,4 +29,3 @@
     </footer>
   </body>
 </HTML>
-
