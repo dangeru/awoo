@@ -372,7 +372,7 @@ module Sinatra
             if is_moderator(params[:board], session) then
               ip = con.escape(author_ip)
               board = con.escape(params[:board])
-              con.query("DELETE FROM bans WHERE ip = #{ip} AND board = #{board}")
+              con.query("DELETE FROM bans WHERE ip = '#{ip}' AND board = '#{board}'")
               redirect "/ip/#{ip}"
             else
               return [403, "You have no janitor privileges"]
