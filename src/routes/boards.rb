@@ -202,7 +202,15 @@ module Sinatra
               erb :rules, :locals => {:rules => settings.config['boards'][path]['rules'], :moderator => is_moderator(path, session), :path => path, :banner => new_banner(path)}
             end
             app.post "/" + path + "/rules/edit/?" do
-              "#{params[:rules].to_json}"
+              if is_moderator(path, session)
+                settings.config['boards'][path]['rules'] = Sanitize.clean(params[:rules]).to_json
+                File.open("config.json", "w") do |f|
+                  f.write(JSON.pretty_generate(settings.config))
+                end
+                redirect "/" + path + "/rules"
+              else
+                return [403, "You have no janitor priviledges."]
+              end
             end
           end
 
