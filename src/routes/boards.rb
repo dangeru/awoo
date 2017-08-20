@@ -292,7 +292,7 @@ module Sinatra
           # Moderator log in page, (mod_login.erb)
           app.get "/mod" do
             if session[:moderates] then
-              return "You are already logged in and you moderate " + session[:moderates].join(", ") + '&nbsp;<a href="/logout">Log out</a>'
+              return "You are already logged in as "+Sanitize.clean(session[:username])+" and you moderate " + session[:moderates].join(", ") + '&nbsp;<a href="/logout">Log out</a>'
             end
             erb :mod_login, :locals => {:session => session}
           end
@@ -303,6 +303,7 @@ module Sinatra
             config["janitors"].each do |janitor|
               if janitor["username"] == username and janitor["password"] == password then
                 session[:moderates] = janitor["boards"]
+                session[:username] = username
                 return "You are now logged in as " + username + ", you moderate " + janitor["boards"].join(", ") + '&nbsp;<a href="/logout">Log out</a>'
               end
             end
@@ -311,6 +312,7 @@ module Sinatra
           # Logout action, logs the user out and redirects to the mod login page
           app.get "/logout" do
             session[:moderates] = nil
+            session[:username] = nil
             redirect("/mod", 303);
           end
           # Gets all post by IP, and let's you ban it
