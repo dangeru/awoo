@@ -141,7 +141,11 @@ module Sinatra
             banned = get_ban_info(ip, board, con)
             if banned then return banned end
             # Insert the new post into the database
-            con.query("INSERT INTO posts (board, title, content, ip) VALUES ('#{board}', '#{title}', '#{content}', '#{ip}')");
+            unless session[:username] != nil
+              con.query("INSERT INTO posts (board, title, content, ip) VALUES ('#{board}', '#{title}', '#{content}', '#{ip}')");
+            else
+              con.query("INSERT INTO posts (board, title, content, ip, janitor) VALUES ('#{board}', '#{title}', '#{content}', '#{ip}', '#{session[:username]}')");
+            end
             # Then get the ID of the just-inserted post and redirect the user to their new thread
             con.query("SELECT LAST_INSERT_ID() AS id").each do |res|
               href = "/" + params[:board] + "/thread/" + res["id"].to_s
@@ -177,7 +181,11 @@ module Sinatra
               return [400, "That thread has been closed"]
             end
             # Insert the new reply
-            con.query("INSERT INTO posts (board, parent, content, ip, title) VALUES ('#{board}', '#{parent}', '#{content}', '#{ip}', NULL)")
+            unless session[:username] != nil
+              con.query("INSERT INTO posts (board, parent, content, ip, title) VALUES ('#{board}', '#{parent}', '#{content}', '#{ip}', NULL)")
+            else
+              con.query("INSERT INTO posts (board, parent, content, ip, title, janitor) VALUES ('#{board}', '#{parent}', '#{content}', '#{ip}', NULL, '#{session[:username]}')")
+            end
             # Redirect them back to the post they just replied to
             href = "/" + params[:board] + "/thread/" + params[:parent]
             redirect(href, 303);
