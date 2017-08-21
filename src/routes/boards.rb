@@ -103,6 +103,9 @@ def looks_like_spam(con, ip, env, config)
   end
   return result
 end
+def make_con()
+  return Mysql2::Client.new(:host => "localhost", :username => "awoo", :password => "awoo", :database => "awoo")
+end
 
 module Sinatra
   module Awoo
@@ -120,11 +123,9 @@ module Sinatra
             puts "Loading board " + config['boards'][key]['name'] + "..."
             boards << config['boards'][key]['name']
           end
-
-          # Make a new mysql connection
-          con = Mysql2::Client.new(:host => "localhost", :username => "awoo", :password => "awoo", :database => "awoo")
           # Route for making a new OP
           app.post "/post" do
+            con = make_con()
             # OPs have a board, a title and a comment.
             board = con.escape(params[:board])
             title = con.escape(params[:title])
@@ -157,6 +158,7 @@ module Sinatra
           end
           # Route for replying to an OP
           app.post "/reply" do
+            con = make_con()
             # replies have a board, a comment and a parent (the post they're responding to)
             board = con.escape(params[:board])
             content = con.escape(params[:content])
@@ -199,6 +201,7 @@ module Sinatra
           # Each board has a listing of the posts there (board.erb) and a listing of the replies to a give post (thread.erb)
           boards.each do |path|
             app.get "/" + path + "/?" do
+              con = make_con()
               if not params[:page]
                 offset = 0;
               else
@@ -210,6 +213,7 @@ module Sinatra
               erb :board, :locals => {:path => path, :con => con, :offset => offset, :banner => new_banner(path), :moderator => is_moderator(path, session)}
             end
             app.get "/" + path + "/thread/:id" do |id|
+              con = make_con()
               if config["boards"][path]["hidden"] and not session["username"] then
                 return [403, "You have no janitor privileges"]
               end
@@ -224,6 +228,7 @@ module Sinatra
               erb :rules, :locals => {:rules => settings.config['boards'][path]['rules'], :moderator => is_moderator(path, session), :path => path, :banner => new_banner(path)}
             end
             app.post "/" + path + "/rules/edit/?" do
+              con = make_con()
               if is_moderator(path, session)
                 settings.config['boards'][path]['rules'] = Sanitize.clean(params[:rules])
                 File.open("config.json", "w") do |f|
@@ -238,6 +243,7 @@ module Sinatra
 
           # Route for moderators to delete a post (and all of its replies, if it's an OP)
           app.get "/delete/:post_id" do |post_id|
+            con = make_con()
             board = nil;
             escaped = con.escape(post_id.to_i.to_s)
             parent = nil
@@ -273,6 +279,7 @@ module Sinatra
 
           # Legacy api, see https://github.com/naomiEve/dangeruAPI
           app.get "/api.php" do
+            con = make_con()
             limit = params[:ln]
             if not limit
               limit = "10000"
@@ -339,14 +346,17 @@ module Sinatra
           end
           # Gets all post by IP, and let's you ban it
           app.get "/ip/:addr" do |addr|
+            con = make_con()
             erb :ip_list, :locals => {:session => session, :addr => addr, :con => con}
           end
 
           # Either locks or unlocks the specified thread
           app.get "/lock/:post/?" do |post|
+            con = make_con()
             return lock_or_unlock(post, "TRUE", con, session)
           end
           app.get "/unlock/:post/?" do |post|
+            con = make_con()
             return lock_or_unlock(post, "FALSE", con, session)
           end
 
@@ -359,6 +369,7 @@ module Sinatra
             end
           end
           app.post "/move/:post/?" do |post|
+            con = make_con()
             # We allow the move if the person moderates at least one board, no matter which boards
             if session[:moderates] then
               id = con.escape(post.to_i.to_s)
@@ -373,6 +384,7 @@ module Sinatra
 
           # Leave notes on an ip address
           app.post "/ip_note/:addr" do |addr|
+            con = make_con()
             if session[:moderates] == nil then
               return [403, "You have no janitor privileges"]
             end
@@ -384,14 +396,17 @@ module Sinatra
 
           # Sticky / Unsticky posts
           app.get "/sticky/:id/?" do |post_id|
+            con = make_con()
             sticky_unsticky(post_id, "TRUE", con, session)
           end
           app.get "/unsticky/:id/?" do |post_id|
+            con = make_con()
             sticky_unsticky(post_id, "FALSE", con, session)
           end
 
           # Ban / Unban an IP
           app.post "/ban/:ip" do |author_ip|
+            con = make_con()
             if is_moderator(params[:board], session) then
               ip = con.escape(author_ip)
               board = con.escape(params[:board])
@@ -405,6 +420,7 @@ module Sinatra
             end
           end
           app.post "/unban/:ip" do |author_ip|
+            con = make_con()
             if is_moderator(params[:board], session) then
               ip = con.escape(author_ip)
               board = con.escape(params[:board])
