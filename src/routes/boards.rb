@@ -178,6 +178,8 @@ module Sinatra
             end
             # Insert the new reply
             con.query("INSERT INTO posts (board, parent, content, ip, title) VALUES ('#{board}', '#{parent}', '#{content}', '#{ip}', NULL)")
+            # Mark the parent as bumped
+            con.query("UPDATE posts SET last_bumped = CURRENT_TIMESTAMP() WHERE post_id = '#{parent}'");
             # Redirect them back to the post they just replied to
             href = "/" + params[:board] + "/thread/" + params[:parent]
             redirect(href, 303);
