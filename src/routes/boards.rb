@@ -317,7 +317,7 @@ module Sinatra
                 return "You are now logged in as " + username + ", you moderate " + janitor["boards"].join(", ") + '&nbsp;<a href="/logout">Log out</a>'
               end
             end
-            "Check your username and password"
+            [403, "Check your username and password"]
           end
           # Logout action, logs the user out and redirects to the mod login page
           app.get "/logout" do
