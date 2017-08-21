@@ -113,11 +113,11 @@ def try_login(username, password, config, session)
       session[:moderates] = janitor["boards"]
       session[:username] = username
       return "You are now logged in as " + username + ", you moderate " + janitor["boards"].join(", ") + '&nbsp;<a href="/logout">Log out</a>' + 
-        "<script>unitedPropertiesIf.setProperty('logged_in', 'true'); unitedPropertiesIf.closeWindow('false')</script>"
+        "<script>unitedPropertiesIf.setProperty('logged_in', 'true'); unitedPropertiesIf.closeWindow('true')</script>"
     end
   end
   return [403, "Check your username and password" + 
-        "<script>unitedPropertiesIf.setProperty('logged_in', 'false'); unitedPropertiesIf.closeWindow('false')</script>"
+        "<script>unitedPropertiesIf.setProperty('logged_in', 'false'); unitedPropertiesIf.closeWindow('true')</script>"
   ]
 end
 
