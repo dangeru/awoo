@@ -69,6 +69,9 @@
           </script>
         <% end %>
         <div class="comment" id="comment-<%= res["post_id"] %>">
+          <% if res["janitor"] then %>
+            <div class="redtext">##Janitor:<%= res["janitor"] %>##</div><br>
+          <% end %>
           <% if moderator then %>
             <i class="fa fa-trash offset-left" aria-hidden="true" onClick='deletePost(<%= res["post_id"] %>)'></i>
             <a style="display: inline-block; font-size: 50%;" href="/ip/<%= res["ip"] %>"><%= res["ip"] %></a>
