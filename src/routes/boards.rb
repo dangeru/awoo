@@ -112,10 +112,13 @@ def try_login(username, password, config, session)
     if janitor["username"] == username and janitor["password"] == password then
       session[:moderates] = janitor["boards"]
       session[:username] = username
-      return "You are now logged in as " + username + ", you moderate " + janitor["boards"].join(", ") + '&nbsp;<a href="/logout">Log out</a>'
+      return "You are now logged in as " + username + ", you moderate " + janitor["boards"].join(", ") + '&nbsp;<a href="/logout">Log out</a>' + 
+        "<script>unitedPropertiesIf.setProperty('logged_in', 'true'); unitedPropertiesIf.closeWindow('false')</script>"
     end
   end
-  return [403, "Check your username and password"]
+  return [403, "Check your username and password" + 
+        "<script>unitedPropertiesIf.setProperty('logged_in', 'false'); unitedPropertiesIf.closeWindow('false')</script>"
+  ]
 end
 
 
@@ -332,13 +335,13 @@ module Sinatra
 
           # Moderator log in page, (mod_login.erb)
           app.get "/mod" do
-            if session[:moderates] then
-              return "You are already logged in as "+Sanitize.clean(session[:username])+" and you moderate " + session[:moderates].join(", ") + '&nbsp;<a href="/logout">Log out</a>'
-            end
             username = env["HTTP_X_AWOO_USERNAME"]
             password = env["HTTP_X_AWOO_PASSWORD"]
             if username != nil and password != nil
               return try_login(username, password, config, session)
+            end
+            if session[:moderates] then
+              return "You are already logged in as "+Sanitize.clean(session[:username])+" and you moderate " + session[:moderates].join(", ") + '&nbsp;<a href="/logout">Log out</a>'
             end
             erb :mod_login, :locals => {:session => session}
           end
