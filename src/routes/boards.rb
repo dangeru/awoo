@@ -207,11 +207,17 @@ module Sinatra
               erb :board, :locals => {:path => path, :con => con, :offset => offset, :banner => new_banner(path), :moderator => is_moderator(path, session)}
             end
             app.get "/" + path + "/thread/:id" do |id|
+              if config["boards"][path]["hidden"] and not session["username"] then
+                return [403, "You have no janitor privileges"]
+              end
               erb :thread, :locals => {:path => path, :id => id, :con => con, :banner => new_banner(path), :moderator => is_moderator(path, session)}
             end
 
             # Rules & Editing rules
             app.get "/" + path + "/rules/?" do
+              if config["boards"][path]["hidden"] and not session["username"] then
+                return [403, "You have no janitor privileges"]
+              end
               erb :rules, :locals => {:rules => settings.config['boards'][path]['rules'], :moderator => is_moderator(path, session), :path => path, :banner => new_banner(path)}
             end
             app.post "/" + path + "/rules/edit/?" do
