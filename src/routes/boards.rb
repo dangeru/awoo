@@ -186,6 +186,8 @@ module Sinatra
             else
               con.query("INSERT INTO posts (board, parent, content, ip, title, janitor) VALUES ('#{board}', '#{parent}', '#{content}', '#{ip}', NULL, '#{session[:username]}')")
             end
+            # Mark the parent as bumped
+            con.query("UPDATE posts SET last_bumped = CURRENT_TIMESTAMP() WHERE post_id = '#{parent}'");
             # Redirect them back to the post they just replied to
             href = "/" + params[:board] + "/thread/" + params[:parent]
             redirect(href, 303);
