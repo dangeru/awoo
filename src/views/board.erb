@@ -30,7 +30,6 @@
     </style>
     <script src="static/js/jquery-3.2.1.min.js"></script>
     <script src="static/js/jquery-ui.min.js"></script>
-
     <script>
       var newThread = function newThread() {
         if(document.getElementById("draggable").style.display == "none") {
@@ -90,6 +89,9 @@
     <link rel="stylesheet" type="text/css" href="../static/dangeru.css">
     <link rel="stylesheet" type="text/css" href="../static/css/font-awesome.min.css">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:url" content="http://<%= settings.config['hostname']%>/<%= path %>">
+    <meta property="og:title" content="/<%= settings.config['boards'][path]['name'] %>/">
+    <meta property="og:description" content="/<%= settings.config['boards'][path]['desc'] %>/">
     <link rel="shortcut icon" href="static/favicon.ico">
   </head>
   <body onLoad='ol();'>
