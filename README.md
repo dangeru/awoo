@@ -15,5 +15,3 @@ Running `sudo make install` will make a user named `awoo`, copy `src` to `/opt/a
 - Rules for each board
 	- put in the text that Mystery wrote
 	- not assigned (we could just assign it to Mystery after the site launches)
-- images on burg
-	- not assigned
