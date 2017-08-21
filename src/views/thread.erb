@@ -3,10 +3,13 @@
   <head>
     <link rel="stylesheet" type="text/css" href="../../static/dangeru.css">
     <link rel="stylesheet" type="text/css" href="../../static/css/font-awesome.min.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="shortcut icon" href="static/favicon.ico">
     <title>Thread <%= id %> on danger/<%= path %>/ Loading...</title>
     <script src="/static/common.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:url" content="http://<%= settings.config['hostname']%>/<%= path %>/<%= id %>">
+    <meta property="og:title" content="">
+    <meta property="og:description" content="">
 <style>
 .redtext {
   display: inline-block;
@@ -70,6 +73,8 @@
           <% end %>
           <script>
             document.title = <%= JSON.dump(res["title"]) %> + " - danger/" + <%= JSON.dump(res["board"]) %> + "/";
+            document.getElementsByTagName("meta")[2].setAttribute("content", "<%= res["title"] %>");
+            document.getElementsByTagName("meta")[3].setAttribute("content", "<%= res["content"] %>");
           </script>
         <% end %>
         <% if path == "burg" then %>
