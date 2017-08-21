@@ -73,21 +73,22 @@
             document.title = <%= JSON.dump(res["title"]) %> + " - danger/" + <%= JSON.dump(res["board"]) %> + "/";
           </script>
           <%# I WILL MOVE IT LATER I PROMISE %>
-          <meta property="og:title" content="<%= res["title"] %>">
-          <meta property="og:description" content="<%= res["content"] %>">
-        <% end %>
-        <% if path == "burg" then %>
-          <% if res["content"] == "burg" then %>
-            <img src="/static/burg.jpg" />
-          <% else %>
-            <img src="/static/angryburg.jpg" />
-          <% end %>
-          <% i += 1 %>
-          <% next %>
+          <meta property="og:title" content="<%= Sanitize.clean(res["title"]) %>">
+          <meta property="og:description" content="<%= Sanitize.clean(res["content"]) %>">
         <% end %>
         <div class="comment" id="comment-<%= res["post_id"] %>">
           <% if res["janitor"] then %>
             <div class="redtext">##Janitor:<%= res["janitor"] %>##</div><br>
+          <% end %>
+          <% if path == "burg" then %>
+            <% if res["content"] == "burg" then %>
+              <img src="/static/burg.jpg" />
+            <% else %>
+              <img src="/static/angryburg.jpg" />
+            <% end %>
+            <% i += 1 %>
+            </div> <%# close .comment div %>
+            <% next %>
           <% end %>
           <% if moderator then %>
             <i class="fa fa-trash offset-left" aria-hidden="true" onClick='deletePost(<%= res["post_id"] %>)'></i>
@@ -178,19 +179,21 @@
         <form action='/reply' method='post' style="text-align: center;">
           <input type='text' style='display: none' name='board' id='board' value='<%= path %>' />
           <input type='text' style='display: none' name='parent' id='parent' value='<%= id %>' />
+          <br />
           <%# Janitors of at least one board can capcode on ANY board %>
           <% if session[:username] %>
-            <br />
-            <input type="checkbox" name="capcode" checked />
+            <input type="checkbox" name="capcode" id="capcode" checked />
             <label style="color: white;" for="capcode">Post with capcode?</label>
+            <br />
           <% end %>
           <% if path == "burg" %>
-            <input type="radio" value="burg" id="burg" name="content" /><label style="color: white" for="burg">burg</label><br />
-            <input type="radio" value="angry burg" id="angry_burg" name="content" /><label style="color: white" for="angry_burg">angry burg</label><br />
+            <input type="radio" value="burg" id="burg" name="content" /><label style="color: white" for="burg">burg</label>
+          <br />
+            <input type="radio" value="angry burg" id="angry_burg" name="content" /><label style="color: white" for="angry_burg">angry burg</label>
+            <br />
           <% else %>
             <textarea name='content' style="width: 100%;" placeholder='Reply'></textarea>
           <% end %>
-          <br />
           <input type='submit' value="Submit" style="float: right;" /><br />
         </form>
         <% if moderator %>
