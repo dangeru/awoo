@@ -107,18 +107,19 @@ def make_con()
   return Mysql2::Client.new(:host => "localhost", :username => "awoo", :password => "awoo", :database => "awoo")
 end
 
-def try_login(username, password, config, session)
+def try_login(username, password, config, session, params)
   config["janitors"].each do |janitor|
     if janitor["username"] == username and janitor["password"] == password then
       session[:moderates] = janitor["boards"]
       session[:username] = username
-      return "You are now logged in as " + username + ", you moderate " + janitor["boards"].join(", ") + '&nbsp;<a href="/logout">Log out</a>' + 
-        "<script>unitedPropertiesIf.setProperty('logged_in', 'true'); unitedPropertiesIf.closeWindow('true')</script>"
+      # used by the mobile app
+      if params[:redirect]
+        return redirect(params[:redirect], 303)
+      end
+      return "You are now logged in as " + username + ", you moderate " + janitor["boards"].join(", ") + '&nbsp;<a href="/logout">Log out</a>'
     end
   end
-  return [403, "Check your username and password" + 
-        "<script>unitedPropertiesIf.setProperty('logged_in', 'false'); unitedPropertiesIf.closeWindow('true')</script>"
-  ]
+  return [403, "Check your username and password"]
 end
 
 
@@ -335,11 +336,6 @@ module Sinatra
 
           # Moderator log in page, (mod_login.erb)
           app.get "/mod" do
-            username = env["HTTP_X_AWOO_USERNAME"]
-            password = env["HTTP_X_AWOO_PASSWORD"]
-            if username != nil and password != nil
-              return try_login(username, password, config, session)
-            end
             if session[:moderates] then
               return "You are already logged in as "+Sanitize.clean(session[:username])+" and you moderate " + session[:moderates].join(", ") + '&nbsp;<a href="/logout">Log out</a>'
             end
@@ -349,12 +345,7 @@ module Sinatra
           app.post "/mod" do
             username = params[:username]
             password = params[:password]
-            # used by mobile app
-            if username == nil and password == nil then
-              username = env["HTTP_X_AWOO_USERNAME"]
-              password = env["HTTP_X_AWOO_PASSWORD"]
-            end
-            return try_login(username, password, config, session);
+            return try_login(username, password, config, session, params)
           end
           # Logout action, logs the user out and redirects to the mod login page
           app.get "/logout" do
