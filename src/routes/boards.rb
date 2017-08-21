@@ -133,15 +133,16 @@ module Sinatra
             ip = get_ip(con, request, env);
             if looks_like_spam(con, ip, env, config) then
               return [403, "Flood detected, post discarded"]
-            end
-            if title.length > 500 or content.length > 500 then
+            elsif title.length > 500 or content.length > 500 then
               return [400, "Post too long (over 500 characters)"]
+            elsif config["boards"][board]["hidden"] and not session[:username]
+              return [403, "You have no janitor permissions"]
             end
             # Check if the IP is banned
             banned = get_ban_info(ip, board, con)
             if banned then return banned end
             # Insert the new post into the database
-            unless session[:username] != nil
+            unless params[:capcode] and session[:username]
               con.query("INSERT INTO posts (board, title, content, ip) VALUES ('#{board}', '#{title}', '#{content}', '#{ip}')");
             else
               con.query("INSERT INTO posts (board, title, content, ip, janitor) VALUES ('#{board}', '#{title}', '#{content}', '#{ip}', '#{session[:username]}')");
@@ -179,9 +180,11 @@ module Sinatra
               return [400, "That thread doesn't exist"]
             elsif closed != 0 then
               return [400, "That thread has been closed"]
+            elsif config["boards"][board]["hidden"] and not session[:username]
+              return [403, "You have no janitor permissions"]
             end
             # Insert the new reply
-            unless session[:username] != nil
+            unless params[:capcode] and session[:username]
               con.query("INSERT INTO posts (board, parent, content, ip, title) VALUES ('#{board}', '#{parent}', '#{content}', '#{ip}', NULL)")
             else
               con.query("INSERT INTO posts (board, parent, content, ip, title, janitor) VALUES ('#{board}', '#{parent}', '#{content}', '#{ip}', NULL, '#{session[:username]}')")
@@ -201,14 +204,23 @@ module Sinatra
               else
                 offset = params[:page].to_i * 20;
               end
+              if config["boards"][path]["hidden"] and not session["username"] then
+                return [403, "You have no janitor privileges"]
+              end
               erb :board, :locals => {:path => path, :con => con, :offset => offset, :banner => new_banner(path), :moderator => is_moderator(path, session)}
             end
             app.get "/" + path + "/thread/:id" do |id|
+              if config["boards"][path]["hidden"] and not session["username"] then
+                return [403, "You have no janitor privileges"]
+              end
               erb :thread, :locals => {:path => path, :id => id, :con => con, :banner => new_banner(path), :moderator => is_moderator(path, session)}
             end
 
             # Rules & Editing rules
             app.get "/" + path + "/rules/?" do
+              if config["boards"][path]["hidden"] and not session["username"] then
+                return [403, "You have no janitor privileges"]
+              end
               erb :rules, :locals => {:rules => settings.config['boards'][path]['rules'], :moderator => is_moderator(path, session), :path => path, :banner => new_banner(path)}
             end
             app.post "/" + path + "/rules/edit/?" do
@@ -219,7 +231,7 @@ module Sinatra
                 end
                 redirect "/" + path + "/rules"
               else
-                return [403, "You have no janitor priviledges."]
+                return [403, "You have no janitor privileges."]
               end
             end
           end
@@ -343,7 +355,7 @@ module Sinatra
             if session[:moderates] then
               erb :move, :locals => {:post => post, :boards => boards}
             else
-              return [403, "You have no janitor priviledges."]
+              return [403, "You have no janitor privileges."]
             end
           end
           app.post "/move/:post/?" do |post|

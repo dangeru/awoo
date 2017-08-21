@@ -94,7 +94,7 @@
   </head>
   <body onLoad='ol();'>
     <div id="boardcontainer">
-      <% settings.config['boards'].each do |key, array| %>
+      <% settings.config['boards'].select do |key, val| session[:username] or not val["hidden"] end.each do |key, array| %>
         <a style='display: inline-block;' class="boarda" href="/<%= key %>">/<%= key %>/</a>
       <% end %>
     </div>
@@ -110,6 +110,13 @@
         <input type="text" name="title" id="title" placeholder="Title" />
         <div class="comment">Comment</div>
         <textarea name="comment" id="comment"></textarea>
+          <%# Janitors of at least one board can capcode on ANY board %>
+          <% if session[:username] %>
+            <br />
+            <input type="checkbox" name="capcode" checked />
+            <label style="color: white;" for="capcode">Post with capcode?</label>
+            <br />
+          <% end %>
         <input type="submit" id="submit" name="submit" value="Send" style="float: right;" /><br />
         <div id="wordcount" class="comment" style="float: left;">0/500</div><br />
       </form>
