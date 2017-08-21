@@ -181,7 +181,7 @@
           <%# Janitors of at least one board can capcode on ANY board %>
           <% if session[:username] %>
             <br />
-            <input type="checkbox" name="capcode" checked />
+            <input type="checkbox" name="capcode" id="capcode" checked />
             <label style="color: white;" for="capcode">Post with capcode?</label>
           <% end %>
           <% if path == "burg" %>
