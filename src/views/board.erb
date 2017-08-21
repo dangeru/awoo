@@ -106,10 +106,15 @@
     <div id="draggable" class="ui-widget-content">
       <form action="/post" method="post" name="newthread">
         <input style='display: none;' type='text' name='board' id='board' value='<%= path %>' />
-        <div class="comment">Title</div>
-        <input type="text" name="title" id="title" placeholder="Title" />
-        <div class="comment">Comment</div>
-        <textarea name="comment" id="comment"></textarea>
+        <% if path == "burg" %>
+          <input style='display: none;' type='text' name='title' id='title' value='burg' />
+          <input type="radio" value="burg" id="burg" name="comment" /><label style="color: white" for="burg">burg</label><br />
+          <input type="radio" value="angry burg" id="angry_burg" name="comment" /><label style="color: white" for="angry_burg">angry burg</label><br />
+        <% else %>
+          <div class="comment">Title</div>
+          <input type="text" name="title" id="title" placeholder="Title" />
+          <div class="comment">Comment</div>
+          <textarea name="comment" id="comment"></textarea>
           <%# Janitors of at least one board can capcode on ANY board %>
           <% if session[:username] %>
             <br />
@@ -117,8 +122,9 @@
             <label style="color: white;" for="capcode">Post with capcode?</label>
             <br />
           <% end %>
+          <div id="wordcount" class="comment" style="float: left;">0/500</div><br />
+        <% end %>
         <input type="submit" id="submit" name="submit" value="Send" style="float: right;" /><br />
-        <div id="wordcount" class="comment" style="float: left;">0/500</div><br />
       </form>
     </div>
 
@@ -128,6 +134,7 @@
       <% extras = "" %>
       <% if res["is_locked"] == 1 then extras += 'color: grey;' end %>
       <% if res["sticky"] == 1 then extras += 'color: #006400;' end %>
+      <% if path == "burg" then res["title"] = "burg" end %>
       <a style="display: inline-block; <%= extras %>" data-replies="<%= res["number_of_replies"] %>" href="/<%= path %>/thread/<%= res["post_id"] %>"><%= Sanitize.clean(res["title"]) %></a>
       <% if moderator %>
         <% if res["is_locked"] == 0 %>

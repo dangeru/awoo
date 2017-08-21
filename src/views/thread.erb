@@ -63,7 +63,11 @@
       <% con.query("SELECT * FROM posts WHERE parent = #{id.to_i} OR post_id = #{id.to_i} ORDER BY post_id").each do |res| %>
         <% if i == 0 then %>
           <% is_locked = res["is_locked"] != 0 %>
-          <div id="title"><%= Sanitize.clean(res["title"]) %></div>
+          <% if path == "burg" then %>
+            <div id="title">burg</div>
+          <% else %>
+            <div id="title"><%= Sanitize.clean(res["title"]) %></div>
+          <% end %>
           <script>
             document.title = <%= JSON.dump(res["title"]) %> + " - danger/" + <%= JSON.dump(res["board"]) %> + "/";
           </script>
@@ -74,6 +78,7 @@
           <% else %>
             <img src="/static/angryburg.jpg" />
           <% end %>
+          <% i += 1 %>
           <% next %>
         <% end %>
         <div class="comment" id="comment-<%= res["post_id"] %>">
@@ -175,7 +180,12 @@
             <input type="checkbox" name="capcode" checked />
             <label style="color: white;" for="capcode">Post with capcode?</label>
           <% end %>
-          <textarea name='content' style="width: 100%;" placeholder='Reply'></textarea>
+          <% if path == "burg" %>
+            <input type="radio" value="burg" id="burg" name="content" /><label style="color: white" for="burg">burg</label><br />
+            <input type="radio" value="angry burg" id="angry_burg" name="content" /><label style="color: white" for="angry_burg">angry burg</label><br />
+          <% else %>
+            <textarea name='content' style="width: 100%;" placeholder='Reply'></textarea>
+          <% end %>
           <br />
           <input type='submit' value="Submit" style="float: right;" /><br />
         </form>
