@@ -68,6 +68,14 @@
             document.title = <%= JSON.dump(res["title"]) %> + " - danger/" + <%= JSON.dump(res["board"]) %> + "/";
           </script>
         <% end %>
+        <% if path == "burg" then %>
+          <% if res["content"] == "burg" then %>
+            <img src="/static/burg.jpg" />
+          <% else %>
+            <img src="/static/angryburg.jpg" />
+          <% end %>
+          <% next %>
+        <% end %>
         <div class="comment" id="comment-<%= res["post_id"] %>">
           <% if res["janitor"] then %>
             <div class="redtext">##Janitor:<%= res["janitor"] %>##</div><br>
@@ -161,6 +169,12 @@
         <form action='/reply' method='post' style="text-align: center;">
           <input type='text' style='display: none' name='board' id='board' value='<%= path %>' />
           <input type='text' style='display: none' name='parent' id='parent' value='<%= id %>' />
+          <%# Janitors of at least one board can capcode on ANY board %>
+          <% if session[:username] %>
+            <br />
+            <input type="checkbox" name="capcode" checked />
+            <label style="color: white;" for="capcode">Post with capcode?</label>
+          <% end %>
           <textarea name='content' style="width: 100%;" placeholder='Reply'></textarea>
           <br />
           <input type='submit' value="Submit" style="float: right;" /><br />
