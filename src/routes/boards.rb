@@ -201,6 +201,9 @@ module Sinatra
               else
                 offset = params[:page].to_i * 20;
               end
+              if config["boards"][path]["hidden"] and not session["username"] then
+                return [403, "You have no janitor privileges"]
+              end
               erb :board, :locals => {:path => path, :con => con, :offset => offset, :banner => new_banner(path), :moderator => is_moderator(path, session)}
             end
             app.get "/" + path + "/thread/:id" do |id|
@@ -219,7 +222,7 @@ module Sinatra
                 end
                 redirect "/" + path + "/rules"
               else
-                return [403, "You have no janitor priviledges."]
+                return [403, "You have no janitor privileges."]
               end
             end
           end
@@ -343,7 +346,7 @@ module Sinatra
             if session[:moderates] then
               erb :move, :locals => {:post => post, :boards => boards}
             else
-              return [403, "You have no janitor priviledges."]
+              return [403, "You have no janitor privileges."]
             end
           end
           app.post "/move/:post/?" do |post|

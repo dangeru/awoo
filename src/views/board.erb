@@ -94,7 +94,7 @@
   </head>
   <body onLoad='ol();'>
     <div id="boardcontainer">
-      <% settings.config['boards'].each do |key, array| %>
+      <% settings.config['boards'].select do |key, val| session[:username] or not val["hidden"] end.each do |key, array| %>
         <a style='display: inline-block;' class="boarda" href="/<%= key %>">/<%= key %>/</a>
       <% end %>
     </div>
