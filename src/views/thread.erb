@@ -71,6 +71,7 @@
                 btn.innerText = "Watch thread";
                 btn.addEventListener("click", function() {
                   unitedPropertiesIf.setProperty("watched_threads", JSON.stringify(watched_threads.concat(id)));
+                  unitedPropertiesIf.threadWatcherRefreshAll();
                   window.location.reload(); // hack to change the text on the button from "Watch" to "Unwatch Thread"
                 });
               }
