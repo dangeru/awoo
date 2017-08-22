@@ -120,7 +120,7 @@ def make_metadata_from_hash(res)
   if is_op
     obj[:title] = res["title"]
     obj[:last_bumped] = res["last_bumped"].strftime("%s").to_i;
-    obj[:is_locked] = res["is_locked"]
+    obj[:is_locked] = res["is_locked"] != 0
     obj[:number_of_replies] = res["number_of_replies"]
     obj[:sticky] = res["sticky"] != 0
   else
