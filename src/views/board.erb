@@ -83,6 +83,19 @@
         var unhover = function() {
           document.getElementById("hover").style.display = "none";
         }
+        if (typeof(unitedPropertiesIf) != "undefined" && unitedPropertiesIf.getProperty("userscript").toUpperCase() == "TRUE") {
+          var s = document.createElement("script")
+          s.src = "https://github.com/nilesr/awoo-catalog/raw/master/awoo-catalog.user.js";
+          window.GM_getValue = function(a, b) {
+            res = unitedPropertiesIf.getProperty(a);
+            if (res == "") return b;
+            return a;
+          }
+          window.GM_setValue = function(a, b) {
+            unitedPropertiesIf.setProperty(a, b);
+          }
+          document.getElementsByTagName("head")[0].appendChild(s);
+        }
       }
     </script>
     <script src="/static/common.js"></script>
