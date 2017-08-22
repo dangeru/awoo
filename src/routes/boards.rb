@@ -8,6 +8,8 @@
 require 'mysql2'
 require 'sanitize'
 
+API = "/api/v2"
+
 # Attempts to pick a random banner for the given board
 def new_banner(board)
   if board.index("..") != nil
@@ -105,6 +107,34 @@ def looks_like_spam(con, ip, env, config)
 end
 def make_con()
   return Mysql2::Client.new(:host => "localhost", :username => "awoo", :password => "awoo", :database => "awoo")
+end
+def make_metadata_from_hash(res)
+  is_op = res["parent"] == nil
+  obj = {:board => res["board"], :is_op => is_op, :comment => res["content"], :date_posted => res["date_posted"].strftime('%s').to_i}
+  if is_moderator(res[:board], session) then
+    obj[:ip] = res["ip"]
+  end
+  if res["janitor"] != nil then
+    obj[:capcode] = res["janitor"]
+  end
+  if is_op
+    obj[:title] = res["title"]
+    obj[:last_bumped] = res["last_bumped"].strftime("%s").to_i;
+    obj[:is_locked] = res["is_locked"]
+    obj[:number_of_replies] = res["number_of_replies"]
+    obj[:sticky] = res["sticky"] != 0
+  else
+    obj[:parent] = res["parent"]
+  end
+  return obj;
+end
+def make_metadata(con, id)
+  id = id.to_i.to_s;
+  result = [400, "No results found"]
+  con.query("SELECT *, (SELECT COUNT(*) FROM posts WHERE parent = #{id}) + 1 AS number_of_replies FROM posts WHERE post_id = #{id}").each do |hash|
+    result = make_metadata_from_hash(hash)
+  end
+  return result
 end
 
 def try_login(username, password, config, session, params)
@@ -438,6 +468,32 @@ module Sinatra
             else
               return [403, "You have no janitor privileges"]
             end
+          end
+          app.get API + "/boards" do
+            JSON.dump(config["boards"].select do |key, value| session[:username] or not value["hidden"] end.map do |key, value| key end)
+          end
+          app.get API + "/board/:board" do |board|
+            results = []
+            page = 0
+            if params[:page] then page = params[:page].to_i end
+            offset = page * 20;
+            con = make_con()
+            con.query("SELECT *, COALESCE(parent, post_id) AS effective_parent, COUNT(*) AS number_of_replies FROM posts WHERE board = '#{con.escape(board)}' GROUP BY effective_parent ORDER BY (-1 * sticky), last_bumped DESC LIMIT 20 OFFSET #{offset.to_s};").each do |res|
+              results.push(make_metadata_from_hash(res))
+            end
+            return JSON.dump(results);
+          end
+          app.get API + "/thread/:id/metadata" do |id|
+            return JSON.dump(make_metadata(make_con(), id))
+          end
+          app.get API + "/thread/:id/replies" do |id|
+            con = make_con()
+            results = []
+            id = id.to_i.to_s
+            con.query("SELECT *, COUNT(*) AS number_of_replies FROM posts WHERE COALESCE(parent, post_id) = #{id}").each do |res|
+              results.push(make_metadata_from_hash(res));
+            end
+            return JSON.dump(results)
           end
         end
       end
