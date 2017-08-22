@@ -51,6 +51,9 @@
             if (window.location.hash.indexOf("comment-") == 1) {
               select(window.location.hash.split("comment-")[1]);
             }
+            if (typeof(unitedPropertiesIf) != "undefined") {
+              unitedPropertiesIf.setProperty(board + ":" + <%= id %>, total_number_of_posts.toString());
+            }
           }
         </script>
   </head>
@@ -58,8 +61,8 @@
     <div id="sitecorner">
       <a href="/<%= path %>"><img src="<%= banner %>" alt="danger/u/"></a>
       <span id="hover" class="comment" style="display: none"></span>
-      <%= last_date_modified = Time.new 0 %>
-      <%= i = 0 %>
+      <% last_date_modified = Time.new 0 %>
+      <% i = 0 %>
       <% is_locked = false %>
       <% con.query("SELECT * FROM posts WHERE parent = #{id.to_i} OR post_id = #{id.to_i} ORDER BY post_id").each do |res| %>
         <% if i == 0 then %>
@@ -70,7 +73,8 @@
             <div id="title"><%= Sanitize.clean(res["title"]) %></div>
           <% end %>
           <script>
-            document.title = <%= JSON.dump(res["title"]) %> + " - danger/" + <%= JSON.dump(res["board"]) %> + "/";
+            var board = <%= JSON.dump(res["board"]) %>;
+            document.title = <%= JSON.dump(res["title"]) %> + " - danger/" + board + "/";
           </script>
           <%# I WILL MOVE IT LATER I PROMISE %>
           <meta property="og:title" content="<%= Sanitize.clean(res["title"]) %>">
@@ -157,6 +161,9 @@
 
       <div style="font-size: 11px;" class="comment">
         Total number of posts: <%= i.to_s %>,
+        <script>
+          var total_number_of_posts = <%= i.to_s %>;
+        </script>
         last modified on:
         <span id='date_last_modified'>
           <%= last_date_modified.strftime '%c' %>
