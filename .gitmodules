@@ -1,0 +1,3 @@
+[submodule "src/static/static/awoo-catalog"]
+	path = src/static/static/awoo-catalog
+	url = https://github.com/nilesr/awoo-catalog

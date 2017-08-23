@@ -83,9 +83,18 @@
         var unhover = function() {
           document.getElementById("hover").style.display = "none";
         }
+        // TEST
+        if (typeof(unitedPropertiesIf) != "undefined") {
+          document.getElementById("sitecorner").style.margin = "0";
+          document.getElementById("sitecorner").style.border = "none";
+          document.getElementById("sitecorner").style.width = "100%";
+          document.getElementById("sitecorner").style.padding = "0";
+          document.getElementsByTagName("img")[0].style.width = "100%";
+          document.getElementsByTagName("img")[0].style.height = "auto";
+        }
         if (typeof(unitedPropertiesIf) != "undefined" && unitedPropertiesIf.getProperty("userscript").toUpperCase() == "TRUE") {
           var s = document.createElement("script")
-          s.src = "https://github.com/nilesr/awoo-catalog/raw/master/awoo-catalog.user.js";
+          s.src = "/static/awoo-catalog/awoo-catalog.user.js"
           window.GM_getValue = function(a, b) {
             res = unitedPropertiesIf.getProperty(a);
             if (res == "") return b;
@@ -118,7 +127,7 @@
     <a href="javascript:location.reload();"><img src="<%= banner %>" alt="danger/u/"></a>
     <div id="boardtitle">/<%= settings.config['boards'][path]['name'] %>/ - <%= settings.config['boards'][path]['desc'] %></div>
     <span onClick='newThread()' id="newthread">Start a new thread</span>
-    <div id="draggable" class="ui-widget-content">
+    <div id="draggable" style="display: none" class="ui-widget-content">
       <form action="/post" method="post" name="newthread">
         <input style='display: none;' type='text' name='board' id='board' value='<%= path %>' />
         <% if path == "burg" %>
@@ -145,28 +154,28 @@
 
     <hr>
     <%# Note that we COULD order by `(-1 * sticky), (SELECT MAX(p2.post_id) FROM posts p2 WHERE parent = post_id)` and we wouldn't need the extra `last_bumped` database column, but it would be more cpu/disk work on the database %>
-    <% con.query("SELECT post_id, title, ip, is_locked, sticky, COALESCE(parent, post_id) AS effective_parent, COUNT(*) AS number_of_replies FROM posts WHERE board = '#{con.escape(path)}' GROUP BY effective_parent ORDER BY (-1 * sticky), last_bumped DESC LIMIT 20 OFFSET #{offset.to_s};").each do |res| %>
+    <% get_board(path, params).each do |res| %>
       <% extras = "" %>
-      <% if res["is_locked"] == 1 then extras += 'color: grey;' end %>
-      <% if res["sticky"] == 1 then extras += 'color: #006400;' end %>
-      <% if path == "burg" then res["title"] = "burg" end %>
-      <a style="display: inline-block; <%= extras %>" data-replies="<%= res["number_of_replies"] %>" href="/<%= path %>/thread/<%= res["post_id"] %>"><%= Sanitize.clean(res["title"]) %></a>
+      <% if res[:is_locked] then extras += 'color: grey;' end %>
+      <% if res[:sticky] then extras += 'color: #006400;' end %>
+      <% if path == "burg" then res[:title] = "burg" end %>
+      <a style="display: inline-block; <%= extras %>" data-replies="<%= res[:number_of_replies] %>" href="/<%= path %>/thread/<%= res[:post_id] %>"><%= Sanitize.clean(res[:title]) %></a>
       <% if moderator %>
-        <% if res["is_locked"] == 0 %>
-          <i class="fa fa-unlock-alt" aria-hidden="true" onClick='lockPost(<%= res["post_id"] %>)'></i>
+        <% if res[:is_locked] %>
+          <i class="fa fa-unlock-alt" aria-hidden="true" onClick='lockPost(<%= res[:post_id] %>)'></i>
         <% else %>
-          <i class="fa fa-lock" aria-hidden="true" onClick='unlockPost(<%= res["post_id"] %>)'></i>
+          <i class="fa fa-lock" aria-hidden="true" onClick='unlockPost(<%= res[:post_id] %>)'></i>
         <% end %>
 
         <%# Sticky / Unsticky post %>
-        <% if res["sticky"] == 0 %>
-          <i class="fa fa-thumb-tack" aria-hidden="true" onClick='stickyPost(<%= res["post_id"] %>)'></i>
+        <% if res[:sticky] == 0 %>
+          <i class="fa fa-thumb-tack" aria-hidden="true" onClick='stickyPost(<%= res[:post_id] %>)'></i>
         <% else %>
-          <i class="fa fa-ban" aria-hidden="true" onClick='unstickyPost(<%= res["post_id"] %>)'></i>
+          <i class="fa fa-ban" aria-hidden="true" onClick='unstickyPost(<%= res[:post_id] %>)'></i>
         <% end %>
-        <i class="fa fa-trash" aria-hidden="true" onClick='deletePost(<%= res["post_id"] %>)'></i>
-        <i class="fa fa-refresh" aria-hidden="true" onClick="window.location.replace('/move/<%= res['post_id'] %>');"></i>
-        <a style="display: inline-block; font-size: 50%;" href="/ip/<%= res["ip"] %>"><%= res["ip"] %></a>
+        <i class="fa fa-trash" aria-hidden="true" onClick='deletePost(<%= res[:post_id] %>)'></i>
+        <i class="fa fa-refresh" aria-hidden="true" onClick="window.location.replace('/move/<%= res[:post_id] %>');"></i>
+        <a style="display: inline-block; font-size: 50%;" href="/ip/<%= res[:ip] %>"><%= res[:ip] %></a>
       <% end %>
       <br />
     <% end %>
