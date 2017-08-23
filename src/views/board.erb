@@ -36,6 +36,7 @@
           document.getElementById("draggable").style.display = "block";
           document.getElementById("newthread").innerHTML = "Close";
           $( "#draggable" ).draggable({containment: "window"});
+          document.getElementById("title").style.width = document.getElementById("comment").clientWidth.toString() + "px";
         }
         else {
           document.getElementById("newthread").innerHTML = "Start a new thread";
@@ -91,6 +92,7 @@
           document.getElementById("sitecorner").style.padding = "0";
           document.getElementsByTagName("img")[0].style.width = "100%";
           document.getElementsByTagName("img")[0].style.height = "auto";
+          document.getElementById("draggable").style.width = "auto";
         }
         if (typeof(unitedPropertiesIf) != "undefined" && unitedPropertiesIf.getProperty("userscript").toUpperCase() == "TRUE") {
           var s = document.createElement("script")

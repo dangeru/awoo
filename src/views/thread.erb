@@ -63,28 +63,6 @@
             if (typeof(unitedPropertiesIf) != "undefined") {
               var id = <%= id %>
               unitedPropertiesIf.setProperty(board + ":" + id, total_number_of_posts.toString());
-              var btn = document.createElement("button");
-              if (unitedPropertiesIf.getProperty("userscript").toUpperCase() != "TRUE") return;
-              var watched_threads = unitedPropertiesIf.getProperty("watched_threads")
-              if (watched_threads.trim().length == 0) {
-                watched_threads = [];
-              } else {
-                watched_threads = JSON.parse(watched_threads);
-              }
-              if (watched_threads.indexOf(id) >= 0) {
-                btn.innerText = "Unwatch thread";
-                btn.addEventListener("click", function() {
-                  unitedPropertiesIf.toast("Not implemented yet, sorry. You're watching this thread forever.")
-                });
-              } else {
-                btn.innerText = "Watch thread";
-                btn.addEventListener("click", function() {
-                  unitedPropertiesIf.setProperty("watched_threads", JSON.stringify(watched_threads.concat(id)));
-                  unitedPropertiesIf.threadWatcherRefreshAll();
-                  window.location.reload(); // hack to change the text on the button from "Watch" to "Unwatch Thread"
-                });
-              }
-              document.getElementById("sitecorner").appendChild(btn);
             }
           }
           var submit_form = function submit_form(form, route) {
