@@ -84,7 +84,7 @@
     <div id="sitecorner">
       <a href="/<%= path %>"><img src="<%= banner %>" alt="danger/u/"></a>
       <span id="hover" class="comment" style="display: none"></span>
-      <% last_date_modified = Time.new 0 %>
+      <% last_date_modified = 0 %>
       <% i = 0 %>
       <% is_locked = false %>
       <% #con.query("SELECT * FROM posts WHERE parent = #{id.to_i} OR post_id = #{id.to_i} ORDER BY post_id").each do |res| %>
