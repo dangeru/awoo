@@ -87,28 +87,29 @@
       <% last_date_modified = Time.new 0 %>
       <% i = 0 %>
       <% is_locked = false %>
-      <% con.query("SELECT * FROM posts WHERE parent = #{id.to_i} OR post_id = #{id.to_i} ORDER BY post_id").each do |res| %>
+      <% #con.query("SELECT * FROM posts WHERE parent = #{id.to_i} OR post_id = #{id.to_i} ORDER BY post_id").each do |res| %>
+      <% get_thread_replies(id.to_i.to_s).each do |res| %>
         <% if i == 0 then %>
-          <% is_locked = res["is_locked"] != 0 %>
+          <% is_locked = res[:is_locked] %>
           <% if path == "burg" then %>
             <div id="title">burg</div>
           <% else %>
-            <div id="title"><%= Sanitize.clean(res["title"]) %></div>
+            <div id="title"><%= Sanitize.clean(res[:title]) %></div>
           <% end %>
           <script>
-            var board = <%= JSON.dump(res["board"]) %>;
-            document.title = <%= JSON.dump(res["title"]) %> + " - danger/" + board + "/";
+            var board = <%= JSON.dump(res[:board]) %>;
+            document.title = <%= JSON.dump(res[:title]) %> + " - danger/" + board + "/";
           </script>
           <%# I WILL MOVE IT LATER I PROMISE %>
-          <meta property="og:title" content="<%= Sanitize.clean(res["title"]) %>">
-          <meta property="og:description" content="<%= Sanitize.clean(res["content"]) %>">
+          <meta property="og:title" content="<%= Sanitize.clean(res[:title]) %>">
+          <meta property="og:description" content="<%= Sanitize.clean(res[:comment]) %>">
         <% end %>
-        <div class="comment" id="comment-<%= res["post_id"] %>">
-          <% if res["janitor"] then %>
-            <div class="redtext">##Janitor:<%= res["janitor"] %>##</div><br>
+        <div class="comment" id="comment-<%= res[:post_id] %>">
+          <% if res[:janitor] then %>
+            <div class="redtext">##Janitor:<%= res[:janitor] %>##</div><br>
           <% end %>
           <% if path == "burg" then %>
-            <% if res["content"] == "burg" then %>
+            <% if res[:comment] == "burg" then %>
               <img src="/static/burg.jpg" />
             <% else %>
               <img src="/static/angryburg.jpg" />
@@ -118,11 +119,11 @@
             <% next %>
           <% end %>
           <% if moderator then %>
-            <i class="fa fa-trash offset-left" aria-hidden="true" onClick='deletePost(<%= res["post_id"] %>)'></i>
-            <a style="display: inline-block; font-size: 50%;" href="/ip/<%= res["ip"] %>"><%= res["ip"] %></a>
+            <i class="fa fa-trash offset-left" aria-hidden="true" onClick='deletePost(<%= res[:post_id] %>)'></i>
+            <a style="display: inline-block; font-size: 50%;" href="/ip/<%= res[:ip] %>"><%= res[:ip] %></a>
           <% end %>
           |
-          <% res["content"].split("\n").each do |line| %>
+          <% res[:comment].split("\n").each do |line| %>
             <% line = line.chomp %>
             <%
               consecutive = 1
@@ -139,7 +140,7 @@
                     target = x.split(" ")[0].split("/")
                     if target.length == 1 then
                       # it's in the format >>1234
-                      %><a class="redtext" onMouseOver="hover(<%= target[0].to_i.to_s %>, <%= res["post_id"] %>)" onMouseOut="unhover()" onClick="select(<%= target[0].to_i.to_s %>)">&gt;<%= Sanitize.clean(x) %></a><%
+                      %><a class="redtext" onMouseOver="hover(<%= target[0].to_i.to_s %>, <%= res[:post_id] %>)" onMouseOut="unhover()" onClick="select(<%= target[0].to_i.to_s %>)">&gt;<%= Sanitize.clean(x) %></a><%
                     else
                       # it's in the format >>/board/1234, so extract `board` and `1234` and make the link
                       target_board = Sanitize.clean(target[1]).gsub("\"", "")
@@ -178,7 +179,7 @@
           <% end %>
         </div>
         <br />
-        <% last_date_modified = res["date_posted"] %>
+        <% last_date_modified = res[:date_posted] %>
         <% i += 1 %>
       <% end %>
 
@@ -189,11 +190,11 @@
         </script>
         last modified on:
         <span id='date_last_modified'>
-          <%= last_date_modified.strftime '%c' %>
+          <%= Time.new(last_date_modified).strftime '%c' %>
         </span>
       </div>
       <script>
-        var d = new Date(parseInt(<%= JSON.dump(last_date_modified.strftime '%s') %> + "000"));
+        var d = new Date(parseInt(<%= JSON.dump(last_date_modified.to_s) %> + "000"));
         document.getElementById("date_last_modified").innerHTML = d.toString();
       </script>
       <br />

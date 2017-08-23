@@ -10,6 +10,10 @@ require 'sanitize'
 
 API = "/api/v2"
 
+def query(con, stmt, *args)
+  return con.prepare(stmt).execute(*args)
+end
+
 # Attempts to pick a random banner for the given board
 def new_banner(board)
   if board.index("..") != nil
@@ -28,7 +32,7 @@ end
 
 # this function tries to get the IP from the request, and if we're behind a reverse proxy it tries to get it from the environment variables
 def get_ip(con, request, env)
-  ip = con.escape(request.ip)
+  ip = request.ip
   if ip == "127.0.0.1"
     ip = env["HTTP_X_FORWARDED_FOR"]
   end
@@ -46,8 +50,8 @@ end
 
 def lock_or_unlock(post, bool, con, session)
   board = nil
-  escaped = con.escape(post.to_i.to_s)
-  con.query("SELECT board FROM posts WHERE post_id = #{escaped}").each do |res|
+  post = post.to_i
+  query(con, "SELECT board FROM posts WHERE post_id = ?", post).each do |res|
     board = res["board"]
   end
   if board == nil then
@@ -56,20 +60,19 @@ def lock_or_unlock(post, bool, con, session)
   if not is_moderator(board, session) then
     return [403, "You do not moderate " + board]
   end
-  con.query("UPDATE posts SET is_locked = #{con.escape(bool)} WHERE post_id = #{escaped}")
-  href = "/" + board + "/thread/" + escaped
+  query(con, "UPDATE posts SET is_locked = ? WHERE post_id = ?", bool, post)
+  href = "/" + board + "/thread/" + post.to_s
   return redirect(href, 303);
 end
 
 def sticky_unsticky(id, setting, con, session)
   board = nil
-  id = con.escape(id.to_i.to_s)
-  con.query("SELECT board FROM posts WHERE post_id = #{id}").each do |res|
+  id = id.to_i
+  query(con, "SELECT board FROM posts WHERE post_id = ?", id).each do |res|
     board = res["board"]
   end
   if is_moderator(board, session) then
-    id = con.escape(id)
-    con.query("UPDATE posts SET sticky = #{setting} WHERE post_id = #{id}")
+    query(con, "UPDATE posts SET sticky = ? WHERE post_id = ?", setting, id)
     return redirect("/" + board + "/thread/" + id, 303)
   else
     return [403, "You have no janitor privileges."]
@@ -80,9 +83,7 @@ def get_ban_info(ip, board, con)
   if ip == nil then # fix for connecting from 127.0.0.1 when not behind a reverse proxy
     return nil
   end
-  ip = con.escape(ip)
-  board = con.escape(board)
-  con.query("SELECT date_of_unban, reason FROM bans WHERE ip = '#{ip}' AND board = '#{board}' AND date_of_unban > CURRENT_TIMESTAMP()").each do |res|
+  query(con, "SELECT date_of_unban, reason FROM bans WHERE ip = ? AND board = ? AND date_of_unban > CURRENT_TIMESTAMP()", ip, board).each do |res|
     reason = Sanitize.clean(res["reason"])
     date_of_unban = Sanitize.clean(res["date_of_unban"])
     return [403, "You are banned. Reason given: #{reason}. Expiration: #{date_of_unban}"]
@@ -96,7 +97,7 @@ end
 def looks_like_spam(con, ip, env, config)
   # if the user has never posted, the block in con.query.each won't be run, so by default it's not spam
   result = false
-  con.query("SELECT COUNT(*) AS count FROM posts WHERE ip = '#{ip}' AND UNIX_TIMESTAMP(date_posted) > #{Time.new.strftime('%s').to_i - config["period_length"]}").each do |res|
+  query(con, "SELECT COUNT(*) AS count FROM posts WHERE ip = ? AND UNIX_TIMESTAMP(date_posted) > ?", ip, Time.new.strftime('%s').to_i - config["period_length"]).each do |res|
     if res["count"] >= config["max_posts_per_period"] then
       result = true
     else
@@ -131,7 +132,7 @@ end
 def make_metadata(con, id)
   id = id.to_i.to_s;
   result = [400, "No results found"]
-  con.query("SELECT *, (SELECT COUNT(*) FROM posts WHERE parent = #{id}) + 1 AS number_of_replies FROM posts WHERE post_id = #{id}").each do |hash|
+  query(con, "SELECT *, (SELECT COUNT(*) FROM posts WHERE parent = ?) + 1 AS number_of_replies FROM posts WHERE post_id = ?", id, id).each do |hash|
     result = make_metadata_from_hash(hash)
   end
   return result
@@ -152,6 +153,29 @@ def try_login(username, password, config, session, params)
   return [403, "Check your username and password"]
 end
 
+def get_board(board, params)
+  results = []
+  page = 0
+  if params[:page] then page = params[:page].to_i end
+  offset = page * 20;
+  con = make_con()
+  query(con, "SELECT *, COALESCE(parent, post_id) AS effective_parent, COUNT(*) AS number_of_replies FROM posts WHERE board = ? GROUP BY effective_parent ORDER BY (-1 * sticky), last_bumped DESC LIMIT 20 OFFSET #{offset.to_s};", board).each do |res|
+    results.push(make_metadata_from_hash(res))
+  end
+  return results
+end
+
+def get_thread_replies(id)
+  con = make_con()
+  results = []
+  id = id.to_i.to_s
+  query(con, "SELECT * FROM posts WHERE COALESCE(parent, post_id) = ?", id).each do |res|
+    results.push(make_metadata_from_hash(res));
+  end
+  # dirty fucking hack
+  results[0][:number_of_replies] = results.length
+  return results
+end
 
 module Sinatra
   module Awoo
@@ -173,9 +197,9 @@ module Sinatra
           app.post "/post" do
             con = make_con()
             # OPs have a board, a title and a comment.
-            board = con.escape(params[:board])
-            title = con.escape(params[:title])
-            content = con.escape(params[:comment])
+            board = params[:board]
+            title = params[:title]
+            content = params[:comment]
             # Also pull the IP address from the request and check if it looks like spam
             ip = get_ip(con, request, env);
             if looks_like_spam(con, ip, env, config) then
@@ -190,12 +214,12 @@ module Sinatra
             if banned then return banned end
             # Insert the new post into the database
             unless params[:capcode] and session[:username]
-              con.query("INSERT INTO posts (board, title, content, ip) VALUES ('#{board}', '#{title}', '#{content}', '#{ip}')");
+              query(con, "INSERT INTO posts (board, title, content, ip) VALUES (?, ?, ?, ?)", board, title, content, ip);
             else
-              con.query("INSERT INTO posts (board, title, content, ip, janitor) VALUES ('#{board}', '#{title}', '#{content}', '#{ip}', '#{session[:username]}')");
+              query(con, "INSERT INTO posts (board, title, content, ip, janitor) VALUES (?, ?, ?, ?, ?)", board, title, content, ip, session[:username]);
             end
             # Then get the ID of the just-inserted post and redirect the user to their new thread
-            con.query("SELECT LAST_INSERT_ID() AS id").each do |res|
+            query(con, "SELECT LAST_INSERT_ID() AS id").each do |res|
               href = "/" + params[:board] + "/thread/" + res["id"].to_s
               redirect(href, 303);
             end
@@ -206,9 +230,9 @@ module Sinatra
           app.post "/reply" do
             con = make_con()
             # replies have a board, a comment and a parent (the post they're responding to)
-            board = con.escape(params[:board])
-            content = con.escape(params[:content])
-            parent = con.escape(params[:parent].to_i.to_s)
+            board = params[:board]
+            content = params[:content]
+            parent = params[:parent].to_i
             if content.length > 500 then
               return [400, "Reply too long (over 500 characters)"]
             end
@@ -221,7 +245,7 @@ module Sinatra
             banned = get_ban_info(ip, board, con)
             if banned then return banned end
             closed = nil
-            con.query("SELECT is_locked FROM posts WHERE post_id = #{parent}").each do |res|
+            query(con, "SELECT is_locked FROM posts WHERE post_id = ?", parent).each do |res|
               closed = res["is_locked"]
             end
             if closed == nil then
@@ -233,12 +257,12 @@ module Sinatra
             end
             # Insert the new reply
             unless params[:capcode] and session[:username]
-              con.query("INSERT INTO posts (board, parent, content, ip, title) VALUES ('#{board}', '#{parent}', '#{content}', '#{ip}', NULL)")
+              query(con, "INSERT INTO posts (board, parent, content, ip, title) VALUES (?, ?, ?, ?, NULL)", board, parent, content, ip)
             else
-              con.query("INSERT INTO posts (board, parent, content, ip, title, janitor) VALUES ('#{board}', '#{parent}', '#{content}', '#{ip}', NULL, '#{session[:username]}')")
+              query(con, "INSERT INTO posts (board, parent, content, ip, title, janitor) VALUES (?, ?, ?, ?, NULL)", board, parent, content, ip, session[:username])
             end
             # Mark the parent as bumped
-            con.query("UPDATE posts SET last_bumped = CURRENT_TIMESTAMP() WHERE post_id = '#{parent}'");
+            query(con, "UPDATE posts SET last_bumped = CURRENT_TIMESTAMP() WHERE post_id = ?", parent);
             # Redirect them back to the post they just replied to
             href = "/" + params[:board] + "/thread/" + params[:parent]
             redirect(href, 303);
@@ -291,10 +315,10 @@ module Sinatra
           app.get "/delete/:post_id" do |post_id|
             con = make_con()
             board = nil;
-            escaped = con.escape(post_id.to_i.to_s)
+            post_id = post_id.to_i
             parent = nil
             # First, figure out which board that post is on
-            con.query("SELECT board, parent FROM posts WHERE post_id = #{escaped}").each do |res|
+            query(con, "SELECT board, parent FROM posts WHERE post_id = ?", post_id).each do |res|
               board = res["board"]
               parent = res["parent"]
             end
@@ -303,18 +327,16 @@ module Sinatra
               return [403, "You are not logged in or you do not moderate " + board]
             end
             # Insert an IP note with the content of the deleted post
-            con.query("SELECT content, title, ip FROM posts WHERE post_id = #{escaped}").each do |res|
-              escaped_addr = con.escape(res["ip"])
+            query(con, "SELECT content, title, ip FROM posts WHERE post_id = ?", post_id).each do |res|
               content = "Post Deleted - "
               if res["title"] then
                 content += "OP with title: " + res["title"] + " - and "
               end
               content += "comment: " + res["content"]
-              escaped_content = con.escape(content);
-              con.query("INSERT INTO ip_notes (ip, content) VALUES ('#{escaped_addr}', '#{escaped_content}')")
+              query(con, "INSERT INTO ip_notes (ip, content) VALUES (?, ?)", res["ip"], content)
             end
             # Finally, delete the post
-            con.query("DELETE FROM posts WHERE post_id = #{escaped} OR parent = #{escaped}")
+            query(con, "DELETE FROM posts WHERE post_id = ? OR parent = ?", post_id, post_id)
             if parent != nil then
               href = "/" + board + "/thread/" + parent.to_s
               redirect(href, 303);
@@ -331,10 +353,10 @@ module Sinatra
               limit = "10000"
             end
             if params[:type] == "thread"
-              id = con.escape(params[:thread].to_i.to_s)
+              id = params[:thread].to_i
               result = {:meta => [], :replies => []}
-              limit = con.escape((limit.to_i + 1).to_s)
-              con.query("SELECT * FROM posts WHERE parent = #{id} OR post_id = #{id} LIMIT #{limit}").each do |res|
+              limit = (limit.to_i + 1).to_s
+              query(con, "SELECT * FROM posts WHERE parent = ? OR post_id = ? LIMIT #{limit}", id, id).each do |res|
                 if not res["parent"]
                   result[:meta] = [{
                     "title": res["title"],
@@ -352,8 +374,8 @@ module Sinatra
                 :url => "https://" + hostname + "/" + params[:board]
               }], :threads => []}
               limit = con.escape(limit.to_i.to_s)
-              board = con.escape(params[:board]);
-              con.query("SELECT post_id, title, board, COALESCE(parent, post_id) AS effective_parent, COUNT(*)-1 AS number_of_replies FROM posts WHERE board = '#{board}' GROUP BY effective_parent ORDER BY post_id LIMIT #{limit};").each do |res|
+              board = params[:board]
+              query(con, "SELECT post_id, title, board, COALESCE(parent, post_id) AS effective_parent, COUNT(*)-1 AS number_of_replies FROM posts WHERE board = ? GROUP BY effective_parent ORDER BY post_id LIMIT #{limit};", board).each do |res|
                 result[:threads].push({
                   :id => res["post_id"],
                   :title => res["title"],
@@ -392,11 +414,11 @@ module Sinatra
           # Either locks or unlocks the specified thread
           app.get "/lock/:post/?" do |post|
             con = make_con()
-            return lock_or_unlock(post, "TRUE", con, session)
+            return lock_or_unlock(post, true, con, session)
           end
           app.get "/unlock/:post/?" do |post|
             con = make_con()
-            return lock_or_unlock(post, "FALSE", con, session)
+            return lock_or_unlock(post, false, con, session)
           end
 
           # Moves thread from board to board
@@ -411,9 +433,9 @@ module Sinatra
             con = make_con()
             # We allow the move if the person moderates at least one board, no matter which boards
             if session[:moderates] then
-              id = con.escape(post.to_i.to_s)
-              board = con.escape(params[:board])
-              con.query("UPDATE posts SET board = '#{board}' WHERE post_id = #{id} OR parent = #{id}")
+              id = post.to_i
+              board = params[:board]
+              query(con, "UPDATE posts SET board = ? WHERE post_id = ? OR parent = ?", board, id, id)
               href = "/" + board + "/thread/" + id
               redirect href
             else
@@ -427,9 +449,8 @@ module Sinatra
             if session[:moderates] == nil then
               return [403, "You have no janitor privileges"]
             end
-            addr = con.escape(addr)
-            content = con.escape(params[:content])
-            con.query("INSERT INTO ip_notes (ip, content) VALUES ('#{addr}', '#{content}')")
+            content = params[:content]
+            query(con, "INSERT INTO ip_notes (ip, content) VALUES (?, ?)", addr, content)
             return redirect("/ip/" + addr, 303)
           end
 
@@ -447,12 +468,12 @@ module Sinatra
           app.post "/ban/:ip" do |author_ip|
             con = make_con()
             if is_moderator(params[:board], session) then
-              ip = con.escape(author_ip)
-              board = con.escape(params[:board])
-              old_date = con.escape(params[:date]).split('/')
+              ip = author_ip
+              board = params[:board]
+              old_date = params[:date].split('/')
               date = old_date[2] + "-" + old_date[0] + "-" + old_date[1] + " 00:00:00"
-              reason = con.escape(params[:reason])
-              con.query("INSERT INTO bans (ip, board, date_of_unban, reason) VALUES ('#{ip}', '#{board}', '#{date}', '#{reason}')");
+              reason = params[:reason]
+              query(con, "INSERT INTO bans (ip, board, date_of_unban, reason) VALUES (?, ?, ?, ?)", ip, board, date, reason);
               redirect "/ip/#{ip}"
             else
               return [403, "You have no janitor privileges"]
@@ -461,9 +482,9 @@ module Sinatra
           app.post "/unban/:ip" do |author_ip|
             con = make_con()
             if is_moderator(params[:board], session) then
-              ip = con.escape(author_ip)
-              board = con.escape(params[:board])
-              con.query("DELETE FROM bans WHERE ip = '#{ip}' AND board = '#{board}'")
+              ip = author_ip
+              board = params[:board]
+              query(con, "DELETE FROM bans WHERE ip = ? AND board = ?", ip, board)
               redirect "/ip/#{ip}"
             else
               return [403, "You have no janitor privileges"]
@@ -473,27 +494,15 @@ module Sinatra
             JSON.dump(config["boards"].select do |key, value| session[:username] or not value["hidden"] end.map do |key, value| key end)
           end
           app.get API + "/board/:board" do |board|
-            results = []
-            page = 0
-            if params[:page] then page = params[:page].to_i end
-            offset = page * 20;
-            con = make_con()
-            con.query("SELECT *, COALESCE(parent, post_id) AS effective_parent, COUNT(*) AS number_of_replies FROM posts WHERE board = '#{con.escape(board)}' GROUP BY effective_parent ORDER BY (-1 * sticky), last_bumped DESC LIMIT 20 OFFSET #{offset.to_s};").each do |res|
-              results.push(make_metadata_from_hash(res))
-            end
-            return JSON.dump(results);
+            return JSON.dump(get_board(board, params))
           end
           app.get API + "/thread/:id/metadata" do |id|
+            id = id.to_i.to_s
             return JSON.dump(make_metadata(make_con(), id))
           end
           app.get API + "/thread/:id/replies" do |id|
-            con = make_con()
-            results = []
             id = id.to_i.to_s
-            con.query("SELECT *, COUNT(*) AS number_of_replies FROM posts WHERE COALESCE(parent, post_id) = #{id}").each do |res|
-              results.push(make_metadata_from_hash(res));
-            end
-            return JSON.dump(results)
+            return JSON.dump(get_thread_replies(id))
           end
         end
       end
