@@ -51,6 +51,15 @@
             if (window.location.hash.indexOf("comment-") == 1) {
               select(window.location.hash.split("comment-")[1]);
             }
+        // TEST
+        if (typeof(unitedPropertiesIf) != "undefined") {
+          document.getElementById("sitecorner").style.margin = "0";
+          document.getElementById("sitecorner").style.border = "none";
+          document.getElementById("sitecorner").style.width = "100%";
+          document.getElementById("sitecorner").style.padding = "0";
+          document.getElementsByTagName("img")[0].style.width = "100%";
+          document.getElementsByTagName("img")[0].style.height = "auto";
+        }
             if (typeof(unitedPropertiesIf) != "undefined") {
               var id = <%= id %>
               unitedPropertiesIf.setProperty(board + ":" + id, total_number_of_posts.toString());
@@ -207,7 +216,7 @@
         </div>
       <% else %>
         <a href="javascript:location.reload();">Refresh</a>
-        <form action='/reply' method='post' style="text-align: center;">
+        <form id="form" action='/reply' method='post' style="text-align: center;">
           <input type='text' style='display: none' name='board' id='board' value='<%= path %>' />
           <input type='text' style='display: none' name='parent' id='parent' value='<%= id %>' />
           <br />
@@ -225,8 +234,11 @@
           <% else %>
             <textarea name='content' style="width: 100%;" placeholder='Reply'></textarea>
           <% end %>
+          <!--
           <input type='submit' value="Submit" style="float: right;" /><br />
+          -->
         </form>
+        <button style="float: right;" onClick='submit_form(document.getElementById("form"), "/reply")'>Submit</button><br />
         <% if moderator %>
           <br />
           <i class="fa fa-unlock-alt" aria-hidden="true" style="display: block; text-align: center;" onClick='lockPost(<%= id.to_i.to_s %>)'></i>

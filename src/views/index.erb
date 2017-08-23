@@ -6,8 +6,18 @@
     <link rel="stylesheet" type="text/css" href="static/dangeru.css">
     <meta name="description" content="danger/u/ - dangerous opinions. danger/u/ is a textboard based off danger/u/ from VA-11 HALL-A Cyberpunk Bartender Action.">
     <link rel="shortcut icon" href="static/favicon.ico">
+    <script>
+      var ol = function ol() {
+        if (typeof(unitedPropertiesIf) != "undefined") {
+          document.getElementById("maincontainer").style.margin = "0";
+          document.getElementById("maincontainer").style.border = "none";
+          document.getElementsByTagName("img")[0].style.width = "100%";
+          document.getElementsByTagName("img")[0].style.height = "auto";
+        }
+      }
+    </script>
   </head>
-  <body>
+  <body onLoad='ol()'>
     <img src="static/logo.png" alt="danger/u/" style="width: 395px; height: 130px;">
     <div style="text-align: center;">
       <span class="comment">Latest news:</span>

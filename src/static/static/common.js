@@ -16,3 +16,14 @@ var unstickyPost = function unlockPost(id) {
 var unban = function unban(addr, board) {
 	alert("You tried to unban " + addr + " from the board " + board + ", but it's not implemented yet");
 }
+var submit_form = function submit_form(form, route) {
+	var data = new FormData(form);
+	var xhr = new XMLHttpRequest();
+	xhr.onreadystatechange = function() {
+		if (xhr.readyState == 4) {
+			window.location.reload();
+		}
+	}
+	xhr.open("POST", route);
+	xhr.send(data);
+}
