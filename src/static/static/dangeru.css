@@ -15,8 +15,7 @@ img {
 }
 @font-face {
     font-family: 'CyberpunkWaifus';
-    src: url('CyberpunkWaifus.eot');
-    src: url('CyberpunkWaifus.eot?#iefix') format('embedded-opentype'), url('CyberpunkWaifus.woff') format('woff'), url('CyberpunkWaifus.ttf') format('truetype');
+    src: url('CyberpunkWaifus.woff') format('woff');
     font-weight: normal;
     font-style: normal;
 }
