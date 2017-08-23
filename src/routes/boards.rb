@@ -112,7 +112,7 @@ end
 def make_metadata_from_hash(res, session)
   is_op = res["parent"] == nil
   obj = {:post_id => res["post_id"], :board => res["board"], :is_op => is_op, :comment => res["content"], :date_posted => res["date_posted"].strftime('%s').to_i}
-  if is_moderator(res[:board], session) then
+  if is_moderator(res["board"], session) then
     obj[:ip] = res["ip"]
   end
   if res["janitor"] != nil then
