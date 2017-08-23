@@ -109,7 +109,7 @@ end
 def make_con()
   return Mysql2::Client.new(:host => "localhost", :username => "awoo", :password => "awoo", :database => "awoo")
 end
-def make_metadata_from_hash(res)
+def make_metadata_from_hash(res, session)
   is_op = res["parent"] == nil
   obj = {:post_id => res["post_id"], :board => res["board"], :is_op => is_op, :comment => res["content"], :date_posted => res["date_posted"].strftime('%s').to_i}
   if is_moderator(res[:board], session) then
@@ -129,11 +129,11 @@ def make_metadata_from_hash(res)
   end
   return obj;
 end
-def make_metadata(con, id)
+def make_metadata(con, id, session)
   id = id.to_i.to_s;
   result = [400, "No results found"]
   query(con, "SELECT *, (SELECT COUNT(*) FROM posts WHERE parent = ?) + 1 AS number_of_replies FROM posts WHERE post_id = ?", id, id).each do |hash|
-    result = make_metadata_from_hash(hash)
+    result = make_metadata_from_hash(hash, session)
   end
   return result
 end
@@ -153,24 +153,24 @@ def try_login(username, password, config, session, params)
   return [403, "Check your username and password"]
 end
 
-def get_board(board, params)
+def get_board(board, params, session)
   results = []
   page = 0
   if params[:page] then page = params[:page].to_i end
   offset = page * 20;
   con = make_con()
   query(con, "SELECT *, COALESCE(parent, post_id) AS effective_parent, COUNT(*) AS number_of_replies FROM posts WHERE board = ? GROUP BY effective_parent ORDER BY (-1 * sticky), last_bumped DESC LIMIT 20 OFFSET #{offset.to_s};", board).each do |res|
-    results.push(make_metadata_from_hash(res))
+    results.push(make_metadata_from_hash(res, session))
   end
   return results
 end
 
-def get_thread_replies(id)
+def get_thread_replies(id, session)
   con = make_con()
   results = []
   id = id.to_i.to_s
   query(con, "SELECT * FROM posts WHERE COALESCE(parent, post_id) = ?", id).each do |res|
-    results.push(make_metadata_from_hash(res));
+    results.push(make_metadata_from_hash(res, session));
   end
   # dirty fucking hack
   results[0][:number_of_replies] = results.length
@@ -494,15 +494,15 @@ module Sinatra
             JSON.dump(config["boards"].select do |key, value| session[:username] or not value["hidden"] end.map do |key, value| key end)
           end
           app.get API + "/board/:board" do |board|
-            return JSON.dump(get_board(board, params))
+            return JSON.dump(get_board(board, params, session))
           end
           app.get API + "/thread/:id/metadata" do |id|
             id = id.to_i.to_s
-            return JSON.dump(make_metadata(make_con(), id))
+            return JSON.dump(make_metadata(make_con(), id, session))
           end
           app.get API + "/thread/:id/replies" do |id|
             id = id.to_i.to_s
-            return JSON.dump(get_thread_replies(id))
+            return JSON.dump(get_thread_replies(id, session))
           end
         end
       end
