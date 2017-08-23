@@ -24,8 +24,9 @@
 </style>
         <script>
           var select = function select(id) {
-            window.location.hash = "#"; // bugfix for webkit
-            window.location.hash = "#comment-" + id.toString();
+            replace = history.replaceState || function(a, b, hash) { window.location.hash = hash; };
+            replace(undefined, undefined, "#") // bugfix for webkit
+            replace(undefined, undefined, "#comment-" + id.toString()) // bugfix for webkit
             var elems = document.getElementsByClassName("selected");
             for (var i = 0; i < elems.length; i++) {
               elems[i].classList.toggle("selected")
