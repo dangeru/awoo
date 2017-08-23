@@ -87,6 +87,17 @@
               document.getElementById("sitecorner").appendChild(btn);
             }
           }
+          var submit_form = function submit_form(form, route) {
+              var data = new FormData(form);
+              var xhr = new XMLHttpRequest();
+              xhr.onreadystatechange = function() {
+                  if (xhr.readyState == 4) {
+                      window.location.reload();
+                  }
+              }
+              xhr.open("POST", route);
+              xhr.send(data);
+          }
         </script>
   </head>
   <body onLoad='ol();'>
