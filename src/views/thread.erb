@@ -24,9 +24,12 @@
 </style>
         <script>
           var select = function select(id) {
-            replace = history.replaceState || function(a, b, hash) { window.location.hash = hash; };
-            replace(undefined, undefined, "#") // bugfix for webkit
-            replace(undefined, undefined, "#comment-" + id.toString()) // bugfix for webkit
+            var replace = function(hash) { history.replaceState(undefined, undefined, hash) }
+            if (!history.replaceState) {
+              replace = function(a, b, hash) { window.location.hash = hash; };
+            }
+            replace("#") // bugfix for webkit
+            replace("#comment-" + id.toString()) // bugfix for webkit
             var elems = document.getElementsByClassName("selected");
             for (var i = 0; i < elems.length; i++) {
               elems[i].classList.toggle("selected")
