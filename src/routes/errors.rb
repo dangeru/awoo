@@ -10,7 +10,7 @@ module Sinatra
       module Errors
         def self.registered(app)
           app.error 404 do
-            erb :404
+            erb :notfound
           end
 
           app.error 500 do
