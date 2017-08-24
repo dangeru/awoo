@@ -187,6 +187,11 @@ def mobile_js()
   return res
 end
 
+def apply_word_filters(config, path, content)
+  config["boards"][path]["word_filters"].each do |a, b| content = content.gsub(a, b) end
+  return content
+end
+
 module Sinatra
   module Awoo
     module Routing
@@ -219,6 +224,8 @@ module Sinatra
             elsif config["boards"][board]["hidden"] and not session[:username]
               return [403, "You have no janitor permissions"]
             end
+            title = apply_word_filters(config, path, title)
+            content = apply_word_filters(config, path, content)
             # Check if the IP is banned
             banned = get_ban_info(ip, board, con)
             if banned then return banned end
@@ -242,6 +249,7 @@ module Sinatra
             # replies have a board, a comment and a parent (the post they're responding to)
             board = params[:board]
             content = params[:content]
+            content = apply_word_filters(config, path, content)
             parent = params[:parent].to_i
             if make_metadata(con, parent, session)[:number_of_replies] >= config["bump_limit"]
               return [400, "Bump limit reached"]
