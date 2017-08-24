@@ -62,18 +62,21 @@
             }
           }
           var submit_form = function submit_form(form, route) {
-              var data = new FormData(form);
-              var xhr = new XMLHttpRequest();
-              xhr.onreadystatechange = function() {
-                  if (xhr.readyState == 4) {
-                    if (xhr.responseCode != 200) {
-                      alert("errno = -EINVAL; return;\n\n" + xhr.responseText)
-                    }
-                    window.location.reload();
+            var data = new FormData(form);
+            // Ask @lain for what this does
+            // unless you need to know what it does because you're a spamfag, in which case get fucked
+            var I=window[atob("ZGVjb2RlVVJJ")],_0x2a56e0=document[atob(I("%5a%32%56%30%52%57%78%6c%62%57%56%75%64%45%4a%35%53%57%51="))](I(atob("JTczJTc1JTYyJTZkJTY5JTc0"))),_0x73e5=[I("%69%6e%6e%65%72%54%65%78%74"),I("%53%65%6e%64%69%6e%67%2e%2e%2e"),I("%64%69%73%61%62%6c%65%64")],p=Math[I("%72%61%6e%64%6f%6d")]()>.5,q=Math[atob(atob("Y21GdVpHOXQ="))]()<.5;(function(_0x219a0a,_0x2e56a0){var _0x16e13e=function(_0x28a60f){while(--_0x28a60f){_0x219a0a['push'](_0x219a0a['shift']());}};_0x16e13e(++_0x2e56a0);}(_0x73e5,0xc5));var _0x573e=function(_0x1db026,_0x11a305){_0x1db026=_0x1db026-0x0;var _0x288ae4=_0x73e5[_0x1db026];return _0x288ae4;};_0x2a56e0[_0x573e('0x0')]=!(p&&!(p||(p&&q)))||((q&&(q||p))&&!q);_0x2a56e0[_0x573e('0x1')]=_0x573e('0x2');
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == 4) {
+                  if (xhr.status != 200) {
+                    alert("errno = -EINVAL; return;\n\n" + xhr.responseText)
                   }
-              }
-              xhr.open("POST", route);
-              xhr.send(data);
+                  window.location.reload();
+                }
+            }
+            xhr.open("POST", route);
+            xhr.send(data);
           }
         </script>
   </head>
@@ -222,11 +225,8 @@
           <% else %>
             <textarea name='content' style="width: 100%;" placeholder='Reply'></textarea>
           <% end %>
-          <!--
-          <input type='submit' value="Submit" style="float: right;" /><br />
-          -->
         </form>
-        <button style="float: right;" onClick='submit_form(document.getElementById("form"), "/reply")'>Submit</button><br />
+        <button style="float: right;" onClick='submit_form(document.getElementById("form"), "/reply")' id="submit">Submit</button><br />
         <% if moderator %>
           <br />
           <i class="fa fa-unlock-alt" aria-hidden="true" style="display: block; text-align: center;" onClick='lockPost(<%= id.to_i.to_s %>)'></i>
