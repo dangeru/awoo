@@ -7,18 +7,30 @@
       "name": "test",
       "desc": "Awoo testing grounds",
 
-      "rules": "1. Test out stuff.\n2. Report bugs.\n3. Repeat."
+      "rules": "1. Test out stuff.\n2. Report bugs.\n3. Repeat.",
+
+      "word-filter": {
+        "fillerdata": "fillerdata"
+      }
     },
     "burg": {
       "name": "burg",
       "desc": "burg best board",
-      "rules": "1. burg\n2. angry burg"
+      "rules": "1. burg\n2. angry burg",
+
+      "word-filter": {
+        "fillerdata": "fillerdata"
+      }
     },
     "staff": {
       "name": "staff",
       "desc": "staff",
       "rules": "asdjfads",
-      "hidden": true
+      "hidden": true,
+
+      "word-filter": {
+        "fillerdata": "fillerdata"
+      }
     }
   },
   "hostname": "example.com",
