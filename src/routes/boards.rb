@@ -224,8 +224,8 @@ module Sinatra
             elsif config["boards"][board]["hidden"] and not session[:username]
               return [403, "You have no janitor permissions"]
             end
-            title = apply_word_filters(config, path, title)
-            content = apply_word_filters(config, path, content)
+            title = apply_word_filters(config, board, title)
+            content = apply_word_filters(config, board, content)
             # Check if the IP is banned
             banned = get_ban_info(ip, board, con)
             if banned then return banned end
@@ -249,7 +249,7 @@ module Sinatra
             # replies have a board, a comment and a parent (the post they're responding to)
             board = params[:board]
             content = params[:content]
-            content = apply_word_filters(config, path, content)
+            content = apply_word_filters(config, board, content)
             parent = params[:parent].to_i
             if make_metadata(con, parent, session)[:number_of_replies] >= config["bump_limit"]
               return [400, "Bump limit reached"]
