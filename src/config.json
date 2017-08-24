@@ -22,6 +22,7 @@
     }
   },
   "hostname": "example.com",
+  "bump_limit": 250,
   "period_length": 30,
   "max_posts_per_period": 4,
   "janitors": [

@@ -233,6 +233,9 @@ module Sinatra
             board = params[:board]
             content = params[:content]
             parent = params[:parent].to_i
+            if make_metadata(con, parent, session)[:number_of_replies] >= config["bump_limit"]
+              return [400, "Bump limit reached"]
+            end
             if content.length > 500 then
               return [400, "Reply too long (over 500 characters)"]
             end
