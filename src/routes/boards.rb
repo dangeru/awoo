@@ -177,6 +177,16 @@ def get_thread_replies(id, session)
   return results
 end
 
+def mobile_js()
+  res = ""
+  f = File.open(File.dirname(__FILE__) + "/../static/static/mobile.js", "r")
+  f.each_line do |line|
+    res += line;
+  end
+  f.close
+  return res
+end
+
 module Sinatra
   module Awoo
     module Routing

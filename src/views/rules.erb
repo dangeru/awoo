@@ -9,10 +9,13 @@
         document.getElementById("rules").style.display = "none";
         document.getElementById("editor").style.display = "block";
       }
+      var ol = function ol() {
+        <%= mobile_js %>
+      }
     </script>
   </head>
 
-  <body>
+  <body onLoad='ol()'>
     <div id="sitecorner">
       <img src="<%= banner %>" alt="danger/u/">
       <div id="title" style="text-align: center;">/<%= path %>/ - Rules</div>

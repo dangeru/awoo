@@ -84,16 +84,7 @@
         var unhover = function() {
           document.getElementById("hover").style.display = "none";
         }
-        // TEST
-        if (typeof(unitedPropertiesIf) != "undefined") {
-          document.getElementById("sitecorner").style.margin = "0";
-          document.getElementById("sitecorner").style.border = "none";
-          document.getElementById("sitecorner").style.width = "100%";
-          document.getElementById("sitecorner").style.padding = "0";
-          document.getElementsByTagName("img")[0].style.width = "100%";
-          document.getElementsByTagName("img")[0].style.height = "auto";
-          document.getElementById("draggable").style.width = "auto";
-        }
+        <%= mobile_js %>
         if (typeof(unitedPropertiesIf) != "undefined" && unitedPropertiesIf.getProperty("userscript").toUpperCase() == "TRUE") {
           var s = document.createElement("script")
           s.src = "/static/awoo-catalog/awoo-catalog.user.js"

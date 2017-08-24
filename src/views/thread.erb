@@ -55,17 +55,9 @@
             if (window.location.hash.indexOf("comment-") == 1) {
               select(window.location.hash.split("comment-")[1]);
             }
-        // TEST
-        if (typeof(unitedPropertiesIf) != "undefined") {
-          document.getElementById("sitecorner").style.margin = "0";
-          document.getElementById("sitecorner").style.border = "none";
-          document.getElementById("sitecorner").style.width = "100%";
-          document.getElementById("sitecorner").style.padding = "0";
-          document.getElementsByTagName("img")[0].style.width = "100%";
-          document.getElementsByTagName("img")[0].style.height = "auto";
-        }
+            <%= mobile_js %>
             if (typeof(unitedPropertiesIf) != "undefined") {
-              var id = <%= id %>
+              var id = <%= id %>;
               unitedPropertiesIf.setProperty(board + ":" + id, total_number_of_posts.toString());
             }
           }
@@ -74,7 +66,10 @@
               var xhr = new XMLHttpRequest();
               xhr.onreadystatechange = function() {
                   if (xhr.readyState == 4) {
-                      window.location.reload();
+                    if (xhr.responseCode != 200) {
+                      alert("errno = -EINVAL; return;\n\n" + xhr.responseText)
+                    }
+                    window.location.reload();
                   }
               }
               xhr.open("POST", route);

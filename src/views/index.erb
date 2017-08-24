@@ -8,15 +8,7 @@
     <link rel="shortcut icon" href="static/favicon.ico">
     <script>
       var ol = function ol() {
-        if (typeof(unitedPropertiesIf) != "undefined") {
-          document.getElementById("maincontainer").style.margin = "0";
-          document.getElementById("maincontainer").style.border = "none";
-          document.getElementById("maincontainer").style.padding = "0";
-          document.getElementById("maincontainer").style.borderRadius = "0";
-          document.getElementById("maincontainer").style.width = "100%";
-          document.getElementsByTagName("img")[0].style.width = "100%";
-          document.getElementsByTagName("img")[0].style.height = "auto";
-        }
+        <%= mobile_js %>
       }
     </script>
   </head>
