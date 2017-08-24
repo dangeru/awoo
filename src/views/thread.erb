@@ -24,6 +24,9 @@
 .post_number {
   font-size: 65%;
 }
+.id_link:hover {
+  text-decoration: underline;
+}
 </style>
         <script>
           var select = function select(id) {
@@ -131,7 +134,7 @@
             <i class="fa fa-trash offset-left" aria-hidden="true" onClick='deletePost(<%= res[:post_id] %>)'></i>
             <a style="display: inline-block; font-size: 50%;" href="/ip/<%= res[:ip] %>"><%= res[:ip] %></a>
           <% end %>
-          <span class="post_number" style="display: none;">Post number #<span href="#" onClick='document.getElementById("reply_box").innerText += ">><%= res[:post_id] %>"'><%= res[:post_id] %></span>, ID: <%= res[:hash] %></span><br>
+          <span class="post_number" style="display: none;">Post number #<span class="id_link" onClick='document.getElementById("reply_box").innerText += ">><%= res[:post_id] %>"'><%= res[:post_id] %></span>, ID: <%= res[:hash] %></span><br>
           |
           <% res[:comment].split("\n").each do |line| %>
             <% line = line.chomp %>
