@@ -277,8 +277,10 @@ module Sinatra
             # Mark the parent as bumped
             query(con, "UPDATE posts SET last_bumped = CURRENT_TIMESTAMP() WHERE post_id = ?", parent);
             # Redirect them back to the post they just replied to
-            href = "/" + params[:board] + "/thread/" + params[:parent]
-            redirect(href, 303);
+            #href = "/" + params[:board] + "/thread/" + params[:parent]
+            #redirect(href, 303);
+            # Ok nevermind just return ok so the js xhr doesn't go off and request the entire thread again
+            return [200, "OK"]
           end
 
           # Each board has a listing of the posts there (board.erb) and a listing of the replies to a give post (thread.erb)
@@ -419,6 +421,9 @@ module Sinatra
           end
           # Gets all post by IP, and let's you ban it
           app.get "/ip/:addr" do |addr|
+            if not session[:moderates] then
+              return [403, "You have no janitor permissions"]
+            end
             con = make_con()
             erb :ip_list, :locals => {:session => session, :addr => addr, :con => con}
           end
@@ -463,7 +468,8 @@ module Sinatra
             end
             content = params[:content]
             query(con, "INSERT INTO ip_notes (ip, content) VALUES (?, ?)", addr, content)
-            return redirect("/ip/" + addr, 303)
+            #return redirect("/ip/" + addr, 303)
+            return [200, "OK"]
           end
 
           # Sticky / Unsticky posts

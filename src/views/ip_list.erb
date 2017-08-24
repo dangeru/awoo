@@ -21,6 +21,21 @@
         $( "#datepicker" ).datepicker();
         <%= mobile_js %>
       });
+      var submit_form = function submit_form(form, route) {
+        var data = new FormData(form);
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == 4) {
+              if (xhr.status != 200) {
+                alert("errno = -EINVAL; return;\n\n" + xhr.responseText)
+              }
+              window.location.reload();
+            }
+        }
+        xhr.open("POST", route);
+        xhr.send(data);
+      }
+
     </script>
   </head>
   <body>
@@ -74,11 +89,11 @@
         </div>
         <br />
       <% end %>
-      <form action="/ip_note/<%= addr %>" method="post" id="ip-note-form">
+      <form action="/ip_note/<%= Sanitize.clean(addr) %>" method="post" id="ip-note-form">
         <textarea name="content" placeholder="New note for this IP"></textarea>
         <br />
-        <button onClick="document.getElementById('ip-note-form').submit()">Submit</button>
       </form>
+      <button onClick="submit_form(document.getElementById('ip-note-form'), '/ip_note/<%= Sanitize.clean(addr) %>')">Submit</button>
     </div>
     <footer class="comment" style="font-size: xx-small; text-align: center;">
       <small>Awoo <%= settings.awoo_version %></small>
