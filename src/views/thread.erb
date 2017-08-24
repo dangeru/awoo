@@ -21,6 +21,9 @@
   background-color: black;
   border: 2px solid gold;
 }
+.post_number {
+  font-size: 40%;
+}
 </style>
         <script>
           var select = function select(id) {
@@ -38,10 +41,11 @@
           }
           var hover = function hover(id, hovered) {
             var elem = document.getElementById("comment-" + id.toString());
-            document.getElementById("hover").innerHTML = elem.innerHTML;
-            document.getElementById("hover").style.display = "inline-block";
             var hovered_elem = document.getElementById("comment-" + hovered.toString())
             hovered_elem.onmousemove = move;
+            if (typeof(unitedPropertiesIf) != "undefined") return; // don't show #hover on mobile
+            document.getElementById("hover").innerHTML = elem.innerHTML;
+            document.getElementById("hover").style.display = "inline-block";
           }
           var unhover = function unhover() {
             document.getElementById("hover").innerHTML = ""
@@ -59,6 +63,11 @@
             if (typeof(unitedPropertiesIf) != "undefined") {
               var id = <%= id %>;
               unitedPropertiesIf.setProperty(board + ":" + id, total_number_of_posts.toString());
+            }
+            if (typeof(unitedPropertiesIf) == "undefined" || unitedPropertiesIf.getProperty("userscript").toUpperCase() == "TRUE") {
+              Array.prototype.slice.call(document.getElementsByClassName("post_number"), 0).forEach(function(elem) {
+                elem.style.display = "inline-block";
+              })
             }
           }
           var submit_form = function submit_form(form, route) {
@@ -122,6 +131,7 @@
             <i class="fa fa-trash offset-left" aria-hidden="true" onClick='deletePost(<%= res[:post_id] %>)'></i>
             <a style="display: inline-block; font-size: 50%;" href="/ip/<%= res[:ip] %>"><%= res[:ip] %></a>
           <% end %>
+          <span class="post_number" style="display: none;" onClick='document.getElementById("reply_box").innerText += ">><%= res[:post_id] %>"'><%= res[:post_id] %></span>
           |
           <% res[:comment].split("\n").each do |line| %>
             <% line = line.chomp %>
@@ -223,7 +233,7 @@
             <input type="radio" value="angry burg" id="angry_burg" name="content" /><label style="color: white" for="angry_burg">angry burg</label>
             <br />
           <% else %>
-            <textarea name='content' style="width: 100%;" placeholder='Reply'></textarea>
+            <textarea id="reply_box" name='content' style="width: 100%;" placeholder='Reply'></textarea>
           <% end %>
         </form>
         <button style="float: right;" onClick='submit_form(document.getElementById("form"), "/reply")' id="submit">Submit</button><br />
