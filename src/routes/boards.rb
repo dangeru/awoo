@@ -457,7 +457,11 @@ module Sinatra
           app.post "/move/:post/?" do |post|
             con = make_con()
             # We allow the move if the person moderates at least one board, no matter which boards
-            if session[:moderates] then
+            prev_board = nil;
+            query(con, "SELECT board FROM posts WHERE post_id = ?", id).each do |res|
+              prev_board = res["board"]
+            end
+            if is_moderator(prev_board, session)
               id = post.to_i
               board = params[:board]
               query(con, "UPDATE posts SET board = ? WHERE post_id = ? OR parent = ?", board, id, id)
