@@ -147,7 +147,7 @@
 
     <hr>
     <%# Note that we COULD order by `(-1 * sticky), (SELECT MAX(p2.post_id) FROM posts p2 WHERE parent = post_id)` and we wouldn't need the extra `last_bumped` database column, but it would be more cpu/disk work on the database %>
-    <% get_board(path, params, session).each do |res| %>
+    <% get_board(path, params, session, config).each do |res| %>
       <% extras = "" %>
       <% if res[:is_locked] then extras += 'color: grey;' end %>
       <% if res[:sticky] then extras += 'color: #006400;' end %>

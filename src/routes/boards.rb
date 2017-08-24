@@ -129,11 +129,14 @@ def make_metadata_from_hash(res, session)
   end
   return obj;
 end
-def make_metadata(con, id, session)
+def make_metadata(con, id, session, config)
   id = id.to_i.to_s;
   result = [400, "No results found"]
   query(con, "SELECT *, (SELECT COUNT(*) FROM posts WHERE parent = ?) + 1 AS number_of_replies FROM posts WHERE post_id = ?", id, id).each do |hash|
     result = make_metadata_from_hash(hash, session)
+  end
+  if config["boards"][result[:board]]["hidden"] and not session[:moderates] then
+    return "You have no janitor permissions"
   end
   return result
 end
@@ -147,14 +150,17 @@ def try_login(username, password, config, session, params)
       if params[:redirect]
         return redirect(params[:redirect], 303)
       end
-      return "You are now logged in as " + username + ", you moderate " + janitor["boards"].join(", ") + '&nbsp;<a href="/logout">Log out</a>'
+      return JSON.dump(janitor["boards"])
     end
   end
   return [403, "Check your username and password"]
 end
 
-def get_board(board, params, session)
+def get_board(board, params, session, config)
   results = []
+  if config["boards"][board]["hidden"] and not session[:moderates] then
+    return [403, "You have no janitor permissions"]
+  end
   page = 0
   if params[:page] then page = params[:page].to_i end
   offset = page * 20;
@@ -165,7 +171,7 @@ def get_board(board, params, session)
   return results
 end
 
-def get_thread_replies(id, session)
+def get_thread_replies(id, session, config)
   con = make_con()
   results = []
   id = id.to_i.to_s
@@ -174,6 +180,9 @@ def get_thread_replies(id, session)
   end
   # dirty fucking hack
   results[0][:number_of_replies] = results.length
+  if config["boards"][results[0][:board]]["hidden"] and not session[:moderates] then
+    return [403, "You have no janitor permissions"]
+  end
   return results
 end
 
@@ -251,7 +260,7 @@ module Sinatra
             content = params[:content]
             content = apply_word_filters(config, board, content)
             parent = params[:parent].to_i
-            if make_metadata(con, parent, session)[:number_of_replies] >= config["bump_limit"]
+            if make_metadata(con, parent, session, config)[:number_of_replies] >= config["bump_limit"]
               return [400, "Bump limit reached"]
             end
             if content.length > 500 then
@@ -303,14 +312,14 @@ module Sinatra
               if config["boards"][path]["hidden"] and not session["username"] then
                 return [403, "You have no janitor privileges"]
               end
-              erb :board, :locals => {:path => path, :con => con, :offset => offset, :banner => new_banner(path), :moderator => is_moderator(path, session)}
+              erb :board, :locals => {:path => path, :config => config, :con => con, :offset => offset, :banner => new_banner(path), :moderator => is_moderator(path, session)}
             end
             app.get "/" + path + "/thread/:id" do |id|
               con = make_con()
               if config["boards"][path]["hidden"] and not session["username"] then
                 return [403, "You have no janitor privileges"]
               end
-              erb :thread, :locals => {:path => path, :id => id, :con => con, :banner => new_banner(path), :moderator => is_moderator(path, session)}
+              erb :thread, :locals => {:config => config, :path => path, :id => id, :con => con, :banner => new_banner(path), :moderator => is_moderator(path, session)}
             end
 
             # Rules & Editing rules
@@ -524,15 +533,15 @@ module Sinatra
             JSON.dump(config["boards"].select do |key, value| session[:username] or not value["hidden"] end.map do |key, value| key end)
           end
           app.get API + "/board/:board" do |board|
-            return JSON.dump(get_board(board, params, session))
+            return JSON.dump(get_board(board, params, session, config))
           end
           app.get API + "/thread/:id/metadata" do |id|
             id = id.to_i.to_s
-            return JSON.dump(make_metadata(make_con(), id, session))
+            return JSON.dump(make_metadata(make_con(), id, session, config))
           end
           app.get API + "/thread/:id/replies" do |id|
             id = id.to_i.to_s
-            return JSON.dump(get_thread_replies(id, session))
+            return JSON.dump(get_thread_replies(id, session, config))
           end
         end
       end

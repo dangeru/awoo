@@ -88,7 +88,7 @@
       <% i = 0 %>
       <% is_locked = false %>
       <% #con.query("SELECT * FROM posts WHERE parent = #{id.to_i} OR post_id = #{id.to_i} ORDER BY post_id").each do |res| %>
-      <% get_thread_replies(id.to_i.to_s, session).each do |res| %>
+      <% get_thread_replies(id.to_i.to_s, session, config).each do |res| %>
         <% if i == 0 then %>
           <% is_locked = res[:is_locked] %>
           <% if path == "burg" then %>
