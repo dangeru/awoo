@@ -420,7 +420,7 @@ module Sinatra
           # Moderator log in page, (mod_login.erb)
           app.get "/mod" do
             if session[:moderates] then
-              return "You are already logged in as "+Sanitize.clean(session[:username])+" and you moderate " + session[:moderates].join(", ") + '&nbsp;<a href="/logout">Log out</a>'
+              redirect('/mod_login_success', 303);
             end
             erb :mod_login, :locals => {:session => session}
           end
