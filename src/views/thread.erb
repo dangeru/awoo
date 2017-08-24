@@ -131,7 +131,8 @@
             <i class="fa fa-trash offset-left" aria-hidden="true" onClick='deletePost(<%= res[:post_id] %>)'></i>
             <a style="display: inline-block; font-size: 50%;" href="/ip/<%= res[:ip] %>"><%= res[:ip] %></a>
           <% end %>
-          <span class="post_number" style="display: none;" onClick='document.getElementById("reply_box").innerText += ">><%= res[:post_id] %>"'><%= res[:post_id] %></span>
+          <% digest = Digest::SHA256.hexdigest res[:ip] %>
+          <span class="post_number" style="display: none;">Post number #<a href="#" onClick='document.getElementById("reply_box").innerText += ">><%= res[:post_id] %>"'><%= res[:post_id] %></a>, ID: <%= digest[-5..-1]%></span><br>
           |
           <% res[:comment].split("\n").each do |line| %>
             <% line = line.chomp %>

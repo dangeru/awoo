@@ -7,6 +7,7 @@
 
 require 'mysql2'
 require 'sanitize'
+require 'digest'
 
 API = "/api/v2"
 
