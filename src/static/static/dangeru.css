@@ -139,3 +139,6 @@ small {
 input, textarea {
   font-size: 16px;
 }
+.burg {
+  width: 50%;
+}
