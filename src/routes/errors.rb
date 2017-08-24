@@ -10,7 +10,7 @@ module Sinatra
       module Errors
         def self.registered(app)
           app.error 404 do
-            "Error 404, route might've been deleted or not existed at all."
+            erb :404
           end
 
           app.error 500 do
