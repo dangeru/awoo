@@ -428,7 +428,11 @@ module Sinatra
           app.post "/mod" do
             username = params[:username]
             password = params[:password]
+            puts username, password
             return try_login(username, password, config, session, params)
+          end
+          app.get "/mod_login_success" do
+            erb :mod_login_success, :locals => {:session => session, :config => config}
           end
           # Logout action, logs the user out and redirects to the mod login page
           app.get "/logout" do

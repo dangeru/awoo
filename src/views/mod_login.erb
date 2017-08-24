@@ -20,17 +20,35 @@
         font-family: 'CyberpunkWaifus';
       }
     </style>
+    <script>
+      var submit_form = function submit_form(form, route) {
+        var data = new FormData(form);
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == 4) {
+              if (xhr.status != 200) {
+                alert("errno = -EINVAL; return;\n\n" + xhr.responseText)
+              } else {
+                window.location.href = "/mod_login_success"
+              }
+            }
+        }
+        xhr.open("POST", route);
+        xhr.send(data);
+      }
+    </script>
   </head>
   <body>
     <div id="container_login">
       <a href="javascript:location.reload();"><img src="/static/logo.png" alt="danger/u/" id="modlogo"></a><br>
       <div class="redtext">[Awoo janitor panel login]</div><br>
-      <form action="/mod" method="post" name="mod_login">
+      <form id="form" name="mod_login" onSubmit='alert('test'); submit_form(this, "/mod")'>
         <div class="redtext">[Username: <input type="text" name="username" id="username" placeholder="Username" class="styled"/>]</div>
         <div class="redtext">[Password: <input type="password" name="password" id="password" placeholder="Password" class="styled"/>]</div>
         <br />
-        <input type="submit" id="submit" name="submit" value="Send" class="styled"/>
-      </form><br>
+        <button class="styled" id="submit" onClick="submit_form(document.getElementById('form'), '/mod')">Send</button>
+      </form>
+      <br />
     </div>
     <footer class="comment" style="font-size: xx-small; text-align: center;">
       <small>Awoo <%= settings.awoo_version %></small>
