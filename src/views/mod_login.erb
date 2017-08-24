@@ -12,6 +12,12 @@
       #modlogo {
         width: auto;
       }
+      .styled {
+        border: 1px solid #ED145B;
+        padding: 4px;
+        color: white;
+        background-color: black;
+      }
     </style>
   </head>
   <body>
@@ -19,10 +25,10 @@
       <a href="javascript:location.reload();"><img src="/static/logo.png" alt="danger/u/" id="modlogo"></a><br>
       <div class="redtext">[danger/u/ admin panel login]</div><br>
       <form action="/mod" method="post" name="mod_login">
-        <div class="redtext">[Username: <input type="text" name="username" id="username" placeholder="Username" style="border: 1px solid #ED145B; padding: 4px; color: #ED145B; background-color: black;"/>]</div>
-        <div class="redtext">[Password: <input type="password" name="password" id="password" placeholder="Password" style="border: 1px solid #ED145B; padding: 4px; color: #ED145B; background-color: black;"/>]</div>
+        <div class="redtext">[Username: <input type="text" name="username" id="username" placeholder="Username" class="styled"/>]</div>
+        <div class="redtext">[Password: <input type="password" name="password" id="password" placeholder="Password" class="styled"/>]</div>
         <br />
-        <input type="submit" id="submit" name="submit" value="Send" style="border: 1px solid #ED145B; padding: 4px; color: #ED145B; background-color: black;"/>
+        <input type="submit" id="submit" name="submit" value="Send" class="styled"/>
       </form><br>
     </div>
     <footer class="comment" style="font-size: xx-small; text-align: center;">
