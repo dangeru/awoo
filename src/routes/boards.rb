@@ -4,8 +4,6 @@
 # => (c) prefetcher & github commiters 2017
 #
 
-
-# Extract 404 logic and use it if someone not logged in tries to access /staff
 # put hash and stickyness keys in Thread.java api in la/u/ncher.API
 
 require 'mysql2'
@@ -321,14 +319,16 @@ module Sinatra
                 offset = params[:page].to_i * 20;
               end
               if config["boards"][path]["hidden"] and not session["username"] then
-                return [403, "You have no janitor privileges"]
+                #return [403, "You have no janitor privileges"]
+                return [404, erb(:notfound)]
               end
               erb :board, :locals => {:path => path, :config => config, :con => con, :offset => offset, :banner => new_banner(path), :moderator => is_moderator(path, session)}
             end
             app.get "/" + path + "/thread/:id" do |id|
               con = make_con()
               if config["boards"][path]["hidden"] and not session["username"] then
-                return [403, "You have no janitor privileges"]
+                #return [403, "You have no janitor privileges"]
+                return [404, erb(:notfound)]
               end
               erb :thread, :locals => {:config => config, :path => path, :id => id, :con => con, :banner => new_banner(path), :moderator => is_moderator(path, session)}
             end
@@ -477,7 +477,8 @@ module Sinatra
           end
           app.post "/move/:post/?" do |post|
             con = make_con()
-            # We allow the move if the person moderates at least one board, no matter which boards
+            # We allow the move if the person moderates the board the thread is being moved *from*
+            # we don't check the thread that it's being moved *to*
             prev_board = nil;
             query(con, "SELECT board FROM posts WHERE post_id = ?", id).each do |res|
               prev_board = res["board"]
