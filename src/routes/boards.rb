@@ -5,8 +5,6 @@
 #
 
 
-# Burg - Move capcode below burg `next`, remove explicit check
-# Make hash default to ffffff instead of hash of 0.0.0.0
 # css for different levels of stickyness
 # Extract 404 logic and use it if someone not logged in tries to access /staff
 
@@ -116,12 +114,14 @@ def make_con()
 end
 def make_metadata_from_hash(res, session)
   is_op = res["parent"] == nil
-  if res["ip"].nil? then
-    res["ip"] = "0.0.0.0"
-  end
-  obj = {:post_id => res["post_id"], :board => res["board"], :is_op => is_op, :comment => res["content"], :date_posted => res["date_posted"].strftime('%s').to_i, :hash => Digest::SHA256.hexdigest(res["ip"])[0..5]}
+  obj = {:post_id => res["post_id"], :board => res["board"], :is_op => is_op, :comment => res["content"], :date_posted => res["date_posted"].strftime('%s').to_i}
   if is_moderator(res["board"], session) then
     obj[:ip] = res["ip"]
+  end
+  if res["ip"].nil? then
+    obj[:hash] = "FFFFFF";
+  else
+    obj[:hash] = Digest::SHA256.hexdigest(res["ip"])[0..5]
   end
   if res["janitor"] != nil then
     obj[:capcode] = res["janitor"]
