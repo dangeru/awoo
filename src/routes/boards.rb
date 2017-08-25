@@ -5,13 +5,10 @@
 #
 
 
-# Redtext improvements
-#     - I'm already splitting redtext links at the space to extract the post id or board name, just print the first thing then </a> then the rest
-# Mod login success probably breaks on mobile
-# Just remove the redirect and replace it with `erb :mod_login_success` and remove the route
 # Burg - Move capcode below burg `next`, remove explicit check
 # Make hash default to ffffff instead of hash of 0.0.0.0
 # css for different levels of stickyness
+# Extract 404 logic and use it if someone not logged in tries to access /staff
 
 require 'mysql2'
 require 'sanitize'
@@ -161,7 +158,7 @@ def try_login(username, password, config, session, params)
       if params[:redirect]
         return redirect(params[:redirect], 303)
       end
-      return JSON.dump(janitor["boards"])
+      return erb :mod_login_success, :locals => {:session => session, :config => config}
     end
   end
   return [403, "Check your username and password"]
@@ -431,7 +428,7 @@ module Sinatra
           # Moderator log in page, (mod_login.erb)
           app.get "/mod" do
             if session[:moderates] then
-              redirect('/mod_login_success', 303);
+              return erb :mod_login_success, :locals => {:session => session, :config => config}
             end
             erb :mod_login, :locals => {:session => session}
           end
@@ -441,9 +438,6 @@ module Sinatra
             password = params[:password]
             puts username, password
             return try_login(username, password, config, session, params)
-          end
-          app.get "/mod_login_success" do
-            erb :mod_login_success, :locals => {:session => session, :config => config}
           end
           # Logout action, logs the user out and redirects to the mod login page
           app.get "/logout" do

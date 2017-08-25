@@ -46,12 +46,11 @@
     <div id="container_login">
       <a href="javascript:location.reload();"><img src="/static/logo.png" alt="danger/u/" id="modlogo"></a><br>
       <div class="redtext">[Awoo janitor panel login]</div><br>
-      <form method="POST" action="/mod" id="form" name="mod_login" onSubmit='the_thing()'>
+      <form method="POST" action="/mod" id="form" name="mod_login">
         <div class="redtext">[Username: <input type="text" name="username" id="username" placeholder="Username" class="styled"/>]</div>
         <div class="redtext">[Password: <input type="password" name="password" id="password" placeholder="Password" class="styled"/>]</div>
-        <input type="text" name="redirect" value="/mod_login_success" style="display: none;" />
         <br />
-        <button class="styled" id="submit" onClick="the_thing()">Send</button>
+        <input type="submit" name="submit" class="styled" id="submit">Send</button>
       </form>
       <br />
     </div>
