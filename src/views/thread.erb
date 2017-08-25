@@ -150,21 +150,24 @@
                   # either in the format >>1234 or >>/board/1234, where the first one must be in the current thread and the second
                   # one must be an OP on that board
                   if x.length > 0 and consecutive == 3
-                    target = x.split(" ")[0].split("/")
+                    x_split = x.split(" ")
+                    target = x_split[0].split("/")
                     if target.length == 1 then
                       # it's in the format >>1234
-                      %><a class="redtext" onMouseOver="hover(<%= target[0].to_i.to_s %>, <%= res[:post_id] %>)" onMouseOut="unhover()" onClick="select(<%= target[0].to_i.to_s %>)">&gt;<%= Sanitize.clean(x) %></a><%
+                      target[0] = target[0].to_i.to_s # sanitize so they don't inject javascriot
+                      %><a class="redtext" onMouseOver="hover(<%= target[0] %>, <%= res[:post_id] %>)" onMouseOut="unhover()" onClick="select(<%= target[0] %>)">&gt;<%= target[0] %></a> <%= Sanitize.clean(x_split[1..(x_split.length - 1)].join(" ")) %></a><%
                     else
                       # it's in the format >>/board/1234, so extract `board` and `1234` and make the link
                       target_board = Sanitize.clean(target[1]).gsub("\"", "")
                       target_thread = target[2].to_i.to_s
                       href = "/" + target_board.to_s + "/thread/" + target_thread.to_s
-                      %><a class="redtext" href="<%= href %>">&gt;<%= Sanitize.clean(x) %></a><%
+                      %><a class="redtext" href="<%= href %>">&gt;<%= Sanitize.clean(x_split[0]) %></a> <%= Sanitize.clean(x_split[1..(x_split.length - 1)].join(" ")) %></a><%
                     end
                   elsif x.length > 0 and consecutive == 4 then
                     # If we've hit the third > in a row, and it's not immediately followed by a fourth >, it's a link to another board
                     # in the format >>/board/ or >>board
-                    target_board_split = x.split(" ")[0].split("/")
+                    x_split = x.split(" ")
+                    target_board_split = x_split[0].split("/")
                     # Assume >>/board/ at first
                     target_board = target_board_split[1]
                     if target_board_split.length == 1 then
@@ -172,7 +175,7 @@
                       target_board = target_board_split[0]
                     end
                     # make the link
-                    %><a class="redtext" href="/<%= target_board %>">&gt;<%= Sanitize.clean(x) %></a><%
+                    %><a class="redtext" href="/<%= target_board %>">&gt;<%= Sanitize.clean(x_split[0]) %></a> <%= Sanitize.clean(x_split[1..(x_split.length - 1)].join(" ")) %></a><%
                   else
                     # it's some other form of red text, just display it as red text
                     %><span class="redtext redtext-<%= consecutive %>">&gt;<%= Sanitize.clean(x) %></span><%

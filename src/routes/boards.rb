@@ -5,6 +5,14 @@
 #
 
 
+# Redtext improvements
+#     - I'm already splitting redtext links at the space to extract the post id or board name, just print the first thing then </a> then the rest
+# Mod login success probably breaks on mobile
+# Just remove the redirect and replace it with `erb :mod_login_success` and remove the route
+# Burg - Move capcode below burg `next`, remove explicit check
+# Make hash default to ffffff instead of hash of 0.0.0.0
+# css for different levels of stickyness
+
 require 'mysql2'
 require 'sanitize'
 
