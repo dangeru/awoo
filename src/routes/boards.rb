@@ -4,8 +4,6 @@
 # => (c) prefetcher & github commiters 2017
 #
 
-# put hash and stickyness keys in Thread.java api in la/u/ncher.API
-
 require 'mysql2'
 require 'sanitize'
 
