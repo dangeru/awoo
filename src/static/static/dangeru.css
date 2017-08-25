@@ -142,3 +142,28 @@ input, textarea {
 .burg {
   width: 50%;
 }
+.sticky-1 {
+  color: #006400; /* prefetcher green */
+}
+.sticky-2 {
+  color: #FAA757; /* rajah */
+}
+.sticky-3 {
+  color: #FF8080; /* frolly */
+}
+.sticky-4 {
+  color: #4891D9; /* havelock blue */
+}
+.sticky-5 {
+  color: #CC2E2D; /* firebrick */
+}
+.sticky-6 {
+  color: #9900FF; /* purple */
+}
+.sticky-7 {
+  color: #DB9863; /* whiskey sour */
+}
+.sticky-8 {
+  color: #6E4B2A; /* cafe royale */
+}
+

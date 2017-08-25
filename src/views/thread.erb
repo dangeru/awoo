@@ -99,7 +99,6 @@
       <% last_date_modified = 0 %>
       <% i = 0 %>
       <% is_locked = false %>
-      <% #con.query("SELECT * FROM posts WHERE parent = #{id.to_i} OR post_id = #{id.to_i} ORDER BY post_id").each do |res| %>
       <% get_thread_replies(id.to_i.to_s, session, config).each do |res| %>
         <% if i == 0 then %>
           <% is_locked = res[:is_locked] %>
@@ -115,6 +114,13 @@
           <%# I WILL MOVE IT LATER I PROMISE %>
           <meta property="og:title" content="<%= Sanitize.clean(res[:title]) %>">
           <meta property="og:description" content="<%= Sanitize.clean(res[:comment]) %>">
+          <% if is_moderator(path, session) and res[:sticky] then %>
+            <form action="/sticky/<%= res[:post_id] %>" method="POST" style="color: white;">
+              Adjust Stickynes
+              <input type="number" name="stickyness" value="<%= res[:stickyness] %>" />
+              <input type="submit" />
+            </form>
+          <% end %>
         <% end %>
         <div class="comment" id="comment-<%= res[:post_id] %>">
           <% if path == "burg" then %>

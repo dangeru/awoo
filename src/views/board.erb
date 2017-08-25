@@ -148,11 +148,11 @@
     <hr>
     <%# Note that we COULD order by `(-1 * sticky), (SELECT MAX(p2.post_id) FROM posts p2 WHERE parent = post_id)` and we wouldn't need the extra `last_bumped` database column, but it would be more cpu/disk work on the database %>
     <% get_board(path, params, session, config).each do |res| %>
-      <% extras = "" %>
-      <% if res[:is_locked] then extras += 'color: grey;' end %>
-      <% if res[:sticky] then extras += 'color: #006400;' end %>
+      <% classes = "" %>
+      <% if res[:is_locked] then classes += " locked " end %>
+      <% if res[:stickyness] then classes += ' sticky-' + res[:stickyness].to_s + ' ' end %>
       <% if path == "burg" then res[:title] = "burg" end %>
-      <a style="display: inline-block; <%= extras %>" data-replies="<%= res[:number_of_replies] %>" href="/<%= path %>/thread/<%= res[:post_id] %>"><%= Sanitize.clean(res[:title]) %></a>
+        <a style="display: inline-block;" data-replies="<%= res[:number_of_replies] %>" href="/<%= path %>/thread/<%= res[:post_id] %>" class="<%= classes %>"><%= Sanitize.clean(res[:title]) %></a>
       <% if moderator %>
         <% if res[:is_locked] %>
           <i class="fa fa-unlock-alt" aria-hidden="true" onClick='lockPost(<%= res[:post_id] %>)'></i>
@@ -161,7 +161,7 @@
         <% end %>
 
         <%# Sticky / Unsticky post %>
-        <% if res[:sticky] == 0 %>
+        <% if not res[:sticky] %>
           <i class="fa fa-thumb-tack" aria-hidden="true" onClick='stickyPost(<%= res[:post_id] %>)'></i>
         <% else %>
           <i class="fa fa-ban" aria-hidden="true" onClick='unstickyPost(<%= res[:post_id] %>)'></i>

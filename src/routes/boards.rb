@@ -5,8 +5,8 @@
 #
 
 
-# css for different levels of stickyness
 # Extract 404 logic and use it if someone not logged in tries to access /staff
+# put hash and stickyness keys in Thread.java api in la/u/ncher.API
 
 require 'mysql2'
 require 'sanitize'
@@ -76,7 +76,7 @@ def sticky_unsticky(id, setting, con, session)
   end
   if is_moderator(board, session) then
     query(con, "UPDATE posts SET sticky = ? WHERE post_id = ?", setting, id)
-    return redirect("/" + board + "/thread/" + id, 303)
+    return redirect("/" + board + "/thread/" + id.to_s, 303)
   else
     return [403, "You have no janitor privileges."]
   end
@@ -132,6 +132,9 @@ def make_metadata_from_hash(res, session)
     obj[:is_locked] = res["is_locked"] != 0
     obj[:number_of_replies] = res["number_of_replies"]
     obj[:sticky] = res["sticky"] != 0
+    if res["sticky"] > 0 then
+      obj[:stickyness] = res["sticky"]
+    end
   else
     obj[:parent] = res["parent"]
   end
@@ -505,11 +508,15 @@ module Sinatra
           # Sticky / Unsticky posts
           app.get "/sticky/:id/?" do |post_id|
             con = make_con()
-            sticky_unsticky(post_id, "TRUE", con, session)
+            sticky_unsticky(post_id, true, con, session)
+          end
+          app.post "/sticky/:id/?" do |post_id|
+            con = make_con()
+            sticky_unsticky(post_id, params[:stickyness].to_i, con, session)
           end
           app.get "/unsticky/:id/?" do |post_id|
             con = make_con()
-            sticky_unsticky(post_id, "FALSE", con, session)
+            sticky_unsticky(post_id, false, con, session)
           end
 
           # Ban / Unban an IP
