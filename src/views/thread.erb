@@ -64,7 +64,7 @@
             }
             <%= mobile_js %>
             if (typeof(unitedPropertiesIf) != "undefined") {
-              var id = <%= id %>;
+              var id = <%= id.to_i %>;
               unitedPropertiesIf.setProperty(board + ":" + id, total_number_of_posts.toString());
             }
             if (typeof(unitedPropertiesIf) == "undefined" || unitedPropertiesIf.getProperty("userscript").toUpperCase() == "TRUE") {
