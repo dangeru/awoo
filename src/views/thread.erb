@@ -127,7 +127,7 @@
             </div> <%# close .comment div %>
             <% next %>
           <% end %>
-          <% if res[:capcode] && path != "burg" then %>
+          <% if res[:capcode] %>
             <div class="redtext">##Janitor:<%= res[:capcode] %>##</div><br>
           <% end %>
           <% if moderator then %>

@@ -1,18 +1,29 @@
 <!doctype html>
 <html>
+  <head>
+    <style>
+      body {
+        text-align: center;
+      }
+    </style>
+    <link rel="stylesheet" href="/static/dangeru.css" />
+  </head>
   <body>
-    You moderate:
-    <br />
-    <% config["boards"].select do |board, v| session[:moderates].include? board end.each do |board, v| %>
-      <a href="/<%= board %>"><%= board %></a>
+    <div id="sitecorner">
+      <span id="title">Welcome <%= Sanitize.clean(session[:username]) %></span>
+      <hr />
+      You moderate:
       <br />
-    <% end %>
-    Rest:
-    <br />
-    <% config["boards"].select do |board, v| not session[:moderates].include? board end.each do |board, v| %>
-      <a href="/<%= board %>"><%= board %></a>
-      <br />
-    <% end %>
-    <a href="/logout">Log out</a>
+      <% config["boards"].select do |board, v| session[:moderates].include? board end.each do |board, v| %>
+        <a href="/<%= board %>"><%= board %></a>
+        <br />
+      <% end %>
+      <hr />
+      <% config["boards"].select do |board, v| not session[:moderates].include? board end.each do |board, v| %>
+        <a href="/<%= board %>"><%= board %></a>
+      <% end %>
+      <hr />
+      <a href="/logout">Log out</a>
+    </div>
   </body>
 </html>
