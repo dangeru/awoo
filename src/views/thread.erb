@@ -117,9 +117,6 @@
           <meta property="og:description" content="<%= Sanitize.clean(res[:comment]) %>">
         <% end %>
         <div class="comment" id="comment-<%= res[:post_id] %>">
-          <% if res[:capcode] then %>
-            <div class="redtext">##Janitor:<%= res[:capcode] %>##</div><br>
-          <% end %>
           <% if path == "burg" then %>
             <% if res[:comment] == "burg" then %>
               <img class="burg" src="/static/burg.jpg" />
@@ -129,6 +126,9 @@
             <% i += 1 %>
             </div> <%# close .comment div %>
             <% next %>
+          <% end %>
+          <% if res[:capcode] && path != "burg" then %>
+            <div class="redtext">##Janitor:<%= res[:capcode] %>##</div><br>
           <% end %>
           <% if moderator then %>
             <i class="fa fa-trash offset-left" aria-hidden="true" onClick='deletePost(<%= res[:post_id] %>)'></i>
