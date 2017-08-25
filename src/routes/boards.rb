@@ -342,11 +342,28 @@ module Sinatra
             end
             app.post "/" + path + "/rules/edit/?" do
               if is_moderator(path, session)
-                settings.config['boards'][path]['rules'] = Sanitize.clean(params[:rules])
+                settings.config['boards'][path]['rules'] = params[:rules]
                 File.open("config.json", "w") do |f|
                   f.write(JSON.pretty_generate(settings.config))
                 end
                 redirect "/" + path + "/rules"
+              else
+                return [403, "You have no janitor privileges."]
+              end
+            end
+            app.get "/" + path + "/word-filter/?" do
+              if not is_moderator(path, session) then
+                return [404, erb(:notfound)]
+              end
+              erb :word_filter, :locals => {:config => config, :path => path, :banner => new_banner(path)}
+            end
+            app.post "/" + path + "/word-filter/?" do
+              if is_moderator(path, session)
+                settings.config['boards'][path]['word-filter'] = JSON.parse(params[:words])
+                File.open("config.json", "w") do |f|
+                  f.write(JSON.pretty_generate(settings.config))
+                end
+                return "OK"
               else
                 return [403, "You have no janitor privileges."]
               end

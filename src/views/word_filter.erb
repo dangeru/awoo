@@ -1,0 +1,99 @@
+<!doctype html>
+<html>
+  <head>
+    <title>/<%= path %>/ - Word filters</title>
+    <link rel="stylesheet" type="text/css" href="/static/dangeru.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+      input[type='text'] {
+        style: inline-block;
+        width: 40%;
+      }
+      button {
+        width: 15%;
+      }
+    </style>
+    <script>
+      var words = <%= JSON.dump(config["boards"][path]["word-filter"]) %>;
+      var ol = function ol() {
+        var editor = document.getElementById("editor");
+        editor.innerHTML = "";
+        for (var i = 0; i < Object.keys(words).length; i++) {
+          var pre = Object.keys(words)[i];
+          var post = words[pre];
+          var pre_inp = document.createElement("input");
+          pre_inp.type = "text";
+          pre_inp.value = pre;
+          pre_inp.id = "pre-" + i;
+          var post_inp = document.createElement("input");
+          post_inp.type = "text";
+          post_inp.value = post;
+          post_inp.id = "post-" + i;
+          var button = document.createElement("button");
+          button.innerText = "Drop";
+          (function(i, button) {
+            button.addEventListener("click", function() {
+              get(i);
+            })
+          })(i, button);
+          editor.appendChild(pre_inp)
+          editor.appendChild(post_inp)
+          editor.appendChild(button)
+          editor.appendChild(document.createElement("br"));
+        }
+      }
+      var get = function get(without) {
+        words = {};
+        var temp = null;
+        Array.from(document.getElementsByTagName("input")).forEach(function(elem) {
+          if (elem.id.indexOf("pre-") == 0) {
+            if (Number(elem.id.replace("pre-", "")) == without) {
+              temp = null;
+            } else {
+              temp = elem.value;
+            }
+          } else if (temp != null) {
+            words[temp] = elem.value
+          }
+        });
+        ol();
+      }
+      var send = function send() {
+        get();
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function() {
+          if (xhr.readyState == 4) {
+            if (xhr.status == 200) {
+              alert("Success");
+              window.location.reload();
+            } else {
+              alert(xhr.responseText);
+            }
+          }
+        }
+        xhr.open("POST", "/" + <%= JSON.dump(path) %> + "/word-filter")
+        var data = new FormData();
+        data.set("words", JSON.stringify(words));
+        xhr.send(data);
+      }
+      var add = function add() {
+        get();
+        words["new"] = "new";
+        ol();
+      }
+    </script>
+  </head>
+
+  <body onLoad='ol()'>
+    <div id="sitecorner">
+      <img src="<%= banner %>" alt="danger/u/">
+      <div id="title" style="text-align: center;">/<%= path %>/ - Word filters</div>
+      <button onClick='add()'>Add</button>
+      <br />
+      <form method="post" action="/<%= path %>/rules/edit" id="editor">
+      </form>
+      <br />
+      <button onClick='send()'>Save</button>
+  </div>
+  </body>
+</html>

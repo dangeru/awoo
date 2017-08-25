@@ -20,7 +20,7 @@
       <img src="<%= banner %>" alt="danger/u/">
       <div id="title" style="text-align: center;">/<%= path %>/ - Rules</div>
       <pre class="comment" id="rules">
-<%= rules %>
+<%= Sanitize.clean(rules) %>
       </pre>
       <% if moderator %>
         <form method="post" action="/<%= path %>/rules/edit" style="display:none;" id="editor">
