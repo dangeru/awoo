@@ -204,7 +204,7 @@ def mobile_js()
 end
 
 def apply_word_filters(config, path, content)
-  config["boards"][path]["word-filter"].each do |a, b| content = content.gsub(a, b) end
+  config["boards"][path]["word-filter"].each do |a, b| content = content.gsub(Regexp.new("\\b" + a + "\\b"), b) end
   return content
 end
 

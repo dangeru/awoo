@@ -144,8 +144,11 @@
         <input type="submit" id="submit" name="submit" value="Send" style="float: right;" /><br />
       </form>
     </div>
-
-    <hr>
+      <% if moderator %>
+        <hr />
+        <a href="/<%= path %>/word-filter">Edit word filters</a>
+      <% end %>
+    <hr />
     <%# Note that we COULD order by `(-1 * sticky), (SELECT MAX(p2.post_id) FROM posts p2 WHERE parent = post_id)` and we wouldn't need the extra `last_bumped` database column, but it would be more cpu/disk work on the database %>
     <% get_board(path, params, session, config).each do |res| %>
       <% classes = "" %>

@@ -6,18 +6,15 @@
     "test": {
       "name": "test",
       "desc": "Awoo testing grounds",
-
       "rules": "1. Test out stuff.\n2. Report bugs.\n3. Repeat.",
-
       "word-filter": {
-        "fillerdata": "fillerdata"
+        "new": "new2"
       }
     },
     "burg": {
       "name": "burg",
       "desc": "burg best board",
       "rules": "1. burg\n2. angry burg",
-
       "word-filter": {
         "fillerdata": "fillerdata"
       }
@@ -27,7 +24,6 @@
       "desc": "staff",
       "rules": "asdjfads",
       "hidden": true,
-
       "word-filter": {
         "fillerdata": "fillerdata"
       }
@@ -41,12 +37,17 @@
     {
       "username": "test",
       "password": "test",
-      "boards": ["test"]
+      "boards": [
+        "test"
+      ]
     },
     {
       "username": "test2",
       "password": "pass",
-      "boards": ["test"]
+      "boards": [
+        "test"
+      ],
+      "is_supermaidmin": true
     }
   ]
 }
