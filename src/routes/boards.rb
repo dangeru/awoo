@@ -403,27 +403,33 @@ module Sinatra
             board = nil;
             post_id = post_id.to_i
             parent = nil
+            ip = post_content = title = nil
             # First, figure out which board that post is on
-            query(con, "SELECT board, parent FROM posts WHERE post_id = ?", post_id).each do |res|
+            query(con, "SELECT content, title, ip, board, parent FROM posts WHERE post_id = ?", post_id).each do |res|
               board = res["board"]
               parent = res["parent"]
+              title = res["title"]
+              ip = res["ip"]
+              board = res["board"]
+              post_content = res["content"]
+            end
+            if board.nil? then
+              return [400, "Could not find a post with that ID"]
             end
             # Then, check if the currently logged in user has permission to moderate that board
             if not is_moderator(board, session)
               return [403, "You are not logged in or you do not moderate " + board]
             end
             # Insert an IP note with the content of the deleted post
-            query(con, "SELECT content, title, ip FROM posts WHERE post_id = ?", post_id).each do |res|
-              content = ""
-              if res["title"] then
-                content += "Post deleted"
-                content += wrap("title", res["title"])
-              else
-                content += "Reply deleted"
-              end
-              content += wrap("comment", res["content"])
-              query(con, "INSERT INTO ip_notes (ip, content, actor) VALUES (?, ?, ?)", res["ip"], content, session[:username])
+            content = ""
+            if title then
+              content += "Post deleted\n"
+              content += wrap("title", title)
+            else
+              content += "Reply deleted\n"
             end
+            content += wrap("comment", post_content)
+            query(con, "INSERT INTO ip_notes (ip, content, actor) VALUES (?, ?, ?)", ip, content, session[:username])
             # Finally, delete the post
             query(con, "DELETE FROM posts WHERE post_id = ? OR parent = ?", post_id, post_id)
             if parent != nil then
