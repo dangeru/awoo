@@ -80,9 +80,15 @@
         <br />
       <% end %>
       <div class="title" style="color: #ED145B;">IP Notes</div>
-      <% query(con, "SELECT content, created FROM ip_notes WHERE ip = ? ORDER BY created", addr).each do |res| %>
+      <% query(con, "SELECT content, created, actor FROM ip_notes WHERE ip = ? ORDER BY created", addr).each do |res| %>
         <div style="font-size: 50%;">
-          <div class="comment"><%= res["created"].strftime '%c' %></div>
+          <div class="comment">
+            <%= res["created"].strftime '%c' %>
+            <% if is_supermaidmin(config, session) then %>
+              <%= mod = res["actor"] %>
+              Created by: <a style="display: inline-block;" href="/introspect/<%= mod %>"><%= mod %></a>
+            <% end %>
+          </div>
         </div>
         <div class="entry">
           <div class="comment"><%= Sanitize.clean(res["content"]).gsub("\n", "<br />") %></div>

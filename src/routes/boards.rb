@@ -46,6 +46,19 @@ def is_moderator(board, session)
   end
   return session[:moderates].index(board) != nil
 end
+def is_supermaidmin(config, session)
+  if not session[:username] then
+    return false
+  end
+  res = false
+  config["janitors"].each do |mod|
+    if mod["username"] == session[:username] and mod["is_supermaidmin"] then
+      res = true
+      break
+    end
+  end
+  return res
+end
 
 def lock_or_unlock(post, bool, con, session)
   board = nil
@@ -390,7 +403,7 @@ module Sinatra
                 content += "OP with title: " + res["title"] + " - and "
               end
               content += "comment: " + res["content"]
-              query(con, "INSERT INTO ip_notes (ip, content) VALUES (?, ?)", res["ip"], content)
+              query(con, "INSERT INTO ip_notes (ip, content, actor) VALUES (?, ?)", res["ip"], content, session[:username])
             end
             # Finally, delete the post
             query(con, "DELETE FROM posts WHERE post_id = ? OR parent = ?", post_id, post_id)
@@ -469,7 +482,7 @@ module Sinatra
               return [403, "You have no janitor permissions"]
             end
             con = make_con()
-            erb :ip_list, :locals => {:session => session, :addr => addr, :con => con}
+            erb :ip_list, :locals => {:session => session, :addr => addr, :con => con, :config => config}
           end
 
           # Either locks or unlocks the specified thread
@@ -516,7 +529,7 @@ module Sinatra
               return [403, "You have no janitor privileges"]
             end
             content = params[:content]
-            query(con, "INSERT INTO ip_notes (ip, content) VALUES (?, ?)", addr, content)
+            query(con, "INSERT INTO ip_notes (ip, content, actor) VALUES (?, ?, ?)", addr, content, session[:username])
             #return redirect("/ip/" + addr, 303)
             return [200, "OK"]
           end
@@ -545,6 +558,7 @@ module Sinatra
               date = old_date[2] + "-" + old_date[0] + "-" + old_date[1] + " 00:00:00"
               reason = params[:reason]
               query(con, "INSERT INTO bans (ip, board, date_of_unban, reason) VALUES (?, ?, ?, ?)", ip, board, date, reason);
+              query(con, "INSERT INTO ip_notes (ip, content, actor) VALUES (?, ?)", ip, "Banned from /" + board + "/ for reason " + reason + " until " + params[:date], session[:username])
               redirect "/ip/#{ip}"
             else
               return [403, "You have no janitor privileges"]
@@ -556,9 +570,41 @@ module Sinatra
               ip = author_ip
               board = params[:board]
               query(con, "DELETE FROM bans WHERE ip = ? AND board = ?", ip, board)
+              query(con, "INSERT INTO ip_notes (ip, content, actor) VALUES (?, ?)", ip, "Unbanned from /" + board + "/", session[:username])
               redirect "/ip/#{ip}"
             else
               return [403, "You have no janitor privileges"]
+            end
+          end
+          app.get "/introspect/?" do
+            if not is_supermaidmin(config, session) then
+              return [403, "You are not a supermaidmin"]
+            end
+            erb :introspect, :locals => {:config => config}
+          end
+          app.get "/introspect/:mod/?" do |mod|
+            if not is_supermaidmin(config, session) then
+              return [403, "You are not a supermaidmin"]
+            end
+            erb :introspect_selected, :locals => {:config => config, :con => make_con(), :mod => mod}
+          end
+          app.post "/introspect_reset" do
+            if not is_supermaidmin(config, session) then
+              return [403, "You are not a supermaidmin"]
+            end
+            if not params[:mod] or not params[:newpass] then
+              return [400, "Username or new password not specified"]
+            end
+            found = -1;
+            config["janitors"].length.times do |i|
+              if config["janitors"][i]["username"] == params[:mod] then
+                found = i
+                config["janitors"][i]["password"] = params[:newpass]
+                break
+              end
+            end
+            if found == -1 then
+              return [400, "Moderator with username " + params[:mod] + " could not be found in config[\"janitors\"]"]
             end
           end
           app.get API + "/boards" do

@@ -1,0 +1,70 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Introspecting <%= Sanitize.clean(mod) %></title>
+    <link rel="stylesheet" type="text/css" href="/static/dangeru.css">
+    <link rel="shortcut icon" href="/static/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <style>
+      .entry {
+        border-left: 2px solid grey;
+        padding-left: 10px;
+      }
+    </style>
+    <script>
+      var mod = <%= JSON.dump(mod) %>;
+      var reset = function reset() {
+        var pw = prompt("Enter the new password: ");
+        var pw2 = prompt("Enter the new password: ");
+        if (pw != pw2) {
+          alert("Aborted on password equality check failure");
+          return;
+        }
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function() {
+          if (xhr.readyState == 4) {
+            if (xhr.status == 200) {
+              alert("Success");
+              window.location.reload();
+            } else {
+              alert("Error - " + xhr.responseText);
+            }
+          }
+        }
+        xhr.open("POST", "/introspect_reset")
+        var data = new FormData();
+        data.set("newpass", pw);
+        data.set("mod", mod)
+        xhr.send(data);
+      }
+    </script>
+  </head>
+  <body>
+    <div id="sitecorner">
+      <% ress = nil %>
+      <% if mod != "_any" then %>
+        <div id="title">Introspecting <%= Sanitize.clean(mod) %></div>
+        <button onClick='reset();'>Reset Password</button>
+        <br />
+        <% ress = query(con, "SELECT * FROM ip_notes WHERE actor = ? ORDER BY created DESC", mod) %>
+      <% else %>
+        <div id="title">Full Moderation Log</div>
+        <% ress = query(con, "SELECT * FROM ip_notes ORDER BY created DESC") %>
+      <% end %>
+      <% ress.each do |res| %>
+        <div style="font-size: 50%;">
+          <div class="comment">
+            <%= res["created"].strftime '%c' %><br />
+            IP in question: <a style="display: inline-block" href="/ip/<%= res["ip"] %>"><%= res["ip"] %></a>
+          </div>
+        </div>
+        <div class="entry">
+          <div class="comment"><%= Sanitize.clean(res["content"]).gsub("\n", "<br />") %></div>
+        </div>
+        <br />
+      <% end %>
+    </div>
+  </body>
+</html>
+
+

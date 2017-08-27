@@ -1,0 +1,26 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Introspect</title>
+    <link rel="stylesheet" type="text/css" href="/static/dangeru.css">
+    <link rel="shortcut icon" href="/static/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <style>
+    </style>
+  </head>
+  <body>
+    <div id="sitecorner">
+      <img src="/static/logo.png" />
+      <div id="title">Pick a janitor to introspect, or any to view all moderation logs</div>
+      <hr />
+      <a href="/introspect/_any">Any</a>
+      <br />
+      <% config["janitors"].each do |mod| %>
+        <% username = mod["username"] %>
+        <a href="/introspect/<%= Sanitize.clean(username) %>"><%= Sanitize.clean(username) %></a>
+        <br />
+      <% end %>
+    </div>
+  </body>
+</html>
+
