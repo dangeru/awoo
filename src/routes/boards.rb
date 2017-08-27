@@ -673,6 +673,10 @@ module Sinatra
                 File.open("config.json", "w") do |f|
                   f.write(JSON.pretty_generate(settings.config))
                 end
+                # rerun will detect that this file has changed and restart the server
+                File.open("_watch", "w") do |f|
+                  f.write(Random.rand.hash.to_s)
+                end
                 break
               end
             end
