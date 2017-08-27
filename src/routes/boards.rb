@@ -403,7 +403,7 @@ module Sinatra
                 content += "OP with title: " + res["title"] + " - and "
               end
               content += "comment: " + res["content"]
-              query(con, "INSERT INTO ip_notes (ip, content, actor) VALUES (?, ?)", res["ip"], content, session[:username])
+              query(con, "INSERT INTO ip_notes (ip, content, actor) VALUES (?, ?, ?)", res["ip"], content, session[:username])
             end
             # Finally, delete the post
             query(con, "DELETE FROM posts WHERE post_id = ? OR parent = ?", post_id, post_id)
@@ -558,7 +558,7 @@ module Sinatra
               date = old_date[2] + "-" + old_date[0] + "-" + old_date[1] + " 00:00:00"
               reason = params[:reason]
               query(con, "INSERT INTO bans (ip, board, date_of_unban, reason) VALUES (?, ?, ?, ?)", ip, board, date, reason);
-              query(con, "INSERT INTO ip_notes (ip, content, actor) VALUES (?, ?)", ip, "Banned from /" + board + "/ for reason " + reason + " until " + params[:date], session[:username])
+              query(con, "INSERT INTO ip_notes (ip, content, actor) VALUES (?, ?, ?)", ip, "Banned from /" + board + "/ for reason " + reason + " until " + params[:date], session[:username])
               redirect "/ip/#{ip}"
             else
               return [403, "You have no janitor privileges"]
@@ -570,7 +570,7 @@ module Sinatra
               ip = author_ip
               board = params[:board]
               query(con, "DELETE FROM bans WHERE ip = ? AND board = ?", ip, board)
-              query(con, "INSERT INTO ip_notes (ip, content, actor) VALUES (?, ?)", ip, "Unbanned from /" + board + "/", session[:username])
+              query(con, "INSERT INTO ip_notes (ip, content, actor) VALUES (?, ?, ?)", ip, "Unbanned from /" + board + "/", session[:username])
               redirect "/ip/#{ip}"
             else
               return [403, "You have no janitor privileges"]
@@ -600,6 +600,9 @@ module Sinatra
               if config["janitors"][i]["username"] == params[:mod] then
                 found = i
                 config["janitors"][i]["password"] = params[:newpass]
+                File.open("config.json", "w") do |f|
+                  f.write(JSON.pretty_generate(settings.config))
+                end
                 break
               end
             end
