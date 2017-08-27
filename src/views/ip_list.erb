@@ -85,7 +85,7 @@
           <div class="comment">
             <%= res["created"].strftime '%c' %>
             <% if is_supermaidmin(config, session) then %>
-              <%= mod = res["actor"] %>
+              <% mod = res["actor"] %>
               Created by: <a style="display: inline-block;" href="/introspect/<%= mod %>"><%= mod %></a>
             <% end %>
           </div>
