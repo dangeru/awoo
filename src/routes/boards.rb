@@ -221,6 +221,10 @@ def apply_word_filters(config, path, content)
   return content
 end
 
+def wrap(what, content)
+  return "--- BEGIN " + what.upcase + " ---\n" + content + "\n--- END " + what.upcase + " ---\n"
+end
+
 module Sinatra
   module Awoo
     module Routing
@@ -353,10 +357,16 @@ module Sinatra
             end
             app.post "/" + path + "/rules/edit/?" do
               if is_moderator(path, session)
+                con = make_con();
+                old_rules = settings.config['boards'][path]['rules']
                 settings.config['boards'][path]['rules'] = params[:rules]
                 File.open("config.json", "w") do |f|
                   f.write(JSON.pretty_generate(settings.config))
                 end
+                content = "Updated rules for /" + path + "/\n"
+                content += wrap("old rules", old_rules);
+                content += wrap("new rules", params[:rules])
+                query(con, "INSERT INTO ip_notes (ip, content, actor) VALUES (?, ?, ?)", "_meta", content, session[:username])
                 redirect "/" + path + "/rules"
               else
                 return [403, "You have no janitor privileges."]
@@ -369,11 +379,17 @@ module Sinatra
               erb :word_filter, :locals => {:config => config, :path => path, :banner => new_banner(path)}
             end
             app.post "/" + path + "/word-filter/?" do
+              con = make_con()
               if is_moderator(path, session)
+                old_words = settings.config['boards'][path]['word-filter'];
                 settings.config['boards'][path]['word-filter'] = JSON.parse(params[:words])
                 File.open("config.json", "w") do |f|
                   f.write(JSON.pretty_generate(settings.config))
                 end
+                content = "Updated word filters for /" + path + "/\n"
+                content += wrap("old word filters", JSON.pretty_generate(old_words));
+                content += wrap("new word filters", JSON.pretty_generate(config['boards'][path]["word-filter"]));
+                query(con, "INSERT INTO ip_notes (ip, content, actor) VALUES (?, ?, ?)", "_meta", content, session[:username])
                 return "OK"
               else
                 return [403, "You have no janitor privileges."]
@@ -480,6 +496,9 @@ module Sinatra
           app.get "/ip/:addr" do |addr|
             if not session[:moderates] then
               return [403, "You have no janitor permissions"]
+            end
+            if addr == "_meta" and not is_supermaidmin(config, session) then
+              return [403, "You are not a supermaidmin"]
             end
             con = make_con()
             erb :ip_list, :locals => {:session => session, :addr => addr, :con => con, :config => config}

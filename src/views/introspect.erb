@@ -5,8 +5,6 @@
     <link rel="stylesheet" type="text/css" href="/static/dangeru.css">
     <link rel="shortcut icon" href="/static/favicon.ico">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <style>
-    </style>
   </head>
   <body>
     <div id="sitecorner">
@@ -14,6 +12,8 @@
       <div id="title">Pick a janitor to introspect, or any to view all moderation logs</div>
       <hr />
       <a href="/introspect/_any">Any</a>
+      <br />
+      <a href="/ip/_meta">Meta logs (rule changes, word filter changes)</a>
       <br />
       <% config["janitors"].each do |mod| %>
         <% username = mod["username"] %>

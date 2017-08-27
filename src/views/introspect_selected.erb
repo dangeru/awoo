@@ -24,7 +24,7 @@
         xhr.onreadystatechange = function() {
           if (xhr.readyState == 4) {
             if (xhr.status == 200) {
-              alert("Success");
+              alert("The password has been changed. HOWEVER - If the janitor was already logged in, they will remain logged in until the server has restarted");
               window.location.reload();
             } else {
               alert("Error - " + xhr.responseText);
