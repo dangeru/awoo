@@ -5,7 +5,6 @@
 #
 
 require 'sinatra/base'
-require 'sinatra/reloader'
 require 'json'
 
 require_relative 'routes/boards'
@@ -22,12 +21,10 @@ class Awoo < Sinatra::Base
   register Sinatra::Awoo::Routing::Boards
   register Sinatra::Awoo::Routing::Errors
   configure do
-    register Sinatra::Reloader
     set :bind, '0.0.0.0'
     set :port, config['port']
     set :awoo_version, '0.1.0'
     set :public_folder, File.dirname(__FILE__) + '/static'
-    also_reload File.dirname(__FILE__) + '/config.json'
   end
   set :root, File.dirname(__FILE__)
   enable :sessions

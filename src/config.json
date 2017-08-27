@@ -43,7 +43,7 @@
     },
     {
       "username": "test2",
-      "password": "pass",
+      "password": "b",
       "boards": [
         "test"
       ],
