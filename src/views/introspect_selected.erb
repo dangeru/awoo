@@ -55,7 +55,10 @@
         <div style="font-size: 50%;">
           <div class="comment">
             <%= res["created"].strftime '%c' %><br />
-            IP in question: <a style="display: inline-block" href="/ip/<%= res["ip"] %>"><%= res["ip"] %></a>
+            <% if mod == "_any" then %>
+              Acting Moderator: <a style="display: inline-block;" href="/introspect/<%= res["actor"] %>"><%= res["actor"] %></a><br />
+            <% end %>
+            IP in question: <a style="display: inline-block;" href="/ip/<%= res["ip"] %>"><%= res["ip"] %></a>
           </div>
         </div>
         <div class="entry">
