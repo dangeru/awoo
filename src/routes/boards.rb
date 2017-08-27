@@ -46,6 +46,8 @@ def is_moderator(board, session)
   end
   return session[:moderates].index(board) != nil
 end
+
+# returns true if the user has the "is_supermaidmin" attribute set
 def is_supermaidmin(config, session)
   if not session[:username] then
     return false
@@ -60,6 +62,8 @@ def is_supermaidmin(config, session)
   return res
 end
 
+# Updates the locked state of the given post to `bool`, where `bool` can either be true or false
+# used in the /lock and /unlock routes
 def lock_or_unlock(post, bool, con, session)
   board = nil
   post = post.to_i
@@ -77,6 +81,8 @@ def lock_or_unlock(post, bool, con, session)
   return redirect(href, 303);
 end
 
+# Stickies or unstickies a post, where `setting` can be true or false or a number indicating the stickyness
+# used in /unsticky and both /sticky routes
 def sticky_unsticky(id, setting, con, session)
   board = nil
   id = id.to_i
@@ -91,6 +97,7 @@ def sticky_unsticky(id, setting, con, session)
   end
 end
 
+# Looks up whether the current user is banned, and if so, retrieves their ban information
 def get_ban_info(ip, board, con)
   if ip == nil then # fix for connecting from 127.0.0.1 when not behind a reverse proxy
     return nil
@@ -118,37 +125,51 @@ def looks_like_spam(con, ip, env, config)
   end
   return result
 end
+
+# Helper function for connecting to the database
 def make_con()
   return Mysql2::Client.new(:host => "localhost", :username => "awoo", :password => "awoo", :database => "awoo")
 end
+
+# Makes an object for a thread's metadata from the given hash, used in the api's thread/:id/metadata route
+# used in get_board which is used in the API's board/:board route and also views/board.erb
 def make_metadata_from_hash(res, session)
   is_op = res["parent"] == nil
+  # keys common to all posts (OPs and replies)
   obj = {:post_id => res["post_id"], :board => res["board"], :is_op => is_op, :comment => res["content"], :date_posted => res["date_posted"].strftime('%s').to_i}
+  # Put ip in the object if the user has permission to see it
   if is_moderator(res["board"], session) then
     obj[:ip] = res["ip"]
   end
+  # the users tripcode
   if res["ip"].nil? then
     obj[:hash] = "FFFFFF";
   else
     obj[:hash] = Digest::SHA256.hexdigest(res["ip"])[0..5]
   end
+  # the janitor's capcode
   if res["janitor"] != nil then
     obj[:capcode] = res["janitor"]
   end
+  # keys only applicable to OPs
   if is_op
     obj[:title] = res["title"]
     obj[:last_bumped] = res["last_bumped"].strftime("%s").to_i;
     obj[:is_locked] = res["is_locked"] != 0
     obj[:number_of_replies] = res["number_of_replies"]
     obj[:sticky] = res["sticky"] != 0
+    # technically stickyness is zero for all unstickied posts, but only send it if the post is stickied anyways
     if res["sticky"] > 0 then
       obj[:stickyness] = res["sticky"]
     end
   else
+    # if it's a reply, just list the parent
     obj[:parent] = res["parent"]
   end
   return obj;
 end
+
+# takes an id, pulls the relevant bits from the database and delegates the creation of the object to make_metadata_from_hash
 def make_metadata(con, id, session, config)
   id = id.to_i.to_s;
   result = [400, "No results found"]
@@ -161,6 +182,7 @@ def make_metadata(con, id, session, config)
   return result
 end
 
+# attempts to find a janitor with the matching username and password, or returns an error if there isn't one
 def try_login(username, password, config, session, params)
   config["janitors"].each do |janitor|
     if janitor["username"] == username and janitor["password"] == password then
@@ -176,25 +198,31 @@ def try_login(username, password, config, session, params)
   return [403, "Check your username and password"]
 end
 
+# gets the 20 threads for the requested board at the requested page (default zero, the first page)
+# used in board.erb and the api's /board/:board route
 def get_board(board, params, session, config)
-  results = []
   if config["boards"][board]["hidden"] and not session[:moderates] then
-    return [403, "You have no janitor permissions"]
+    return [404, erb(:notfound)]
   end
+  con = make_con()
+  # calculate which 20 posts to show
   page = 0
   if params[:page] then page = params[:page].to_i end
   offset = page * 20;
-  con = make_con()
+  # make a thread object for each returned row and return the list of all the thread objects
+  results = []
   query(con, "SELECT *, COALESCE(parent, post_id) AS effective_parent, COUNT(*) AS number_of_replies FROM posts WHERE board = ? GROUP BY effective_parent ORDER BY (-1 * sticky), last_bumped DESC LIMIT 20 OFFSET #{offset.to_s};", board).each do |res|
     results.push(make_metadata_from_hash(res, session))
   end
   return results
 end
 
+# Gets the replies to a given thread
 def get_thread_replies(id, session, config)
   con = make_con()
   results = []
   id = id.to_i.to_s
+  # 
   query(con, "SELECT * FROM posts WHERE COALESCE(parent, post_id) = ?", id).each do |res|
     results.push(make_metadata_from_hash(res, session));
   end
@@ -206,6 +234,8 @@ def get_thread_replies(id, session, config)
   return results
 end
 
+# read mobile.js into a string so the client on the phone doesn't have to make an extra request for it
+# actually does speed up load time on mobile because the mobile page is gonna look like shit until it loads this javascript
 def mobile_js()
   res = ""
   f = File.open(File.dirname(__FILE__) + "/../static/static/mobile.js", "r")
@@ -216,11 +246,14 @@ def mobile_js()
   return res
 end
 
+# applys word filters to the given content, only applying them on a word break
 def apply_word_filters(config, path, content)
   config["boards"][path]["word-filter"].each do |a, b| content = content.gsub(Regexp.new("\\b" + a + "\\b"), b) end
   return content
 end
 
+# wraps the given content for formatting in IP notes
+# http://i.imgur.com/D63VXG0.png
 def wrap(what, content)
   return "--- BEGIN " + what.upcase + " ---\n" + content + "\n--- END " + what.upcase + " ---\n"
 end
@@ -358,34 +391,39 @@ module Sinatra
             app.post "/" + path + "/rules/edit/?" do
               if is_moderator(path, session)
                 con = make_con();
-                old_rules = settings.config['boards'][path]['rules']
+                # insert an IP note with the changes
+                content = "Updated rules for /" + path + "/\n"
+                content += wrap("old rules", settings.config['boards'][path]["rules"]);
+                content += wrap("new rules", params[:rules])
+                query(con, "INSERT INTO ip_notes (ip, content, actor) VALUES (?, ?, ?)", "_meta", content, session[:username])
+                # change the rules and save the changes
                 settings.config['boards'][path]['rules'] = params[:rules]
                 File.open("config.json", "w") do |f|
                   f.write(JSON.pretty_generate(settings.config))
                 end
-                content = "Updated rules for /" + path + "/\n"
-                content += wrap("old rules", old_rules);
-                content += wrap("new rules", params[:rules])
-                query(con, "INSERT INTO ip_notes (ip, content, actor) VALUES (?, ?, ?)", "_meta", content, session[:username])
                 redirect "/" + path + "/rules"
               else
                 return [403, "You have no janitor privileges."]
               end
             end
+            # edit word filters form
             app.get "/" + path + "/word-filter/?" do
               if not is_moderator(path, session) then
                 return [404, erb(:notfound)]
               end
               erb :word_filter, :locals => {:config => config, :path => path, :banner => new_banner(path)}
             end
+            # posted url when saving word filters
             app.post "/" + path + "/word-filter/?" do
               con = make_con()
               if is_moderator(path, session)
+                # update and save the word filters
                 old_words = settings.config['boards'][path]['word-filter'];
                 settings.config['boards'][path]['word-filter'] = JSON.parse(params[:words])
                 File.open("config.json", "w") do |f|
                   f.write(JSON.pretty_generate(settings.config))
                 end
+                # save an IP note
                 content = "Updated word filters for /" + path + "/\n"
                 content += wrap("old word filters", JSON.pretty_generate(old_words));
                 content += wrap("new word filters", JSON.pretty_generate(config['boards'][path]["word-filter"]));
@@ -577,29 +615,32 @@ module Sinatra
           end
 
           # Ban / Unban an IP
-          app.post "/ban/:ip" do |author_ip|
+          app.post "/ban/:ip" do |ip|
             con = make_con()
             if is_moderator(params[:board], session) then
-              ip = author_ip
+              # Insert the ban
               board = params[:board]
               old_date = params[:date].split('/')
               date = old_date[2] + "-" + old_date[0] + "-" + old_date[1] + " 00:00:00"
               reason = params[:reason]
               query(con, "INSERT INTO bans (ip, board, date_of_unban, reason) VALUES (?, ?, ?, ?)", ip, board, date, reason);
-              query(con, "INSERT INTO ip_notes (ip, content, actor) VALUES (?, ?, ?)", ip, "Banned from /" + board + "/ for reason " + reason + " until " + params[:date], session[:username])
-              redirect "/ip/#{ip}"
+              # Insert the IP note
+              content = "Banned from /" + board + "/ until " + params[:date] + "\n"
+              content += wrap("reason", reason)
+              query(con, "INSERT INTO ip_notes (ip, content, actor) VALUES (?, ?, ?)", ip, content, session[:username])
+              return "OK"
             else
               return [403, "You have no janitor privileges"]
             end
           end
-          app.post "/unban/:ip" do |author_ip|
+          app.post "/unban/:ip" do |ip|
             con = make_con()
             if is_moderator(params[:board], session) then
-              ip = author_ip
               board = params[:board]
+              # delete the ban and insert the ip note
               query(con, "DELETE FROM bans WHERE ip = ? AND board = ?", ip, board)
               query(con, "INSERT INTO ip_notes (ip, content, actor) VALUES (?, ?, ?)", ip, "Unbanned from /" + board + "/", session[:username])
-              redirect "/ip/#{ip}"
+              return "OK"
             else
               return [403, "You have no janitor privileges"]
             end
@@ -616,6 +657,7 @@ module Sinatra
             end
             erb :introspect_selected, :locals => {:config => config, :con => make_con(), :mod => mod}
           end
+          # Posted to reset the password of a moderator
           app.post "/introspect_reset" do
             if not is_supermaidmin(config, session) then
               return [403, "You are not a supermaidmin"]
@@ -637,10 +679,16 @@ module Sinatra
             if found == -1 then
               return [400, "Moderator with username " + params[:mod] + " could not be found in config[\"janitors\"]"]
             end
+            return [200, "OK"]
           end
+          # API routes from here down
           app.get API + "/boards" do
             JSON.dump(config["boards"].select do |key, value| session[:username] or not value["hidden"] end.map do |key, value| key end)
           end
+          # Not ready yet, leaks word filters
+          #app.get API + "/boards/detail" do
+            #JSON.dump(config["boards"].select do |key, value| session[:username] or not value["hidden"] end)
+          #end
           app.get API + "/board/:board" do |board|
             return JSON.dump(get_board(board, params, session, config))
           end

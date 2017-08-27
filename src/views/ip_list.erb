@@ -43,7 +43,7 @@
     <br />
     <div id="maincontainer" style="overflow: hidden; color: white;">
       <div class="title" style="color: #ED145B;">Information for IP <%= Sanitize.clean(addr) %></div>
-      <form action="/ban/<%= addr %>" method="post">
+      <form action="/ban/<%= addr %>" method="post" id="ban-form">
         <select id="board" name="board">
           <% session[:moderates].each do |board| %>
             <option value="<%= board %>"><%= board %></option>
@@ -51,15 +51,17 @@
         </select>
         <input type="text" id="datepicker" name="date" placeholder="Date"/>
         <input type="text" id="reason" name="reason" placeholder="Reason" />
-        <input type="submit" name="submit" value="Ban" />
       </form>
+      <button onClick="submit_form(document.getElementById('ban-form'), '/ban/<%= Sanitize.clean(addr) %>')">Ban</button>
       <br />
       <% boards = session[:moderates].map do |f| con.escape(f) end %>
       <% boards = "('" + boards.join("', '") + "')" %>
       <% query(con, "SELECT reason, board, date_of_unban FROM bans WHERE ip = ? AND board IN #{boards} AND date_of_unban > CURRENT_TIMESTAMP()", addr).each do |res| %>
+        <% id = Digest::SHA256.hexdigest(res["board"] + res["reason"]) %>
         <h3 class="redtext">
           Banned from <%= res["board"] %> until <%= res["date_of_unban"].strftime '%c' %> for reason "<%= Sanitize.clean(res["reason"]) %>"
-          <form action="/unban/<%= addr %>" method="post"><input type="hidden" name="board" value="<%= res["board"] %>" /><input type="submit" name="submit" value="Unban" /></form>
+          <form id="<%= id %>" action="/unban/<%= addr %>" method="post"><input type="hidden" name="board" value="<%= res["board"] %>" /></form>
+          <button onClick="submit_form(document.getElementById('<%= id %>'), '/unban/<%= Sanitize.clean(addr) %>')">Unban</button>
         </h3>
       <% end %>
       <%# We're actually left joining the table `posts` on itself here to get the title of the OP the comment is replying to, if there is one %>
