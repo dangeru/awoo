@@ -1,0 +1,36 @@
+to test
+
+posting
+	posting with capcode
+replying
+	replying with capcode
+pagination
+bump limit
+stickying
+	check that it requires auth
+stickyness
+	check that it requires auth
+unstickying
+	check that it requires auth
+deleting post
+	check that it requires auth
+	check ip note
+deleting reply
+	check that it requires auth
+	check ip note
+viewing rules
+editing rules
+	check that it requires auth
+	check ip note
+viewing word filters
+	check that it requires auth
+editing word filters
+	check that it requires auth
+	checking that the new changes applied
+		post title
+		post content
+		reply content
+check mod login success page contains introspect only if supermaidmin
+check /introspect requires supermaidmin
+check /introspect/mod requires supermaidmin
+check /introspect_reset
