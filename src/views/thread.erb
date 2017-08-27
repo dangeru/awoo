@@ -115,11 +115,11 @@
           <meta property="og:title" content="<%= Sanitize.clean(res[:title]) %>">
           <meta property="og:description" content="<%= Sanitize.clean(res[:comment]) %>">
           <% if is_moderator(path, session) and res[:sticky] then %>
-            <form action="/sticky/<%= res[:post_id] %>" method="POST" style="color: white;">
+            <form id="sticky-form" action="/sticky/<%= res[:post_id] %>" method="POST" style="color: white;">
               Adjust Stickynes
               <input type="number" name="stickyness" value="<%= res[:stickyness] %>" />
-              <input type="submit" />
             </form>
+            <button onClick="submit_form(document.getElementById('sticky-form'), '/sticky/<%= res[:post_id] %>')">Submit</button>
           <% end %>
         <% end %>
         <div class="comment" id="comment-<%= res[:post_id] %>">
