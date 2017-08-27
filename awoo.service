@@ -10,4 +10,4 @@ Restart=always
 User=awoo
 Group=awoo
 WorkingDirectory=/opt/awoo/src
-ExecStart=/usr/bin/env rackup
+ExecStart=/usr/bin/env rerun -b -p config.json rackup
