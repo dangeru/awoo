@@ -9,11 +9,14 @@
   <body>
     <div id="sitecorner">
       <img src="/static/logo.png" />
-      <div id="title">Pick a janitor to introspect, or any to view all moderation logs</div>
+      <div id="title">Select what you would like to introspect today</div>
       <hr />
-      <a href="/introspect/_any">Any</a>
       <br />
-      <a href="/ip/_meta">Meta logs (rule changes, word filter changes)</a>
+      <a href="/introspect/_any">Full logs</a>
+      <br />
+      <a href="/ip/_meta">Meta logs</a>
+      <br />
+      <hr />
       <br />
       <% config["janitors"].each do |mod| %>
         <% username = mod["username"] %>

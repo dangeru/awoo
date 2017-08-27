@@ -414,11 +414,14 @@ module Sinatra
             end
             # Insert an IP note with the content of the deleted post
             query(con, "SELECT content, title, ip FROM posts WHERE post_id = ?", post_id).each do |res|
-              content = "Post Deleted - "
+              content = ""
               if res["title"] then
-                content += "OP with title: " + res["title"] + " - and "
+                content += "Post deleted"
+                content += wrap("title", res["title"])
+              else
+                content += "Reply deleted"
               end
-              content += "comment: " + res["content"]
+              content += wrap("comment", res["content"])
               query(con, "INSERT INTO ip_notes (ip, content, actor) VALUES (?, ?, ?)", res["ip"], content, session[:username])
             end
             # Finally, delete the post

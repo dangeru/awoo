@@ -62,7 +62,7 @@
           </div>
         </div>
         <div class="entry">
-          <div class="comment"><%= Sanitize.clean(res["content"]).gsub("\n", "<br />") %></div>
+          <pre class="comment"><%= Sanitize.clean(res["content"]).gsub("\n", "<br />") %></pre>
         </div>
         <br />
       <% end %>

@@ -4,6 +4,7 @@
     <style>
       body {
         text-align: center;
+        color: white;
       }
     </style>
     <link rel="stylesheet" href="/static/dangeru.css" />
@@ -12,16 +13,24 @@
     <div id="sitecorner">
       <span id="title">Welcome <%= Sanitize.clean(session[:username]) %></span>
       <hr />
-      You moderate:
+      <% if is_supermaidmin config, session %>
+        Welcome Supermaidmin.<br /><br />
+        <a href="/introspect">Begin introspection?</a>
+        <br />
+        <hr />
+      <% end %>
+      You moderate:<br />
       <br />
       <% config["boards"].select do |board, v| session[:moderates].include? board end.each do |board, v| %>
         <a href="/<%= board %>"><%= board %></a>
-        <br />
       <% end %>
+      <br />
       <hr />
+      Other boards:<br /><br />
       <% config["boards"].select do |board, v| not session[:moderates].include? board end.each do |board, v| %>
         <a href="/<%= board %>"><%= board %></a>
       <% end %>
+      <br />
       <hr />
       <a href="/logout">Log out</a>
     </div>
