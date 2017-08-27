@@ -6,7 +6,7 @@
     "test": {
       "name": "test",
       "desc": "Awoo testing grounds",
-      "rules": "1. Test out stuff.\r\n2. Report bugs.\r\n3. Repeat.asdfasdfadsf",
+      "rules": "1. Test out stuff.\r\n2. Report bugs.\r\n3. Repeat.",
       "word-filter": {
         "new": "new2"
       }
@@ -43,7 +43,7 @@
     },
     {
       "username": "test2",
-      "password": "g",
+      "password": "pass",
       "boards": [
         "test"
       ],
