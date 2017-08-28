@@ -17,6 +17,18 @@
       width: auto;
     }
     </style>
+    <script>
+      function showActions(id) {
+        if(document.getElementById("actions-" + id).style.display == "none") {
+          document.getElementById("draggable").style.display = "block";
+          document.getElementById(id).innerHTML = ">" + id + "<";
+        }
+        else {
+          document.getElementById("newthread").innerHTML = "Start a new thread";
+          document.getElementById(id).style.display = id;
+        }
+      }
+    </script>
   </head>
   <body>
     <div id="container_login">
@@ -31,7 +43,10 @@
       <span class="redtext">[You moderate:]</span><br />
       <br />
       <% config["boards"].select do |board, v| session[:moderates].include? board end.each do |board, v| %>
-        <a href="/<%= board %>">><%= board %></a>
+        <span id="<%= board %>" onClick="showActions(this.id)"><%= board %></span>
+        <div id="actions-<%= board %>" style="display: none;">
+          <span>test</span>
+        </div>
       <% end %>
       <br />
       <a href="/logout" class="redtext">Log out</a>
