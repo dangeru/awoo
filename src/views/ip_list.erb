@@ -49,10 +49,10 @@
             <option value="<%= board %>"><%= board %></option>
           <% end %>
         </select>
-        <input type="text" id="datepicker" name="date" placeholder="Date"/>
-        <input type="text" id="reason" name="reason" placeholder="Reason" />
+        <input type="text" id="datepicker" name="date" placeholder="Date" />
+        <input type="text" id="reason" name="reason" placeholder="Reason" class="special_styled"/>
       </form>
-      <button onClick="submit_form(document.getElementById('ban-form'), '/ban/<%= Sanitize.clean(addr) %>')">Ban</button>
+      <button onClick="submit_form(document.getElementById('ban-form'), '/ban/<%= Sanitize.clean(addr) %>')" style="special_styled">Ban</button>
       <br />
       <% boards = session[:moderates].map do |f| con.escape(f) end %>
       <% boards = "('" + boards.join("', '") + "')" %>
