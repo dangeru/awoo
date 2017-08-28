@@ -113,7 +113,7 @@
             document.title = <%= JSON.dump(res[:title]) %> + " - danger/" + board + "/";
           </script>
           <%# I WILL MOVE IT LATER I PROMISE %>
-          <meta property="og:title" content="<%= Sanitize.clean(res[:title]) %>">
+          <meta property="og:title" content="<%= Sanitize.clean(res[:title]) %> - /<%= res[:board] %>/">
           <meta property="og:description" content="<%= Sanitize.clean(res[:comment]) %>">
           <% if is_moderator(path, session) and res[:sticky] then %>
             <form id="sticky-form" action="/sticky/<%= res[:post_id] %>" method="POST" style="color: white;">
