@@ -24,11 +24,11 @@
       function showActions(id) {
         if(document.getElementById("actions-" + id).style.display == "none") {
           document.getElementById("actions-" + id).style.display = "block";
-          document.getElementById(id).innerHTML = ">" + id + "<";
+          document.getElementById(id).innerHTML = ">/" + id + "/<";
         }
         else {
           document.getElementById("actions-" + id).style.display = "none";
-          document.getElementById(id).innerHTML = id;
+          document.getElementById(id).innerHTML = "/" + id + "/";
         }
       }
     </script>
@@ -40,15 +40,17 @@
       <br />
       <% if is_supermaidmin config, session %>
         <span class="redtext">[Welcome Supermaidmin.]</span><br /><br />
-        <a href="/introspect">>Begin introspection?</a>
+        <a href="/introspect">>Begin introspection?<</a>
         <br />
       <% end %>
       <span class="redtext">[You moderate:]</span><br />
       <% config["boards"].select do |board, v| session[:moderates].include? board end.each do |board, v| %>
-        <span id="<%= board %>" onClick="showActions(this.id)" class="comment"><%= board %></span>
+        <span id="<%= board %>" onClick="showActions(this.id)" class="comment">/<%= board %>/</span>
         <div id="actions-<%= board %>" style="display: none;">
-          <span>test</span>
-        </div>
+          <a href="/<%= board %>/word-filter">Edit word filters</a>
+          <a href="/<%= board %>/rules">Edit rules</a>
+          <a href="/<%= board %>/">Go to board</a>
+        </div><br />
       <% end %>
       <br />
       <a href="/logout" class="redtext">[Log out]</a>
