@@ -1,17 +1,7 @@
 to test
 
-posting
-	posting with capcode
-replying
-	replying with capcode
 pagination
 bump limit
-stickying
-	check that it requires auth
-stickyness
-	check that it requires auth
-unstickying
-	check that it requires auth
 deleting post
 	check that it requires auth
 	check ip note
