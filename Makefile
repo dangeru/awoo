@@ -7,4 +7,6 @@ install:
 	cp awoo.service /etc/systemd/system/
 	systemctl daemon-reload
 	mysql -u root < create.sql
-.PHONY: install
+test:
+	ruby src/test/generic_test.rb
+.PHONY: install test

@@ -48,6 +48,13 @@
         "test"
       ],
       "is_supermaidmin": true
+    },
+    {
+      "username": "test3",
+      "password": "pass",
+      "boards": [
+        "burg"
+      ]
     }
   ]
 }
