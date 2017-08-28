@@ -16,6 +16,8 @@ class AwooTest < MiniTest::Test
     assert(not(post_exists("test", "a")))
     assert_success(post("/post", nil, {"board" => "test", "title" => "a", "comment" => ""}))
     assert(post_exists("test", "a"))
+    cookie = login("test")
+    # TODO test capcode
   end
   def test_final_teardown
     Mysql2::Client.new(:host => "localhost", :username => "awoo", :password => "awoo", :database => "awoo").query("DELETE FROM posts WHERE date_posted > TIMESTAMP('#{@time.strftime '%m-%d-%YT%H:%M:%S.0000000'}')")
@@ -31,6 +33,18 @@ class AwooTest < MiniTest::Test
       end
     end
     return false
+  end
+  def login(user)
+    pass = File.open(File.dirname(__FILE__) + "/../config.json") do |f|
+      JSON.parse(f.read)["janitors"].each do |mod|
+        if mod["username"] == user then
+          mod["password"]
+          break
+        end
+      end
+    end
+    res = post("/mod", nil, {"username": user, "password": pass})
+    res["Set-Cookie"]
   end
   def get(route, cookie = nil, params = nil)
     uri = URI("http://#{@host}:#{@port}/#{route}")
