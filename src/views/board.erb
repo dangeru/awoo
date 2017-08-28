@@ -49,7 +49,10 @@
           console.log(comment.value.length);
           var len = comment.value.length
           var wc = document.getElementById("wordcount");
+          var submit = document.getElementById("submit");
           wc.style.color = len > 500 ? "red" : "inherit";
+          submit.disabled = len > 500 ? "true" : "false";
+          submit.className = len > 500 ? "special_styled" : "button_styled";
           wc.innerText = len + "/500";
         });
         Array.prototype.slice.call(document.getElementsByClassName("fa"), 0).forEach(function(elem) {
