@@ -167,3 +167,11 @@ input, textarea {
   color: #6E4B2A; /* cafe royale */
 }
 
+/* Button styling */
+.button_styled {
+  border: 1px solid #FFF;
+  padding: 4px;
+  color: white;
+  background-color: black;
+  font-family: 'CyberpunkWaifus';
+}
