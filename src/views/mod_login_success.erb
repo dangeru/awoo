@@ -24,11 +24,11 @@
       function showActions(id) {
         if(document.getElementById("actions-" + id).style.display == "none") {
           document.getElementById("actions-" + id).style.display = "block";
-          document.getElementById(id).innerHTML = ">/" + id + "/<";
+          document.getElementById(id).innerText = ">/" + id + "/<";
         }
         else {
           document.getElementById("actions-" + id).style.display = "none";
-          document.getElementById(id).innerHTML = "/" + id + "/";
+          document.getElementById(id).innerText = "/" + id + "/";
         }
       }
     </script>
@@ -40,7 +40,7 @@
       <br />
       <% if is_supermaidmin config, session %>
         <span class="redtext">[Welcome Supermaidmin.]</span><br /><br />
-        <a href="/introspect">>Begin introspection?<</a>
+        <a href="/introspect">&gt;Begin introspection?&lt;</a>
         <br />
       <% end %>
       <span class="redtext">[You moderate:]</span><br />
