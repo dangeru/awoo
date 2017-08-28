@@ -10,7 +10,7 @@ class AwooTest < MiniTest::Test
     super(x)
     @host = "127.0.0.1"
     @port = 8080
-    @time = Time.new - 10
+    @time = Time.new.utc - 1
   end
   def test_post
     assert(not(post_exists("test", "a")))
