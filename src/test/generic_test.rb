@@ -6,13 +6,13 @@ require('http-cookie')
 
 API = "/api/v2".freeze
 Dummy_uri = "http://dummy/".freeze
+Host = "127.0.0.1".freeze
+Port = 8080.freeze
 
 class AwooTest < MiniTest::Test
   def initialize(x)
     super(x)
-    @host = "127.0.0.1"
-    @port = 8080
-    @time = Time.new.utc - 1
+    @time = Time.new.utc - 10
   end
   def test_post
     # Make sure the post shows up
@@ -133,16 +133,16 @@ class AwooTest < MiniTest::Test
     jar
   end
   def get(route, cookie = nil, params = nil)
-    uri = URI("http://#{@host}:#{@port}/#{route}")
+    uri = URI("http://#{Host}:#{Port}/#{route}")
     uri.query = URI.www_encode_form(params) if params
-    Net::HTTP.start(@host, @port) do |http|
+    Net::HTTP.start(Host, Port) do |http|
       request = Net::HTTP::Get.new uri
       request["Cookie"] = HTTP::Cookie.cookie_value(cookie.cookies) if cookie
       http.request request
     end
   end
   def post(route, cookie = nil, params = nil)
-    Net::HTTP.start(@host, @port) do |http|
+    Net::HTTP.start(Host, Port) do |http|
       request = Net::HTTP::Post.new route
       request.set_form_data(params) if params
       request["Cookie"] = HTTP::Cookie.cookie_value(cookie.cookies) if cookie
