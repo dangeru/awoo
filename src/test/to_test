@@ -1,7 +1,6 @@
 to test
 
 pagination
-bump limit
 deleting post
 	check that it requires auth
 	check ip note

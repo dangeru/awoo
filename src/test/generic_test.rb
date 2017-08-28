@@ -13,6 +13,9 @@ class AwooTest < MiniTest::Test
   def initialize(x)
     super(x)
     @time = Time.new.utc - 10
+    @config = File.open(File.dirname(__FILE__) + "/../config.json") do |f|
+      JSON.parse(f.read)
+    end
   end
   def test_post
     # Make sure the post shows up
@@ -89,6 +92,21 @@ class AwooTest < MiniTest::Test
     fpost = find_post("test", "f")
     assert(fpost["stickyness"] == 1) # should have been unchanged
   end
+  def test_bump_limit
+    assert(is_success(post("/post", nil, {"board" => "test", "title" => "g", "comment" => ""})))
+    sleep 1
+    gpost = find_post("test", "g")
+    # make 249 replies
+    (@config["bump_limit"] - 1).times do
+      assert is_success(post("/reply", nil, {"board" => "test", "content" => "", "parent" => gpost["post_id"].to_s}))
+    end
+    sleep 1
+    gpost = find_post("test", "g")
+    # make sure that got us to the bump limit
+    assert(gpost["number_of_replies"] == @config["bump_limit"]);
+    # make sure we can't post any more
+    assert(not(is_success(post("/reply", nil, {"board" => "test", "content" => "", "parent" => gpost["post_id"].to_s}))))
+  end
   def test_final_teardown
     Mysql2::Client.new(:host => "localhost", :username => "awoo", :password => "awoo", :database => "awoo").query("DELETE FROM posts WHERE date_posted > TIMESTAMP('#{@time.strftime '%m-%d-%YT%H:%M:%S.0000000'}')")
   end
@@ -117,12 +135,10 @@ class AwooTest < MiniTest::Test
   end
   def login(user)
     pass = nil
-    File.open(File.dirname(__FILE__) + "/../config.json") do |f|
-      JSON.parse(f.read)["janitors"].each do |mod|
-        if mod["username"] == user then
-          pass = mod["password"]
-          break
-        end
+    @config["janitors"].each do |mod|
+      if mod["username"] == user then
+        pass = mod["password"]
+        break
       end
     end
     res = post("/mod", nil, {"username": user, "password": pass})
