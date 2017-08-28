@@ -20,12 +20,12 @@
     <script>
       function showActions(id) {
         if(document.getElementById("actions-" + id).style.display == "none") {
-          document.getElementById("draggable").style.display = "block";
+          document.getElementById("actions-" + id).style.display = "block";
           document.getElementById(id).innerHTML = ">" + id + "<";
         }
         else {
-          document.getElementById("newthread").innerHTML = "Start a new thread";
-          document.getElementById(id).style.display = id;
+          document.getElementById("actions-" + id).style.display = "none";
+          document.getElementById(id).innerHTML = id;
         }
       }
     </script>
