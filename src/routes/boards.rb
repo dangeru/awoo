@@ -141,12 +141,6 @@ def make_metadata_from_hash(res, session)
   if is_moderator(res["board"], session) then
     obj[:ip] = res["ip"]
   end
-  # the users tripcode
-  if res["ip"].nil? then
-    obj[:hash] = "FFFFFF";
-  else
-    obj[:hash] = Digest::SHA256.hexdigest(res["ip"])[0..5]
-  end
   # the janitor's capcode
   if res["janitor"] != nil then
     obj[:capcode] = res["janitor"]
@@ -165,6 +159,16 @@ def make_metadata_from_hash(res, session)
   else
     # if it's a reply, just list the parent
     obj[:parent] = res["parent"]
+  end
+  # the users tripcode
+  if res["ip"].nil? then
+    obj[:hash] = "FFFFFF";
+  else
+    if is_op then
+      obj[:hash] = Digest::SHA256.hexdigest(res["ip"] + res["post_id"].to_s)[0..5]
+    else
+      obj[:hash] = Digest::SHA256.hexdigest(res["ip"] + res["parent"].to_s)[0..5]
+    end
   end
   return obj;
 end
@@ -222,7 +226,7 @@ def get_thread_replies(id, session, config)
   con = make_con()
   results = []
   id = id.to_i.to_s
-  # 
+  #
   query(con, "SELECT * FROM posts WHERE COALESCE(parent, post_id) = ?", id).each do |res|
     results.push(make_metadata_from_hash(res, session));
   end
