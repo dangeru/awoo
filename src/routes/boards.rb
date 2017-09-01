@@ -90,6 +90,8 @@ def sticky_unsticky(id, setting, con, session)
     board = res["board"]
   end
   if is_moderator(board, session) then
+    content = "Changed stickyness on post /" + res["board"] + "/thread/" + id.to_s + " to new value " + setting.to_s
+    query(con, "INSERT INTO ip_logs (ip, content, actor) VALUES (?, ?, ?)", "_meta", content, session[:username])
     query(con, "UPDATE posts SET sticky = ? WHERE post_id = ?", setting, id)
     return redirect("/" + board + "/thread/" + id.to_s, 303)
   else
