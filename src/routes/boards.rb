@@ -473,7 +473,7 @@ module Sinatra
               content += "Reply deleted\n"
             end
             content += wrap("comment", post_content)
-            query(con, "INSERT INTO ip_notes (ip, content, actor) VALUES (?, ?, ?)", ip, content, session[:username])
+            query(con, "INSERT INTO ip_notes (ip, content, actor) VALUES (?, ?, ?)", ip, content, session[:username]) unless ip.nil?
             # Finally, delete the post
             query(con, "DELETE FROM posts WHERE post_id = ? OR parent = ?", post_id, post_id)
             if parent != nil then
