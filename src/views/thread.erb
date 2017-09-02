@@ -73,6 +73,29 @@
                 elem.style.display = "inline-block";
               })
             }
+            Array.prototype.slice.call(document.getElementsByClassName("comment"), 0).forEach(makeClickable);
+          }
+          var makeClickable = function makeClickable(elem) {
+            var child = elem.firstChild;
+            if (child == null) return;
+            do {
+              if (child.nodeType == Node.TEXT_NODE) {
+                child.data.replace(/https?:\/\/[^\s]+/, function(all) {
+                  var args = Array.prototype.slice.call(arguments);
+                  var offset = args[args.length - 2];
+                  var newNode = child.splitText(offset);
+                  newNode.data = newNode.data.substr(all.length)
+                  var a = document.createElement("a");
+                  a.href = all;
+                  a.innerText = all;
+                  a.style.display = "inline-block";
+                  child.parentNode.insertBefore(a, child.nextSibling);
+                  child = newNode;
+                })
+              } else {
+                makeClickable(child);
+              }
+            } while (child = child.nextSibling)
           }
           var submit_form = function submit_form(form, route) {
             var data = new FormData(form);
