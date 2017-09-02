@@ -92,6 +92,8 @@ textarea, #draggable > form > input[type='text'] {
     font-size: 18px;
     color: #FFFFFF;
     font-family: 'CyberpunkWaifus';
+    margin: 3px -1px;
+    padding: 0;
 }
 #boardtitle {
     text-align: center;
