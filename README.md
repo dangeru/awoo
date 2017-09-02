@@ -15,4 +15,4 @@ The tests depend on the `http-cookie` gem
 
 ## Todo List
 
-- On `/ip/:addr`, maybe let people select more than one board at a time to ban the IP from?
+- On `/ip/:addr`, maybe let people select more than one board at a time to ban the IP from? 
