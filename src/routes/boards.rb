@@ -587,7 +587,7 @@ module Sinatra
               id = post.to_i
               board = params[:board]
               query(con, "UPDATE posts SET board = ? WHERE post_id = ? OR parent = ?", board, id, id)
-              href = "/" + board + "/thread/" + id
+              href = "/" + board + "/thread/" + id.to_s
               redirect href
             else
               return [403, "You have no janitor privileges."]
