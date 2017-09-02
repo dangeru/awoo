@@ -63,8 +63,6 @@ div {
     padding: 20px;
     width: 395px;
     height: auto;
-    word-wrap: break-word;
-    white-space: pre-line;
 }
 #maincontainer {
     width: 100vw;
