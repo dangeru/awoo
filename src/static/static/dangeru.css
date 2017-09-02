@@ -63,6 +63,8 @@ div {
     padding: 20px;
     width: 395px;
     height: auto;
+    word-wrap: break-word;
+    white-space: pre-line;
 }
 #maincontainer {
     width: 100vw;
@@ -92,7 +94,6 @@ textarea, #draggable > form > input[type='text'] {
     font-size: 18px;
     color: #FFFFFF;
     font-family: 'CyberpunkWaifus';
-    word-wrap: break-word;
 }
 #boardtitle {
     text-align: center;
