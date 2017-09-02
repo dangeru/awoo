@@ -580,7 +580,7 @@ module Sinatra
             # We allow the move if the person moderates the board the thread is being moved *from*
             # we don't check the thread that it's being moved *to*
             prev_board = nil;
-            query(con, "SELECT board FROM posts WHERE post_id = ?", id).each do |res|
+            query(con, "SELECT board FROM posts WHERE post_id = ?", post).each do |res|
               prev_board = res["board"]
             end
             if is_moderator(prev_board, session)
