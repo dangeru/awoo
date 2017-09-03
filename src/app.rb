@@ -9,6 +9,7 @@ require 'json'
 
 require_relative 'routes/boards'
 require_relative 'routes/errors'
+require_relative 'routes/vichan_compat'
 
 class Awoo < Sinatra::Base
   def initialize
@@ -20,6 +21,7 @@ class Awoo < Sinatra::Base
   end
   register Sinatra::Awoo::Routing::Boards
   register Sinatra::Awoo::Routing::Errors
+  register Sinatra::Awoo::Routing::VichanCompat
   configure do
     set :bind, '0.0.0.0'
     set :port, config['port']
