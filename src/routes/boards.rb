@@ -103,11 +103,12 @@ module Sinatra
             end
             # Mark the parent as bumped
             query(con, "UPDATE posts SET last_bumped = CURRENT_TIMESTAMP() WHERE post_id = ?", parent);
-            # Redirect them back to the post they just replied to
-            #href = "/" + params[:board] + "/thread/" + params[:parent]
-            #redirect(href, 303);
-            # Ok nevermind just return ok so the js xhr doesn't go off and request the entire thread again
-            return [200, "OK"]
+            # needed for dashchan extension
+            id = nil
+            query(con, "SELECT LAST_INSERT_ID() AS id").each do |res|
+              id = res["id"]
+            end
+            return [200, "OK/" + id.to_s]
           end
 
           # Each board has a listing of the posts there (board.erb) and a listing of the replies to a give post (thread.erb)
