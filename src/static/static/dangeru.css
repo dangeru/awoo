@@ -166,7 +166,9 @@ input, textarea {
 .sticky-8 {
   color: #6E4B2A; /* cafe royale */
 }
-
+.locked {
+  color: #7a7a7a;
+}
 /* Styling */
 .button_styled {
   border: 1px solid #FFF;
