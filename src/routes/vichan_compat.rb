@@ -1,5 +1,5 @@
 ############################################
-# => errors.rb - Error handlers for Awoo
+# => vichan_compat.rb - vichan compatibility layer for Awoo.
 # => Awoo Textboard Engine
 # => (c) prefetcher & github commiters 2017
 #
