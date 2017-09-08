@@ -113,6 +113,13 @@ textarea, #draggable > form > input[type='text'] {
 #pagecount_container {
     text-align: center;
 }
+#modlogo {
+  max-width: 395px;
+  width: auto;
+}
+#container_login {
+  text-align: center;
+}
 input[type=submit] {
     margin-top: 3px;
 }
