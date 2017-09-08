@@ -126,7 +126,7 @@
     <div id="draggable" style="display: none" class="ui-widget-content">
       <form action="/post" method="post" name="newthread">
         <% if path == "all" %>
-          Post to: 
+          Post to:
           <select name="board" id="board">
             <% config["boards"].select do |key, value| session[:username] or not value["hidden"] end.each do |key, value| %>
               <% if key == "all" then next end %>
@@ -177,7 +177,11 @@
       <% if res[:is_locked] then classes += " locked " end %>
       <% if res[:stickyness] then classes += ' sticky-' + res[:stickyness].to_s + ' ' end %>
       <% if path == "burg" then res[:title] = "burg" end %>
+      <% if path == "all" then %>
+        <a style="display: inline-block;" data-replies="<%= res[:number_of_replies] %>" href="/<%= res[:board] %>/thread/<%= res[:post_id] %>" class="<%= classes %>">/<%= res[:board] %>/ - <%= Sanitize.clean(res[:title]) %></a>
+      <% else %>
         <a style="display: inline-block;" data-replies="<%= res[:number_of_replies] %>" href="/<%= res[:board] %>/thread/<%= res[:post_id] %>" class="<%= classes %>"><%= Sanitize.clean(res[:title]) %></a>
+      <% end %>
       <% if moderator %>
         <% if res[:is_locked] %>
           <i class="fa fa-unlock-alt" aria-hidden="true" onClick='lockPost(<%= res[:post_id] %>)'></i>
