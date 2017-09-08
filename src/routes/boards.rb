@@ -42,6 +42,8 @@ module Sinatra
               return [400, "Post too long (over 500 characters)"]
             elsif config["boards"][board]["hidden"] and not session[:username]
               return [403, "You have no janitor permissions"]
+            elsif board == "all"
+              return [400, "stop that"]
             end
             title = apply_word_filters(config, board, title)
             content = apply_word_filters(config, board, content)

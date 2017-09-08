@@ -125,7 +125,20 @@
     <span onClick='newThread()' id="newthread">Start a new thread</span>
     <div id="draggable" style="display: none" class="ui-widget-content">
       <form action="/post" method="post" name="newthread">
-        <input style='display: none;' type='text' name='board' id='board' value='<%= path %>' />
+        <% if path == "all" %>
+          Post to: 
+          <select name="board" id="board">
+            <% config["boards"].select do |key, value| session[:username] or not value["hidden"] end.each do |key, value| %>
+              <% if key == "all" then next end %>
+              <option value="<%= key %>">
+                <%= key %> - <%= value["desc"] %>
+              </option>
+            <% end %>
+          </select>
+          <br />
+        <% else %>
+          <input style='display: none;' type='text' name='board' id='board' value='<%= path %>' />
+        <% end %>
         <% if path == "burg" %>
           <input style='display: none;' type='text' name='title' id='title' value='burg' />
           <input type="radio" value="burg" id="burg" name="comment" /><label style="color: white" for="burg">burg</label><br />
