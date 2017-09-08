@@ -164,7 +164,7 @@
       <% if res[:is_locked] then classes += " locked " end %>
       <% if res[:stickyness] then classes += ' sticky-' + res[:stickyness].to_s + ' ' end %>
       <% if path == "burg" then res[:title] = "burg" end %>
-        <a style="display: inline-block;" data-replies="<%= res[:number_of_replies] %>" href="/<%= path %>/thread/<%= res[:post_id] %>" class="<%= classes %>"><%= Sanitize.clean(res[:title]) %></a>
+        <a style="display: inline-block;" data-replies="<%= res[:number_of_replies] %>" href="/<%= res[:board] %>/thread/<%= res[:post_id] %>" class="<%= classes %>"><%= Sanitize.clean(res[:title]) %></a>
       <% if moderator %>
         <% if res[:is_locked] %>
           <i class="fa fa-unlock-alt" aria-hidden="true" onClick='lockPost(<%= res[:post_id] %>)'></i>
