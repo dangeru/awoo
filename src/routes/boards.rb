@@ -450,6 +450,9 @@ module Sinatra
             #JSON.dump(config["boards"].select do |key, value| session[:username] or not value["hidden"] end)
           #end
           app.get API + "/board/:board" do |board|
+            if board == "all" then
+              return JSON.dump(get_all(params, session, config))
+            end
             return JSON.dump(get_board(board, params, session, config))
           end
           app.get API + "/thread/:id/metadata" do |id|
