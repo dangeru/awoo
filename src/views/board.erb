@@ -153,7 +153,13 @@
       <% end %>
     <hr />
     <%# Note that we COULD order by `(-1 * sticky), (SELECT MAX(p2.post_id) FROM posts p2 WHERE parent = post_id)` and we wouldn't need the extra `last_bumped` database column, but it would be more cpu/disk work on the database %>
-    <% get_board(path, params, session, config).each do |res| %>
+    <% ress = nil %>
+    <% if path == "all" then %>
+      <% ress = get_all(params, session, config) %>
+    <% else %>
+      <% ress = get_board(path, params, session, config) %>
+    <% end %>
+    <% ress.each do |res| %>
       <% classes = "" %>
       <% if res[:is_locked] then classes += " locked " end %>
       <% if res[:stickyness] then classes += ' sticky-' + res[:stickyness].to_s + ' ' end %>

@@ -27,6 +27,13 @@
       "word-filter": {
         "fillerdata": "fillerdata"
       }
+    },
+    "all": {
+      "name": "all",
+      "desc": "all",
+      "rules": "",
+      "word-filter": {
+      }
     }
   },
   "hostname": "example.com",

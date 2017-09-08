@@ -212,6 +212,22 @@ def get_board(board, params, session, config)
   return results
 end
 
+def get_all(params, session, config)
+  con = make_con()
+  allowed_boards = config["boards"].select do |k, v| session[:moderates] or not v["hidden"] end.map do |k, v| k end
+  allowed_boards = "(" + (allowed_boards.reduce([]) do |acc, k| acc.push("'" + con.escape(k) + "'") end.join ",") + ")"
+  # calculate which 20 posts to show
+  page = 0
+  if params[:page] then page = params[:page].to_i end
+  offset = page * 20;
+  # make a thread object for each returned row and return the list of all the thread objects
+  results = []
+  query(con, "SELECT *, COALESCE(parent, post_id) AS effective_parent, COUNT(*) AS number_of_replies FROM posts WHERE board IN #{allowed_boards} GROUP BY effective_parent ORDER BY (-1 * sticky), last_bumped DESC LIMIT 20 OFFSET #{offset.to_s};").each do |res|
+    results.push(make_metadata_from_hash(res, session))
+  end
+  return results
+end
+
 # Gets the replies to a given thread
 def get_thread_replies(id, session, config)
   con = make_con()
