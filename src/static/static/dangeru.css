@@ -51,10 +51,6 @@ a:hover {
     color: #ED145B;
     font-size: 18px;
     font-family: 'CyberpunkWaifus';
-    white-space: pre-wrap;
-    white-space: -moz-pre-wrap;
-    white-space: -pre-wrap;
-    white-space: -o-pre-wrap;
     word-wrap: break-word;
 }
 div {
@@ -97,10 +93,6 @@ textarea, #draggable > form > input[type='text'] {
     font-size: 18px;
     color: #FFFFFF;
     font-family: 'CyberpunkWaifus';
-    white-space: pre-wrap;
-    white-space: -moz-pre-wrap;
-    white-space: -pre-wrap;
-    white-space: -o-pre-wrap;
     word-wrap: break-word;
 }
 #boardtitle {
