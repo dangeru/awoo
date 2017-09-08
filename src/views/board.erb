@@ -177,10 +177,12 @@
       <% if res[:is_locked] then classes += " locked " end %>
       <% if res[:stickyness] then classes += ' sticky-' + res[:stickyness].to_s + ' ' end %>
       <% if path == "burg" then res[:title] = "burg" end %>
-      <% if path == "all" then %>
-        <span style="color: grey; font-family: 'CyberpunkWaifus';">/<%= res[:board] %>/</a>
-      <% end %>
-      <a style="display: inline-block;" data-replies="<%= res[:number_of_replies] %>" href="/<%= res[:board] %>/thread/<%= res[:post_id] %>" class="<%= classes %>"><%= Sanitize.clean(res[:title]) %></a>
+      <a style="display: inline-block;" data-replies="<%= res[:number_of_replies] %>" href="/<%= res[:board] %>/thread/<%= res[:post_id] %>" class="<%= classes %>">
+        <% if path == "all" then %>
+          <span style="color: grey;">/<%= res[:board] %>/</span>
+        <% end %>
+        <%= Sanitize.clean(res[:title]) %>
+      </a>
       <% if moderator %>
         <% if res[:is_locked] %>
           <i class="fa fa-unlock-alt" aria-hidden="true" onClick='lockPost(<%= res[:post_id] %>)'></i>
@@ -197,7 +199,7 @@
         <i class="fa fa-trash" aria-hidden="true" onClick='deletePost(<%= res[:post_id] %>)'></i>
         <i class="fa fa-refresh" aria-hidden="true" onClick="window.location.replace('/move/<%= res[:post_id] %>');"></i>
         <a style="display: inline-block; font-size: 50%;" href="/ip/<%= res[:ip] %>"><%= res[:ip] %></a>
-      <% end %>
+    <% end %>
       <br />
     <% end %>
 
