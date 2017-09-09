@@ -25,7 +25,7 @@ class Awoo < Sinatra::Base
   configure do
     set :bind, '0.0.0.0'
     set :port, config['port']
-    set :awoo_version, '0.1.0'
+    set :awoo_version, '1.0.0'
     set :public_folder, File.dirname(__FILE__) + '/static'
   end
   set :root, File.dirname(__FILE__)

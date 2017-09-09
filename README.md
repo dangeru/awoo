@@ -13,6 +13,8 @@ If you want to test against a production environment but are worried about secur
 
 The tests depend on the `http-cookie` gem
 
+![awoo in use](/meta/awoo.PNG)
+
 ## Todo List
 
-- On `/ip/:addr`, maybe let people select more than one board at a time to ban the IP from? 
+- On `/ip/:addr`, maybe let people select more than one board at a time to ban the IP from?
