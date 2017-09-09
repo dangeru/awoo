@@ -19,12 +19,12 @@
       <span class="redtext">02/09/17: we switched to Awoo! The new app is finally up too!</span>
     </div>
     <br>
-    <div id="maincontainer" style="overflow: hidden;">
-      <div style="float: left;">
+    <div id="maincontainer" style="overflow: hidden;"><br>
+      <div style="float: left; margin-left: 20px;">
         <span class="redtext" style="text-decoration: underline;">General</span>
         <% settings.config['boards'].select do |key, val| session[:username] or not val["hidden"] end.each do |key, array| %>
           <a class="boarda" href="/<%= key %>"><div id="comment"><%= settings.config['boards'][key]['desc'] %></div></a>
-        <% end %>
+        <% end %><br>
       </div>
     </div>
     <div style="text-align: center;">

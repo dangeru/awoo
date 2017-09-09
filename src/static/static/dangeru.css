@@ -29,6 +29,9 @@ a {
 }
 .boarda {
     text-align: left;
+    font-size: 17px;
+    font-family: 'CyberpunkWaifus';
+    color: #FFF;
 }
 .boardb {
     text-align: right;
@@ -69,7 +72,6 @@ div {
     width: 100vw;
     border-radius: 25px;
     border: 2px solid #FFFFFF;
-    padding: 20px;
     max-width: 568px;
     height: auto;
     margin: 0 auto;
@@ -103,6 +105,7 @@ textarea, #draggable > form > input[type='text'] {
 }
 #boardcontainer {
     text-align: center;
+    height: 20px;
     width: auto;
 }
 #boardid {
@@ -201,4 +204,11 @@ pre {
   white-space: -pre-wrap;
   white-space: -o-pre-wrap;
   word-wrap: break-word;
+}
+/* new board selector style */
+hr {
+  border:none;
+  box-shadow: 0px 4px 9px #111;
+  height: 5px;
+  border-top: 1px solid #343434;
 }
