@@ -280,7 +280,7 @@ module Sinatra
             if session[:moderates] then
               return erb :mod_login_success, :locals => {:session => session, :config => config}
             end
-            erb :mod_login, :locals => {:session => session}
+            erb :mod_login, :locals => {:session => session, :config => config}
           end
           # Moderator log in action, checks the username and password against the list of janitors and logs them in if it matches
           app.post "/mod" do
