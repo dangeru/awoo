@@ -2,6 +2,7 @@
   "title": "Awoo test board",
   "port": 8080,
   "seconds_until_archival": 43200,
+  "footer": "",
   "boards": {
     "test": {
       "name": "test",

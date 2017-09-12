@@ -115,6 +115,7 @@
             }
             xhr.open("POST", route);
             xhr.send(data);
+            document.getElementById("reply_box").value = "";
           }
         </script>
   </head>
@@ -282,7 +283,7 @@
       <% end %>
     </div>
     <footer class="comment" style="font-size: xx-small; text-align: center;">
-      <small>Awoo <%= settings.awoo_version %></small>
+      <%= config["footer"] %>, <a href="https://github.com/dangeru/awoo/" style="font-size: x-small;">Awoo <%= settings.awoo_version %></a>
     </footer>
   </body>
 </html>
