@@ -41,7 +41,7 @@
   <body>
     <a href="../../"><img src="/static/logo.png" alt="danger/u/" style="width: 395px; height: 130px;"></a>
     <br />
-    <div id="maincontainer" style="overflow: hidden; color: white;">
+    <div id="maincontainer" style="overflow: hidden; color: white; padding: 10px;">
       <div class="title" style="color: #ED145B;">Information for IP <%= Sanitize.clean(addr) %></div>
       <form action="/ban/<%= addr %>" method="post" id="ban-form">
         <select id="board" name="board">
