@@ -449,6 +449,9 @@ module Sinatra
             if config["boards"][board]["hidden"] and not session[:moderates] then
               return [404, "Board not found"]
             end
+            if config["boards"][board].nil? then
+              return [404, "Board not found"]
+            end
 
             payload = {:name => config["boards"][board]["name"], :desc => config["boards"][board]["desc"], :rules => config["boards"][board]["rules"]}
             return JSON.dump(payload)
