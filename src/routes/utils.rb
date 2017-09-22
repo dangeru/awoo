@@ -94,9 +94,7 @@ def get_ban_info(ip, board, con)
     return nil
   end
   query(con, "SELECT date_of_unban, reason FROM bans WHERE ip = ? AND board = ? AND date_of_unban > CURRENT_TIMESTAMP()", ip, board).each do |res|
-    reason = Sanitize.clean(res["reason"])
-    date_of_unban = Sanitize.clean(res["date_of_unban"])
-    return [403, "You are banned. Reason given: #{reason}. Expiration: #{date_of_unban}"]
+    return res
   end
   return nil
 end
@@ -268,5 +266,3 @@ end
 def wrap(what, content)
   return "--- BEGIN " + what.upcase + " ---\n" + content + "\n--- END " + what.upcase + " ---\n"
 end
-
-

@@ -49,7 +49,9 @@ module Sinatra
             content = apply_word_filters(config, board, content)
             # Check if the IP is banned
             banned = get_ban_info(ip, board, con)
-            if banned then return banned end
+            if banned then
+              erb :banned {:info => banned, :config => config}
+            end
             # Insert the new post into the database
             unless params[:capcode] and session[:username]
               query(con, "INSERT INTO posts (board, title, content, ip) VALUES (?, ?, ?, ?)", board, title, content, ip);
@@ -85,7 +87,9 @@ module Sinatra
             end
             # Check if the IP is banned
             banned = get_ban_info(ip, board, con)
-            if banned then return banned end
+            if banned then
+              erb :banned {:info => banned, :config => config}
+            end
             closed = nil
             query(con, "SELECT is_locked FROM posts WHERE post_id = ?", parent).each do |res|
               closed = res["is_locked"]
