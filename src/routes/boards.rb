@@ -445,15 +445,11 @@ module Sinatra
           app.get API + "/boards" do
             JSON.dump(config["boards"].select do |key, value| session[:username] or not value["hidden"] end.map do |key, value| key end)
           end
-          # Not ready yet, leaks word filters
-          #app.get API + "/boards/detail" do
-            #JSON.dump(config["boards"].select do |key, value| session[:username] or not value["hidden"] end)
-          #end
           app.get API + "/board/:board/detail" do |board|
             if config["boards"][board]["hidden"] and not session[:moderates] then
               return [404, "Board not found"]
             end
-            
+
             payload = {:name => config["boards"][board]["name"], :desc => config["boards"][board]["desc"], :rules => config["boards"][board]["rules"]}
             return JSON.dump(payload)
           end
