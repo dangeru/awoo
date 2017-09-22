@@ -307,6 +307,16 @@ module Sinatra
             erb :ip_list, :locals => {:session => session, :addr => addr, :con => con, :config => config}
           end
 
+          # Gets the moderator ban list
+          app.get "/bans" do
+            if not session[:moderates] then
+              return [403, "You have no janitor permissions"]
+            end
+
+            con = make_con()
+            erb :ban_list, :locals => {:con => con, :config => config}
+          end
+
           # Either locks or unlocks the specified thread
           app.get "/lock/:post/?" do |post|
             con = make_con()

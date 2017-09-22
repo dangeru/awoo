@@ -1,0 +1,23 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>Awoo - Ban List</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" type="text/css" href="static/dangeru.css">
+    <link rel="shortcut icon" href="static/favicon.ico">
+  </head>
+  <body>
+    <a href="/"><img src="/static/logo.png" alt="danger/u/" style="width: 395px; height: 130px;"></a>
+    <br />
+    <div id="maincontainer" style="overflow: hidden; color: white; padding: 10px;">
+      <div class="title" style="color: #ED145B;">Showing Global Ban List</div>
+      <br>
+      <% query(con, "SELECT * FROM bans WHERE date_of_unban > CURRENT_TIMESTAMP()").each do |res| %>
+        <div class="comment">IP: <span class="redtext"><%= Sanitize.clean(res["ip"])%></span></div>
+        <div class="comment">Got banned from board <span class="redtext">/<%= Sanitize.clean(res["board"])%>/</span>, for reason: <span class="redtext">/<%= Sanitize.clean(res["reason"])%>/</span></div>
+        <div class="comment">The date of unban will be on: <span class="redtext"><%= Sanitize.clean(res["date_of_unban"])%></span></div>
+        <hr />
+      <% end %>
+    </div>
+  </body>
+</html>
