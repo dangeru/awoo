@@ -64,9 +64,11 @@
               select(window.location.hash.split("comment-")[1]);
             }
             <%= mobile_js %>
+            var id = <%= id.to_i %>;
             if (typeof(unitedPropertiesIf) != "undefined") {
-              var id = <%= id.to_i %>;
               unitedPropertiesIf.setProperty(board + ":" + id, total_number_of_posts.toString());
+            } else {
+              localStorage.setItem(board + ":" + id, total_number_of_posts.toString());
             }
             if (typeof(unitedPropertiesIf) == "undefined" || unitedPropertiesIf.getProperty("userscript").toUpperCase() == "TRUE") {
               Array.prototype.slice.call(document.getElementsByClassName("post_number"), 0).forEach(function(elem) {
