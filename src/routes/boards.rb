@@ -50,7 +50,7 @@ module Sinatra
             # Check if the IP is banned
             banned = get_ban_info(ip, board, con)
             if banned then
-              return erb :banned {:info => banned, :config => config}
+              return erb :banned, :locals =>  {:info => banned, :config => config}
             end
             # Insert the new post into the database
             unless params[:capcode] and session[:username]
@@ -88,7 +88,7 @@ module Sinatra
             # Check if the IP is banned
             banned = get_ban_info(ip, board, con)
             if banned then
-              return erb :banned {:info => banned, :config => config}
+              return erb :banned, :locals => {:info => banned, :config => config}
             end
             closed = nil
             query(con, "SELECT is_locked FROM posts WHERE post_id = ?", parent).each do |res|
