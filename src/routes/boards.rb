@@ -446,10 +446,10 @@ module Sinatra
             JSON.dump(config["boards"].select do |key, value| session[:username] or not value["hidden"] end.map do |key, value| key end)
           end
           app.get API + "/board/:board/detail" do |board|
-            if config["boards"][board]["hidden"] and not session[:moderates] then
+            if config["boards"][board].nil? then
               return [404, "Board not found"]
             end
-            if config["boards"][board].nil? then
+            if config["boards"][board]["hidden"] and not session[:moderates] then
               return [404, "Board not found"]
             end
 
