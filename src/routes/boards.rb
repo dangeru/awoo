@@ -449,6 +449,10 @@ module Sinatra
           #app.get API + "/boards/detail" do
             #JSON.dump(config["boards"].select do |key, value| session[:username] or not value["hidden"] end)
           #end
+          app.get API + "/board/:board/detail" do |board|
+            payload = {:name => config["boards"][board]["name"], :desc => config["boards"][board]["desc"], :rules => config["boards"][board]["rules"]}
+            return JSON.dump(payload)
+          end
           app.get API + "/board/:board" do |board|
             if board == "all" then
               return JSON.dump(get_all(params, session, config))
