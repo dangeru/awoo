@@ -93,7 +93,7 @@ def get_ban_info(ip, board, con)
   if ip == nil then # fix for connecting from 127.0.0.1 when not behind a reverse proxy
     return nil
   end
-  query(con, "SELECT date_of_unban, reason FROM bans WHERE ip = ? AND board = ? AND date_of_unban > CURRENT_TIMESTAMP()", ip, board).each do |res|
+  query(con, "SELECT date_of_unban, reason, board FROM bans WHERE ip = ? AND board = ? AND date_of_unban > CURRENT_TIMESTAMP()", ip, board).each do |res|
     return res
   end
   return nil
