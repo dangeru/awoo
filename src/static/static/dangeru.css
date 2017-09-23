@@ -12,6 +12,9 @@ img {
     #maincontainer {
         width: 90%;
     }
+    #boardcontainer {
+      margin-bottom: 25px;
+    }
 }
 @font-face {
     font-family: 'CyberpunkWaifus';
