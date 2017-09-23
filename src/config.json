@@ -59,7 +59,7 @@
       "rank": "Admin",
       "boards": [
         "test"
-      ],
+      ]
     },
     {
       "username": "test3",
@@ -82,6 +82,9 @@
     "delete": 1,
     "introspect": 3,
     "move": 1,
-    "edit_rules": 2
+    "edit_rules": 2,
+    "edit_wordfilters": 2,
+    "sticky": 2,
+    "view_all_bans", 2
   }
 }
