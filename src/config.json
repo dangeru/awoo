@@ -3,6 +3,7 @@
   "port": 8080,
   "seconds_until_archival": 43200,
   "footer": "",
+
   "boards": {
     "test": {
       "name": "test",
@@ -37,14 +38,17 @@
       }
     }
   },
+
   "hostname": "example.com",
   "bump_limit": 250,
   "period_length": 30,
   "max_posts_per_period": 4,
+
   "janitors": [
     {
       "username": "test",
       "password": "test",
+      "rank": "Janitor",
       "boards": [
         "test"
       ]
@@ -52,17 +56,32 @@
     {
       "username": "test2",
       "password": "pass",
+      "rank": "Admin",
       "boards": [
         "test"
       ],
-      "is_supermaidmin": true
     },
     {
       "username": "test3",
       "password": "pass",
+      "rank": "Maidmin",
       "boards": [
         "burg"
       ]
     }
-  ]
+  ],
+
+  "ranks": {
+    "Admin": 4,
+    "Maidmin": 3,
+    "Janitor": 2,
+    "Trial Janitor": 1
+  },
+  "permissions": {
+    "ban": 2,
+    "delete": 1,
+    "introspect": 3,
+    "move": 1,
+    "edit_rules": 2
+  }
 }

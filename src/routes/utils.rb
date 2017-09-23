@@ -255,7 +255,7 @@ def mobile_js()
   return res
 end
 
-# applys word filters to the given content, only applying them on a word break
+# applies word filters to the given content, only applying them on a word break
 def apply_word_filters(config, path, content)
   config["boards"][path]["word-filter"].each do |a, b| content = content.gsub(Regexp.new("\\b" + a + "\\b"), b) end
   return content
@@ -265,4 +265,20 @@ end
 # http://i.imgur.com/D63VXG0.png
 def wrap(what, content)
   return "--- BEGIN " + what.upcase + " ---\n" + content + "\n--- END " + what.upcase + " ---\n"
+end
+
+# Gets if a janitor has the permission to perform an action
+def get_action_permission(session, config, action)
+  if not session[:username] then
+    return false
+  end
+
+  config["janitors"].each do |mod|
+    if mod["username"] == session[:username] then
+      return config["ranks"][mod["rank"]] >= config["permissions"][action]
+      break
+    end
+  end
+
+  return false
 end
