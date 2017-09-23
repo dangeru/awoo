@@ -53,10 +53,10 @@ module Sinatra
               return erb :banned, :locals => {:info => banned, :config => config}
             end
             # Insert the new post into the database
-            unless params[:capcode] and session[:username]
-              query(con, "INSERT INTO posts (board, title, content, ip) VALUES (?, ?, ?, ?)", board, title, content, ip);
+            if params[:capcode] and params[:capcode].length > 0 and allowed_capcodes(session, config).include? params[:capcode] and session[:username] then
+              query(con, "INSERT INTO posts (board, title, content, ip, janitor) VALUES (?, ?, ?, ?, ?)", board, title, content, ip, params[:capcode] + " " + session[:username]);
             else
-              query(con, "INSERT INTO posts (board, title, content, ip, janitor) VALUES (?, ?, ?, ?, ?)", board, title, content, ip, session[:username]);
+              query(con, "INSERT INTO posts (board, title, content, ip) VALUES (?, ?, ?, ?)", board, title, content, ip);
             end
             # Then get the ID of the just-inserted post and redirect the user to their new thread
             query(con, "SELECT LAST_INSERT_ID() AS id").each do |res|
@@ -102,10 +102,10 @@ module Sinatra
               return [403, "You have no janitor permissions"]
             end
             # Insert the new reply
-            unless params[:capcode] and session[:username]
-              query(con, "INSERT INTO posts (board, parent, content, ip, title) VALUES (?, ?, ?, ?, NULL)", board, parent, content, ip)
+            if params[:capcode] and params[:capcode].length > 0 and allowed_capcodes(session, config).include? params[:capcode] and session[:username] then
+              query(con, "INSERT INTO posts (board, parent, content, ip, title, janitor) VALUES (?, ?, ?, ?, NULL, ?)", board, parent, content, ip, params[:capcode] + ":" + session[:username])
             else
-              query(con, "INSERT INTO posts (board, parent, content, ip, title, janitor) VALUES (?, ?, ?, ?, NULL, ?)", board, parent, content, ip, session[:username])
+              query(con, "INSERT INTO posts (board, parent, content, ip, title) VALUES (?, ?, ?, ?, NULL)", board, parent, content, ip)
             end
             # Mark the parent as bumped
             query(con, "UPDATE posts SET last_bumped = CURRENT_TIMESTAMP() WHERE post_id = ?", parent);

@@ -266,3 +266,26 @@ def has_permission(session, config, action)
 
   return false
 end
+
+def allowed_capcodes(session, config)
+  if not session[:username] then
+    return []
+  end
+  rank = nil
+  config["janitors"].each do |mod|
+    if mod["username"] == session[:username] then
+      rank = mod["rank"]
+      break
+    end
+  end
+  if rank.nil? then
+    return []
+  end
+  res = []
+  config["ranks"].each do |k, v|
+    if v <= config["ranks"][rank] then
+      res.push k
+    end
+  end
+  return res
+end

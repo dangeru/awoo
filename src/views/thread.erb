@@ -163,7 +163,7 @@
             <% next %>
           <% end %>
           <% if res[:capcode] %>
-            <div class="redtext">##Janitor:<%= res[:capcode] %>##</div><br>
+            <div class="redtext">##<%= res[:capcode] %>##</div><br>
           <% end %>
           <% if moderator and has_permission(session, config, "delete") then %>
             <i class="fa fa-trash offset-left" aria-hidden="true" onClick='deletePost(<%= res[:post_id] %>)'></i>
@@ -266,9 +266,7 @@
           <br />
           <%# Janitors of at least one board can capcode on ANY board %>
           <% if session[:username] %>
-            <input type="checkbox" name="capcode" id="capcode" />
-            <label style="color: white;" for="capcode">Post with capcode?</label>
-            <br />
+            <%= erb :capcode_dropdown, :locals => {:config => config, :session => session} %>
           <% end %>
           <% if path == "burg" %>
             <input type="radio" value="burg" id="burg" name="content" /><label style="color: white" for="burg">burg</label>

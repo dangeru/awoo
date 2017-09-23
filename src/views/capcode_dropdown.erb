@@ -1,0 +1,7 @@
+<span style="color: white;">Capcode: </span>
+<select name="capcode" id="capcode">
+  <option value="">None</option>
+  <% allowed_capcodes(session, config).each do |code| %>
+    <option value="<%= code %>"><%= code %></option>
+  <% end %>
+</select>

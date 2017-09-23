@@ -157,8 +157,7 @@
           <%# Janitors of at least one board can capcode on ANY board %>
           <% if session[:username] %>
             <br />
-            <input type="checkbox" name="capcode" id="capcode" />
-            <label style="color: white;" for="capcode">Post with capcode?</label>
+            <%= erb :capcode_dropdown, :locals => {:config => config, :session => session} %>
             <br />
           <% end %>
           <div id="wordcount" class="comment" style="float: left;">0/500</div><br />
