@@ -41,8 +41,12 @@
       <% config["boards"].select do |board, v| session[:moderates].include? board end.each do |board, v| %>
         <span id="<%= board %>" onClick="showActions(this.id)" class="comment">/<%= board %>/</span>
         <div id="actions-<%= board %>" style="display: none;">
-          <a href="/<%= board %>/word-filter">Edit word filters</a>
-          <a href="/<%= board %>/rules">Edit rules</a>
+          <% if has_permission(session, config, "edit_wordfilters") %>
+            <a href="/<%= board %>/word-filter">Edit word filters</a>
+          <% end %>
+          <% if has_permission(session, config, "edit_rules") %>
+            <a href="/<%= board %>/rules">Edit rules</a>
+          <% end %>
           <a href="/<%= board %>/">Go to board</a>
         </div><br />
       <% end %>

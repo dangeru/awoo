@@ -43,17 +43,19 @@
     <br />
     <div id="maincontainer" style="overflow: hidden; color: white; padding: 10px;">
       <div class="title" style="color: #ED145B;">Information for IP <%= Sanitize.clean(addr) %></div>
-      <form action="/ban/<%= addr %>" method="post" id="ban-form">
-        <select id="board" name="board">
-          <% session[:moderates].each do |board| %>
-            <option value="<%= board %>"><%= board %></option>
-          <% end %>
-        </select>
-        <input type="text" id="datepicker" name="date" placeholder="Date" class="special_styled"/>
-        <input type="text" id="reason" name="reason" placeholder="Reason" class="special_styled"/>
-        <button onClick="submit_form(document.getElementById('ban-form'), '/ban/<%= Sanitize.clean(addr) %>')" class="special_styled">Ban</button>
-      </form>
-      <br />
+      <% if has_permission(session, config, "ban") %>
+        <form action="/ban/<%= addr %>" method="post" id="ban-form">
+          <select id="board" name="board">
+            <% session[:moderates].each do |board| %>
+              <option value="<%= board %>"><%= board %></option>
+            <% end %>
+          </select>
+          <input type="text" id="datepicker" name="date" placeholder="Date" class="special_styled"/>
+          <input type="text" id="reason" name="reason" placeholder="Reason" class="special_styled"/>
+          <button onClick="submit_form(document.getElementById('ban-form'), '/ban/<%= Sanitize.clean(addr) %>')" class="special_styled">Ban</button>
+        </form>
+        <br />
+      <% end %>
       <% boards = session[:moderates].map do |f| con.escape(f) end %>
       <% boards = "('" + boards.join("', '") + "')" %>
       <% query(con, "SELECT reason, board, date_of_unban FROM bans WHERE ip = ? AND board IN #{boards} AND date_of_unban > CURRENT_TIMESTAMP()", addr).each do |res| %>
@@ -61,7 +63,9 @@
         <h3 class="redtext">
           Banned from <%= res["board"] %> until <%= res["date_of_unban"].strftime '%c' %> for reason "<%= Sanitize.clean(res["reason"]) %>"
           <form id="<%= id %>" action="/unban/<%= addr %>" method="post"><input type="hidden" name="board" value="<%= res["board"] %>" /></form>
-          <button onClick="submit_form(document.getElementById('<%= id %>'), '/unban/<%= Sanitize.clean(addr) %>')">Unban</button>
+          <% if has_permission(session, config, "ban") %>
+            <button onClick="submit_form(document.getElementById('<%= id %>'), '/unban/<%= Sanitize.clean(addr) %>')">Unban</button>
+          <% end %>
         </h3>
       <% end %>
       <%# We're actually left joining the table `posts` on itself here to get the title of the OP the comment is replying to, if there is one %>
@@ -75,7 +79,11 @@
         <% else %>
           <div class="comment">OP with title <a style='display: inline-block;' href="/<%= res["board"] %>/thread/<%= res["post_id"] %>"><%= res["title"] %></a>
         <% end %>
-        in /<%= res["board"] %>/ on <%= res["date_posted"].strftime '%c' %>.<i class="fa fa-trash" aria-hidden="true" onClick='deletePost(<%= res["post_id"] %>)'></i></div>
+          in /<%= res["board"] %>/ on <%= res["date_posted"].strftime '%c' %>.
+          <% if has_permission(session, config, "delete") %>
+            <i class="fa fa-trash" aria-hidden="true" onClick='deletePost(<%= res["post_id"] %>)'></i>
+          <% end %>
+        </div>
         <div class="entry">
           <div class="comment"><%= Sanitize.clean(res["content"]).gsub("\n", "<br />") %></div>
         </div>
