@@ -143,7 +143,7 @@
           <%# I WILL MOVE IT LATER I PROMISE %>
           <meta property="og:title" content="<%= Sanitize.clean(res[:title]) %> - /<%= res[:board] %>/">
           <meta property="og:description" content="<%= Sanitize.clean(res[:comment]) %>">
-          <% if is_moderator(path, session) and res[:sticky] then %>
+          <% if moderator and res[:sticky] and has_permission(session, config, "sticky") then %>
             <form id="sticky-form" action="/sticky/<%= res[:post_id] %>" method="POST" style="color: white;">
               Adjust Stickynes
               <input type="number" name="stickyness" value="<%= res[:stickyness] %>" />
@@ -165,8 +165,10 @@
           <% if res[:capcode] %>
             <div class="redtext">##Janitor:<%= res[:capcode] %>##</div><br>
           <% end %>
-          <% if moderator then %>
+          <% if moderator and has_permission(session, config, "delete") then %>
             <i class="fa fa-trash offset-left" aria-hidden="true" onClick='deletePost(<%= res[:post_id] %>)'></i>
+          <% end %>
+          <% if moderator and has_permission(session, config, "view_ips") then %>
             <a style="display: inline-block; font-size: 50%;" href="/ip/<%= res[:ip] %>"><%= res[:ip] %></a>
           <% end %>
           <span class="post_number" style="display: none;">Post number #<span class="id_link" onClick='document.getElementById("reply_box").innerText += ">><%= res[:post_id] %>"'><%= res[:post_id] %></span>, ID: <span style="color: #<%= res[:hash] %>;"><%= res[:hash] %></span></span><br>
@@ -252,7 +254,7 @@
       <% if is_locked then %>
         <div id="lockedcontainer" style="text-align: center;">
           <div class="redtext">This thread is closed.</div>
-          <% if moderator %>
+          <% if moderator and has_permission(session, config, "lock") %>
             <i class="fa fa-lock" aria-hidden="true" onClick='unlockPost(<%= id.to_i.to_s %>)'></i>
           <% end %>
         </div>
@@ -278,7 +280,7 @@
           <% end %>
         </form>
         <button class="button_styled" style="float: right;" onClick='submit_form(document.getElementById("form"), "/reply")' id="submit">Submit</button><br />
-        <% if moderator %>
+        <% if moderator and has_permission(session, config, "lock") %>
           <br />
           <i class="fa fa-unlock-alt" aria-hidden="true" style="display: block; text-align: center;" onClick='lockPost(<%= id.to_i.to_s %>)'></i>
         <% end %>

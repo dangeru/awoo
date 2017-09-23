@@ -86,6 +86,7 @@
     "edit_wordfilters": 2,
     "sticky": 2,
     "view_all_bans": 2,
-    "view_ips": 1
+    "view_ips": 1,
+    "lock": 1
   }
 }

@@ -38,7 +38,7 @@ end
 
 # Updates the locked state of the given post to `bool`, where `bool` can either be true or false
 # used in the /lock and /unlock routes
-def lock_or_unlock(post, bool, con, session)
+def lock_or_unlock(post, bool, con, session, config)
   board = nil
   post = post.to_i
   query(con, "SELECT board FROM posts WHERE post_id = ?", post).each do |res|
@@ -47,7 +47,7 @@ def lock_or_unlock(post, bool, con, session)
   if board == nil then
     return [400, "Post not found"]
   end
-  if not is_moderator(board, session) then
+  if not is_moderator(board, session) or not has_permission(session, config, "lock") then
     return [403, "You do not moderate " + board]
   end
   query(con, "UPDATE posts SET is_locked = ? WHERE post_id = ?", bool, post)
@@ -57,13 +57,13 @@ end
 
 # Stickies or unstickies a post, where `setting` can be true or false or a number indicating the stickyness
 # used in /unsticky and both /sticky routes
-def sticky_unsticky(id, setting, con, session)
+def sticky_unsticky(id, setting, con, session, config)
   board = nil
   id = id.to_i
   query(con, "SELECT board FROM posts WHERE post_id = ?", id).each do |res|
     board = res["board"]
   end
-  if is_moderator(board, session) then
+  if is_moderator(board, session) and has_permission(session, config, "sticky") then
     content = "Changed stickyness on post /" + board + "/thread/" + id.to_s + " to new value " + setting.to_s
     query(con, "INSERT INTO ip_notes (ip, content, actor) VALUES (?, ?, ?)", "_meta", content, session[:username])
     query(con, "UPDATE posts SET sticky = ? WHERE post_id = ?", setting, id)
@@ -107,12 +107,12 @@ end
 
 # Makes an object for a thread's metadata from the given hash, used in the api's thread/:id/metadata route
 # used in get_board which is used in the API's board/:board route and also views/board.erb
-def make_metadata_from_hash(res, session)
+def make_metadata_from_hash(res, session, config)
   is_op = res["parent"] == nil
   # keys common to all posts (OPs and replies)
   obj = {:post_id => res["post_id"], :board => res["board"], :is_op => is_op, :comment => res["content"], :date_posted => res["date_posted"].strftime('%s').to_i}
   # Put ip in the object if the user has permission to see it
-  if is_moderator(res["board"], session) then
+  if is_moderator(res["board"], session) and has_permission(session, config, "view_ips") then
     obj[:ip] = res["ip"]
   end
   # the janitor's capcode
@@ -152,7 +152,7 @@ def make_metadata(con, id, session, config)
   id = id.to_i.to_s;
   result = [400, "No results found"]
   query(con, "SELECT *, (SELECT COUNT(*) FROM posts WHERE parent = ?) + 1 AS number_of_replies FROM posts WHERE post_id = ?", id, id).each do |hash|
-    result = make_metadata_from_hash(hash, session)
+    result = make_metadata_from_hash(hash, session, config)
   end
   if config["boards"][result[:board]]["hidden"] and not session[:moderates] then
     return "You have no janitor permissions"
@@ -190,7 +190,7 @@ def get_board(board, params, session, config)
   # make a thread object for each returned row and return the list of all the thread objects
   results = []
   query(con, "SELECT *, COALESCE(parent, post_id) AS effective_parent, COUNT(*) AS number_of_replies FROM posts WHERE board = ? GROUP BY effective_parent ORDER BY (-1 * sticky), last_bumped DESC LIMIT 20 OFFSET #{offset.to_s};", board).each do |res|
-    results.push(make_metadata_from_hash(res, session))
+    results.push(make_metadata_from_hash(res, session, config))
   end
   return results
 end
@@ -206,7 +206,7 @@ def get_all(params, session, config)
   # make a thread object for each returned row and return the list of all the thread objects
   results = []
   query(con, "SELECT *, COALESCE(parent, post_id) AS effective_parent, COUNT(*) AS number_of_replies FROM posts WHERE board IN #{allowed_boards} GROUP BY effective_parent ORDER BY (-1 * sticky), last_bumped DESC LIMIT 20 OFFSET #{offset.to_s};").each do |res|
-    results.push(make_metadata_from_hash(res, session))
+    results.push(make_metadata_from_hash(res, session, config))
   end
   return results
 end
@@ -218,7 +218,7 @@ def get_thread_replies(id, session, config)
   id = id.to_i.to_s
   #
   query(con, "SELECT * FROM posts WHERE COALESCE(parent, post_id) = ?", id).each do |res|
-    results.push(make_metadata_from_hash(res, session));
+    results.push(make_metadata_from_hash(res, session, config));
   end
   # dirty fucking hack
   results[0][:number_of_replies] = results.length

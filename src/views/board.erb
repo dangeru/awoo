@@ -166,7 +166,7 @@
         <input type="submit" id="submit" name="submit" class="button_styled" value="Send" style="float: right; height: 20px; line-height:0;" /><br />
       </form>
     </div>
-      <% if moderator %>
+      <% if moderator and has_permission(session, config, "edit_wordfilters") %>
         <hr />
         <a href="/<%= path %>/word-filter">Edit word filters</a>
       <% end %>
@@ -189,23 +189,30 @@
         <% end %>
         <%= Sanitize.clean(res[:title]) %>
       </a>
-      <% if moderator %>
+      <% if moderator and has_permission(session, config, "lock") %>
         <% if res[:is_locked] %>
           <i class="fa fa-unlock-alt" aria-hidden="true" onClick='lockPost(<%= res[:post_id] %>)'></i>
         <% else %>
           <i class="fa fa-lock" aria-hidden="true" onClick='unlockPost(<%= res[:post_id] %>)'></i>
         <% end %>
-
+      <% end %>
+      <% if moderator and has_permission(session, config, "sticky") %>
         <%# Sticky / Unsticky post %>
         <% if not res[:sticky] %>
           <i class="fa fa-thumb-tack" aria-hidden="true" onClick='stickyPost(<%= res[:post_id] %>)'></i>
         <% else %>
           <i class="fa fa-ban" aria-hidden="true" onClick='unstickyPost(<%= res[:post_id] %>)'></i>
         <% end %>
+      <% end %>
+      <% if moderator and has_permission(session, config, "delete") %>
         <i class="fa fa-trash" aria-hidden="true" onClick='deletePost(<%= res[:post_id] %>)'></i>
+      <% end %>
+      <% if moderator and has_permission(session, config, "move") %>
         <i class="fa fa-refresh" aria-hidden="true" onClick="window.location.replace('/move/<%= res[:post_id] %>');"></i>
+      <% end %>
+      <% if moderator and has_permission(session, config, "view_ips") %>
         <a style="display: inline-block; font-size: 50%;" href="/ip/<%= res[:ip] %>"><%= res[:ip] %></a>
-    <% end %>
+      <% end %>
       <br />
     <% end %>
 

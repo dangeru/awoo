@@ -130,7 +130,7 @@ module Sinatra
                 #return [403, "You have no janitor privileges"]
                 return [404, erb(:notfound)]
               end
-              erb :board, :locals => {:path => path, :config => config, :con => con, :offset => offset, :banner => new_banner(path), :moderator => is_moderator(path, session)}
+              erb :board, :locals => {:path => path, :config => config, :con => con, :offset => offset, :banner => new_banner(path), :moderator => is_moderator(path, session), :session => session}
             end
             app.get "/" + path + "/thread/:id" do |id|
               con = make_con()
@@ -324,11 +324,11 @@ module Sinatra
           # Either locks or unlocks the specified thread
           app.get "/lock/:post/?" do |post|
             con = make_con()
-            return lock_or_unlock(post, true, con, session)
+            return lock_or_unlock(post, true, con, session, config)
           end
           app.get "/unlock/:post/?" do |post|
             con = make_con()
-            return lock_or_unlock(post, false, con, session)
+            return lock_or_unlock(post, false, con, session, config)
           end
 
           # Moves thread from board to board
@@ -373,15 +373,15 @@ module Sinatra
           # Sticky / Unsticky posts
           app.get "/sticky/:id/?" do |post_id|
             con = make_con()
-            sticky_unsticky(post_id, true, con, session)
+            sticky_unsticky(post_id, true, con, session, config)
           end
           app.post "/sticky/:id/?" do |post_id|
             con = make_con()
-            sticky_unsticky(post_id, params[:stickyness].to_i, con, session)
+            sticky_unsticky(post_id, params[:stickyness].to_i, con, session, config)
           end
           app.get "/unsticky/:id/?" do |post_id|
             con = make_con()
-            sticky_unsticky(post_id, false, con, session)
+            sticky_unsticky(post_id, false, con, session, config)
           end
 
           # Ban / Unban an IP
