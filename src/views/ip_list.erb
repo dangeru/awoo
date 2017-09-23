@@ -86,7 +86,7 @@
         <div style="font-size: 50%;">
           <div class="comment">
             <%= res["created"].strftime '%c' %>
-            <% if is_supermaidmin(config, session) then %>
+            <% if has_permission(session, config, "introspect") then %>
               <% mod = res["actor"] %>
               Created by: <a style="display: inline-block;" href="/introspect/<%= mod %>"><%= mod %></a>
             <% end %>
