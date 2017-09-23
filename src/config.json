@@ -46,6 +46,14 @@
 
   "janitors": [
     {
+      "username": "test0",
+      "password": "test",
+      "rank": "Trial Janitor",
+      "boards": [
+        "test"
+      ]
+    },
+    {
       "username": "test",
       "password": "test",
       "rank": "Janitor",
