@@ -32,7 +32,7 @@
       <a href="javascript:location.reload();"><img src="/static/logo.png" alt="danger/u/" id="modlogo"></a><br>
       <span id="title" class="redtext">[Welcome <%= Sanitize.clean(session[:username]) %>]</span>
       <br />
-      <% if get_action_permission session, config, "introspect" %>
+      <% if has_permission(session, config, "introspect") %>
         <span class="redtext">[Welcome Supermaidmin.]</span><br /><br />
         <a href="/introspect">&gt;Begin introspection?&lt;</a>
         <br />
