@@ -304,7 +304,7 @@ module Sinatra
             if not session[:moderates] then
               return [403, "You have no janitor permissions"]
             end
-            if addr == "_meta" and not is_supermaidmin(config, session) then
+            if addr == "_meta" and not has_permission(session, config, "introspect") then
               return [403, "You are not a supermaidmin"]
             end
             con = make_con()
@@ -416,20 +416,20 @@ module Sinatra
             end
           end
           app.get "/introspect/?" do
-            if not is_supermaidmin(config, session) then
+            if not has_permission(session, config, "introspect") then
               return [403, "You are not a supermaidmin"]
             end
             erb :introspect, :locals => {:config => config}
           end
           app.get "/introspect/:mod/?" do |mod|
-            if not is_supermaidmin(config, session) then
+            if not has_permission(session, config, "introspect") then
               return [403, "You are not a supermaidmin"]
             end
             erb :introspect_selected, :locals => {:config => config, :con => make_con(), :mod => mod}
           end
           # Posted to reset the password of a moderator
           app.post "/introspect_reset" do
-            if not is_supermaidmin(config, session) then
+            if not has_permission(session, config, "introspect") then
               return [403, "You are not a supermaidmin"]
             end
             if not params[:mod] or not params[:newpass] then

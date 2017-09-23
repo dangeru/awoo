@@ -36,21 +36,6 @@ def is_moderator(board, session)
   return session[:moderates].index(board) != nil
 end
 
-# returns true if the user has the "is_supermaidmin" attribute set
-def is_supermaidmin(config, session)
-  if not session[:username] then
-    return false
-  end
-  res = false
-  config["janitors"].each do |mod|
-    if mod["username"] == session[:username] and mod["is_supermaidmin"] then
-      res = true
-      break
-    end
-  end
-  return res
-end
-
 # Updates the locked state of the given post to `bool`, where `bool` can either be true or false
 # used in the /lock and /unlock routes
 def lock_or_unlock(post, bool, con, session)
@@ -268,7 +253,7 @@ def wrap(what, content)
 end
 
 # Gets if a janitor has the permission to perform an action
-def get_action_permission(session, config, action)
+def has_permission(session, config, action)
   if not session[:username] then
     return false
   end
@@ -276,7 +261,6 @@ def get_action_permission(session, config, action)
   config["janitors"].each do |mod|
     if mod["username"] == session[:username] then
       return config["ranks"][mod["rank"]] >= config["permissions"][action]
-      break
     end
   end
 
