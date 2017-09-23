@@ -146,10 +146,10 @@ module Sinatra
               if config["boards"][path]["hidden"] and not session["username"] then
                 return [403, "You have no janitor privileges"]
               end
-              erb :rules, :locals => {:rules => settings.config['boards'][path]['rules'], :moderator => is_moderator(path, session), :path => path, :banner => new_banner(path)}
+              erb :rules, :locals => {:rules => settings.config['boards'][path]['rules'], :moderator => is_moderator(path, session), :path => path, :banner => new_banner(path), :config => config, :session => session}
             end
             app.post "/" + path + "/rules/edit/?" do
-              if is_moderator(path, session)
+              if is_moderator(path, session) and has_permission(session, config, "edit_rules")
                 con = make_con();
                 # insert an IP note with the changes
                 content = "Updated rules for /" + path + "/\n"
@@ -168,7 +168,7 @@ module Sinatra
             end
             # edit word filters form
             app.get "/" + path + "/word-filter/?" do
-              if not is_moderator(path, session) then
+              if not is_moderator(path, session) or not has_permission(session, config, "edit_wordfilters") then
                 return [404, erb(:notfound)]
               end
               erb :word_filter, :locals => {:config => config, :path => path, :banner => new_banner(path)}
@@ -176,7 +176,7 @@ module Sinatra
             # posted url when saving word filters
             app.post "/" + path + "/word-filter/?" do
               con = make_con()
-              if is_moderator(path, session)
+              if is_moderator(path, session) and has_permission(session, config, "edit_wordfilters") then
                 # update and save the word filters
                 old_words = settings.config['boards'][path]['word-filter'];
                 settings.config['boards'][path]['word-filter'] = JSON.parse(params[:words])
@@ -215,7 +215,7 @@ module Sinatra
               return [400, "Could not find a post with that ID"]
             end
             # Then, check if the currently logged in user has permission to moderate that board
-            if not is_moderator(board, session)
+            if not is_moderator(board, session) or not has_permission(session, config, "delete")
               return [403, "You are not logged in or you do not moderate " + board]
             end
             # Insert an IP note with the content of the deleted post
@@ -301,7 +301,7 @@ module Sinatra
           end
           # Gets all post by IP, and let's you ban it
           app.get "/ip/:addr" do |addr|
-            if not session[:moderates] then
+            if not session[:moderates] or not has_permission(session, config, "view_ips") then
               return [403, "You have no janitor permissions"]
             end
             if addr == "_meta" and not has_permission(session, config, "introspect") then
@@ -313,7 +313,7 @@ module Sinatra
 
           # Gets the moderator ban list
           app.get "/bans" do
-            if not session[:moderates] then
+            if not session[:moderates] or not has_permission(session, config, "view_all_bans") then
               return [403, "You have no janitor permissions"]
             end
 
@@ -333,7 +333,7 @@ module Sinatra
 
           # Moves thread from board to board
           app.get "/move/:post/?" do |post|
-            if session[:moderates] then
+            if session[:moderates] and has_permission(session, config, "move") then
               erb :move, :locals => {:post => post, :boards => boards}
             else
               return [403, "You have no janitor privileges."]
@@ -347,7 +347,7 @@ module Sinatra
             query(con, "SELECT board FROM posts WHERE post_id = ?", post).each do |res|
               prev_board = res["board"]
             end
-            if is_moderator(prev_board, session)
+            if is_moderator(prev_board, session) and has_permission(session, config, "move")
               id = post.to_i
               board = params[:board]
               query(con, "UPDATE posts SET board = ? WHERE post_id = ? OR parent = ?", board, id, id)
@@ -361,7 +361,7 @@ module Sinatra
           # Leave notes on an ip address
           app.post "/ip_note/:addr" do |addr|
             con = make_con()
-            if session[:moderates] == nil then
+            if session[:moderates] == nil or not has_permission(session, config, "view_ips") then
               return [403, "You have no janitor privileges"]
             end
             content = params[:content]
@@ -387,7 +387,7 @@ module Sinatra
           # Ban / Unban an IP
           app.post "/ban/:ip" do |ip|
             con = make_con()
-            if is_moderator(params[:board], session) then
+            if is_moderator(params[:board], session) and has_permission(session, config, "ban") then
               # Insert the ban
               board = params[:board]
               old_date = params[:date].split('/')
@@ -405,7 +405,7 @@ module Sinatra
           end
           app.post "/unban/:ip" do |ip|
             con = make_con()
-            if is_moderator(params[:board], session) then
+            if is_moderator(params[:board], session) and has_permission(session, config, "ban") then
               board = params[:board]
               # delete the ban and insert the ip note
               query(con, "DELETE FROM bans WHERE ip = ? AND board = ?", ip, board)
