@@ -54,7 +54,7 @@ module Sinatra
             end
             # Insert the new post into the database
             if params[:capcode] and params[:capcode].length > 0 and allowed_capcodes(session, config).include? params[:capcode] and session[:username] then
-              query(con, "INSERT INTO posts (board, title, content, ip, janitor) VALUES (?, ?, ?, ?, ?)", board, title, content, ip, params[:capcode] + " " + session[:username]);
+              query(con, "INSERT INTO posts (board, title, content, ip, janitor) VALUES (?, ?, ?, ?, ?)", board, title, content, ip, params[:capcode] + ":" + session[:username]);
             else
               query(con, "INSERT INTO posts (board, title, content, ip) VALUES (?, ?, ?, ?)", board, title, content, ip);
             end
