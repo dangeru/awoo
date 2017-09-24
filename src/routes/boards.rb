@@ -138,7 +138,11 @@ module Sinatra
                 #return [403, "You have no janitor privileges"]
                 return [404, erb(:notfound)]
               end
-              erb :thread, :locals => {:config => config, :path => path, :id => id, :con => con, :banner => new_banner(path), :moderator => is_moderator(path, session), :session => session}
+              if does_thread_exist(id, path)
+                erb :thread, :locals => {:config => config, :path => path, :id => id, :con => con, :banner => new_banner(path), :moderator => is_moderator(path, session), :session => session}
+              else
+                return [404, erb(:notfound)]
+              end
             end
 
             # Rules & Editing rules

@@ -289,3 +289,12 @@ def allowed_capcodes(session, config)
   end
   return res
 end
+
+def does_thread_exist(id, board)
+  exists = false
+  query("SELECT * FROM posts WHERE post_id=? AND board=?", id, board) do |res|
+    exists = true
+  end
+
+  return exists
+end
