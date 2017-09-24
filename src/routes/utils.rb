@@ -33,7 +33,10 @@ def is_moderator(board, session)
   if session[:moderates] == nil
     return false;
   end
-  return session[:moderates].index(board) != nil
+  if session[:moderates].include? "all" then
+      return true
+  end
+  return session[:moderates].include? board
 end
 
 # Updates the locked state of the given post to `bool`, where `bool` can either be true or false
