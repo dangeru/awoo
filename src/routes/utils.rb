@@ -292,7 +292,7 @@ end
 
 def does_thread_exist(id, board)
   exists = false
-  query("SELECT * FROM posts WHERE post_id=? AND board=?", id, board) do |res|
+  query("SELECT * FROM posts WHERE post_id=? AND board=?", id, board).each do |res|
     exists = true
   end
 
