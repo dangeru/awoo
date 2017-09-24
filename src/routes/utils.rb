@@ -293,7 +293,7 @@ end
 def does_thread_exist(id, board="")
   exists = false
 
-  unless board.nil?
+  unless board.empty?
     con = make_con()
     query(con, "SELECT * FROM posts WHERE post_id=? AND board=? AND parent IS NULL", id, board).each do |res|
       exists = true

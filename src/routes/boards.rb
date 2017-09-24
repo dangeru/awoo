@@ -484,7 +484,7 @@ module Sinatra
               id = id.to_i.to_s
               return JSON.dump(make_metadata(make_con(), id, session, config))
             else
-              return[404, '{"404": "Thread not found."}']
+              return [404, '{"404": "Thread not found."}']
             end
           end
           app.get API + "/thread/:id/replies" do |id|
@@ -492,7 +492,7 @@ module Sinatra
               id = id.to_i.to_s
               return JSON.dump(get_thread_replies(id, session, config))
             else
-              return[404, '{"404": "Thread not found."}']
+              return [404, '{"404": "Thread not found."}']
             end
           end
         end
