@@ -480,12 +480,20 @@ module Sinatra
             return JSON.dump(get_board(board, params, session, config))
           end
           app.get API + "/thread/:id/metadata" do |id|
-            id = id.to_i.to_s
-            return JSON.dump(make_metadata(make_con(), id, session, config))
+            if does_thread_exist id then
+              id = id.to_i.to_s
+              return JSON.dump(make_metadata(make_con(), id, session, config))
+            else
+              return[404, '{"404": "Thread not found."}']
+            end
           end
           app.get API + "/thread/:id/replies" do |id|
-            id = id.to_i.to_s
-            return JSON.dump(get_thread_replies(id, session, config))
+            if does_thread_exist id then
+              id = id.to_i.to_s
+              return JSON.dump(get_thread_replies(id, session, config))
+            else
+              return[404, '{"404": "Thread not found."}']
+            end
           end
         end
       end

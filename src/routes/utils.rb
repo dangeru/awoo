@@ -290,11 +290,19 @@ def allowed_capcodes(session, config)
   return res
 end
 
-def does_thread_exist(id, board)
+def does_thread_exist(id, board="")
   exists = false
-  con = make_con()
-  query(con, "SELECT * FROM posts WHERE post_id=? AND board=?", id, board).each do |res|
-    exists = true
+
+  unless board.blank?
+    con = make_con()
+    query(con, "SELECT * FROM posts WHERE post_id=? AND board=? AND parent IS NULL", id, board).each do |res|
+      exists = true
+    end
+  else
+    con = make_con()
+    query(con, "SELECT * FROM posts WHERE post_id=? AND parent IS NULL", id).each do |res|
+      exists = true
+    end
   end
 
   return exists
