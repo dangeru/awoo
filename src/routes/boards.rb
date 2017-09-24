@@ -290,7 +290,6 @@ module Sinatra
           app.post "/mod" do
             username = params[:username]
             password = params[:password]
-            puts username, password
             return try_login(username, password, config, session, params)
           end
           # Logout action, logs the user out and redirects to the mod login page
