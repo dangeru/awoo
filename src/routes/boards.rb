@@ -259,11 +259,10 @@ module Sinatra
                     "id": res[:post_id].to_s,
                     "url": "https://" + hostname + "/" + res[:board] + "/thread/" + res[:post_id].to_s
                   }]
-                else
-                  result[:replies].push({"post": res[:comment]})
                 end
-                result[:replies] = result[:replies][0..limit]
+                result[:replies].push({"post": res[:comment]})
               end
+              result[:replies] = result[:replies][0..limit]
             else
               # type must be index
               result = {:board => [{
