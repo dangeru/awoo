@@ -244,25 +244,25 @@ module Sinatra
 
           # Legacy api, see https://github.com/naomiEve/dangeruAPI
           app.get "/api.php" do
-            con = make_con()
-            limit = params[:ln]
-            if not limit
-              limit = "10000"
+            limit = params[:ln].to_i
+            if not limit or limit == 0 then
+              limit = 10000
             end
             if params[:type] == "thread"
               id = params[:thread].to_i
               result = {:meta => [], :replies => []}
-              limit = (limit.to_i + 1).to_s
-              query(con, "SELECT * FROM posts WHERE parent = ? OR post_id = ? LIMIT #{limit}", id, id).each do |res|
-                if not res["parent"]
+              #limit += 1
+              get_thread_replies(id, session, config).each do |res|
+                if res[:is_op] then
                   result[:meta] = [{
-                    "title": res["title"],
-                    "id": res["post_id"].to_s,
-                    "url": "https://" + hostname + "/" + params[:board] + "/thread/" + params[:thread]
+                    "title": res[:title],
+                    "id": res[:post_id].to_s,
+                    "url": "https://" + hostname + "/" + res[:board] + "/thread/" + res[:post_id].to_s
                   }]
                 else
-                  result[:replies].push({"post": res["content"]})
+                  result[:replies].push({"post": res[:comment]})
                 end
+                result[:replies] = result[:replies][0..limit]
               end
             else
               # type must be index
@@ -270,15 +270,14 @@ module Sinatra
                 :name => config["boards"][params[:board]]["name"],
                 :url => "https://" + hostname + "/" + params[:board]
               }], :threads => []}
-              limit = con.escape(limit.to_i.to_s)
-              board = params[:board]
-              query(con, "SELECT post_id, title, board, COALESCE(parent, post_id) AS effective_parent, COUNT(*)-1 AS number_of_replies FROM posts WHERE board = ? GROUP BY effective_parent ORDER BY post_id LIMIT #{limit};", board).each do |res|
+              get_board(params[:board], params, session, config).each do |res|
                 result[:threads].push({
-                  :id => res["post_id"],
-                  :title => res["title"],
-                  :url => "https://" + hostname + "/" + params["board"] + "/thread/" + res["post_id"].to_s
+                  :id => res[:post_id],
+                  :title => res[:title],
+                  :url => "https://" + hostname + "/" + res[:board] + "/thread/" + res[:post_id].to_s
                 })
               end
+              result[:threads] = result[:threads][0..limit]
             end
             JSON.dump(result)
           end
