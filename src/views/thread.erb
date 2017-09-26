@@ -76,6 +76,12 @@
               })
             }
             Array.prototype.slice.call(document.getElementsByClassName("comment"), 0).forEach(makeClickable);
+            Array.prototype.slice.call(document.getElementsByClassName("jshide"), 0).forEach(function(elem) {
+              elem.style.display = "none";
+            });
+            Array.prototype.slice.call(document.getElementsByClassName("jsunhide"), 0).forEach(function(elem) {
+              elem.style.display = "inline-block";
+            });
           }
           var makeClickable = function makeClickable(elem) {
             var child = elem.firstChild;
@@ -276,8 +282,9 @@
           <% else %>
             <textarea id="reply_box" name='content' style="width: 100%;" placeholder='Reply'></textarea>
           <% end %>
+          <input class="jshide" type="submit" value="Submit without javascript" />
         </form>
-        <button class="button_styled" style="float: right;" onClick='submit_form(document.getElementById("form"), "/reply")' id="submit">Submit</button><br />
+        <button class="button_styled jsunhide" style="float: right; display: none;" onClick='submit_form(document.getElementById("form"), "/reply")' id="submit">Submit</button><br />
         <% if moderator and has_permission(session, config, "lock") %>
           <br />
           <i class="fa fa-unlock-alt" aria-hidden="true" style="display: block; text-align: center;" onClick='lockPost(<%= id.to_i.to_s %>)'></i>
