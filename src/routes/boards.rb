@@ -263,7 +263,8 @@ module Sinatra
                 result[:replies].push({"post": res[:comment]})
               end
               result[:replies] = result[:replies][0..limit]
-            else
+              JSON.dump(result)
+            elsif params[:type] == "index"
               # type must be index
               result = {:board => [{
                 :name => config["boards"][params[:board]]["name"],
@@ -277,8 +278,10 @@ module Sinatra
                 })
               end
               result[:threads] = result[:threads][0..limit]
+              JSON.dump(result)
+            else
+              return [400, "The request was malformed / unknown type of request."]
             end
-            JSON.dump(result)
           end
 
           # Moderator log in page, (mod_login.erb)
