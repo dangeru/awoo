@@ -220,8 +220,7 @@
       <% page_clause = "AND board = '#{con.escape(path)}'" if path != "all" %>
       <% con.query("SELECT COUNT(*) AS count FROM posts WHERE parent IS NULL #{page_clause}").each do |res| %>
       <% quota = ((res["count"]/20)+1) %>
-      <% max = page + 10 %>
-      <% max = quota if quota < max %>
+      <% max = [page + 10, quota].min %>
       <% (page..max).each do |i| %>
         <a href="/<%= path %>?page=<%= i.to_s %>" id="pagecount"><%= (i + 1).to_s %></a>
       <% end end %>
