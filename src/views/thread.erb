@@ -82,6 +82,8 @@
             Array.prototype.slice.call(document.getElementsByClassName("jsunhide"), 0).forEach(function(elem) {
               elem.style.display = "inline-block";
             });
+            var e = document.getElementById("redirect");
+            e.value = "false";
           }
           var makeClickable = function makeClickable(elem) {
             var child = elem.firstChild;
@@ -283,6 +285,7 @@
             <textarea id="reply_box" name='content' style="width: 100%;" placeholder='Reply'></textarea>
           <% end %>
           <input class="jshide" type="submit" value="Submit without javascript" />
+          <input style="display: none" type="text" name="redirect" id="redirect" value="true" />
         </form>
         <button class="button_styled jsunhide" style="float: right; display: none;" onClick='submit_form(document.getElementById("form"), "/reply")' id="submit">Submit</button><br />
         <% if moderator and has_permission(session, config, "lock") %>

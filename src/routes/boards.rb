@@ -114,7 +114,11 @@ module Sinatra
             query(con, "SELECT LAST_INSERT_ID() AS id").each do |res|
               id = res["id"]
             end
-            return [200, "OK/" + id.to_s]
+            if params[:redirect] == "true"
+              return redirect "/" + board + "/thread/" + parent.to_s
+            else
+              return [200, "OK/" + id.to_s]
+            end
           end
 
           # Each board has a listing of the posts there (board.erb) and a listing of the replies to a give post (thread.erb)
