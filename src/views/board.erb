@@ -218,7 +218,7 @@
     <div id="pagecount_container">
       <% page_clause = "" %>
       <% page_clause = "AND board = '#{con.escape(path)}'" if path != "all" %>
-      <% con.query("SELECT COUNT(*) AS count FROM posts WHERE parent IS NULL #{page_clause}").each do |res| ((res["count"]/20)+1).times do |i| %>
+      <% con.query("SELECT COUNT(*) AS count FROM posts WHERE parent IS NULL #{page_clause} LIMIT 10 OFFSET ?", offset).each do |res| ((res["count"]/20)+1).times do |i| %>
         <a href="/<%= path %>?page=<%= i.to_s %>" id="pagecount"><%= (i + 1).to_s %></a>
       <% end end %>
     </div>
