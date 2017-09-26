@@ -9,7 +9,6 @@
       padding: 0.5em;
       background-color: black;
       border: 1px solid /* black */ white;
-      display: none;
       text-align: center;
       color: white;
     }
@@ -44,6 +43,7 @@
         }
       }
       var ol = function ol() {
+        document.getElementById("draggable").style.display = "none";
         document.getElementById("comment").addEventListener("keyup", function() {
           var comment = document.getElementById("comment");
           console.log(comment.value.length);
@@ -129,7 +129,7 @@
     <a href="javascript:location.reload();"><img src="<%= banner %>" alt="danger/u/"></a>
     <div id="boardtitle">/<%= settings.config['boards'][path]['name'] %>/ - <%= settings.config['boards'][path]['desc'] %></div>
     <span onClick='newThread()' id="newthread">Start a new thread</span>
-    <div id="draggable" style="display: none" class="ui-widget-content">
+    <div id="draggable" class="ui-widget-content">
       <form action="/post" method="post" name="newthread">
         <% if path == "all" %>
           Post to:
