@@ -37,9 +37,9 @@ module Sinatra
             # Also pull the IP address from the request and check if it looks like spam
             ip = get_ip(con, request, env);
             if looks_like_spam(con, ip, env, config) then
-              return [403, "Flood detected, post discarded"]
+              return [429, "Flood detected, post discarded"]
             elsif title.length > 500 or content.length > 500 then
-              return [400, "Post too long (over 500 characters)"]
+              return [431, "Post too long (over 500 characters)"]
             elsif config["boards"][board]["hidden"] and not session[:username]
               return [403, "You have no janitor permissions"]
             elsif board == "all"
@@ -78,12 +78,12 @@ module Sinatra
               return [400, "Bump limit reached"]
             end
             if content.length > 500 then
-              return [400, "Reply too long (over 500 characters)"]
+              return [431, "Reply too long (over 500 characters)"]
             end
             # Pull the IP address and check if it looks like spam
             ip = get_ip(con, request, env);
             if looks_like_spam(con, ip, env, config) then
-              return [403, "Flood detected, post discarded"]
+              return [429, "Flood detected, post discarded"]
             end
             # Check if the IP is banned
             banned = get_ban_info(ip, board, con)
