@@ -134,7 +134,7 @@ module Sinatra
                 #return [403, "You have no janitor privileges"]
                 return [404, erb(:notfound)]
               end
-              erb :board, :locals => {:path => path, :config => config, :con => con, :offset => offset, :banner => new_banner(path), :moderator => is_moderator(path, session), :session => session}
+              erb :board, :locals => {:path => path, :config => config, :con => con, :offset => offset, :banner => new_banner(path), :moderator => is_moderator(path, session), :session => session, :page => params[:page].to_i}
             end
             app.get "/" + path + "/thread/:id" do |id|
               con = make_con()
