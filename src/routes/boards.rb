@@ -37,9 +37,9 @@ module Sinatra
             # Also pull the IP address from the request and check if it looks like spam
             ip = get_ip(con, request, env);
             if looks_like_spam(con, ip, env, config) then
-              return [403, "Flood detected, post discarded"]
+              return [429, "Flood detected, post discarded"]
             elsif title.length > 500 or content.length > 500 then
-              return [400, "Post too long (over 500 characters)"]
+              return [431, "Post too long (over 500 characters)"]
             elsif config["boards"][board]["hidden"] and not session[:username]
               return [403, "You have no janitor permissions"]
             elsif board == "all"
@@ -78,12 +78,12 @@ module Sinatra
               return [400, "Bump limit reached"]
             end
             if content.length > 500 then
-              return [400, "Reply too long (over 500 characters)"]
+              return [431, "Reply too long (over 500 characters)"]
             end
             # Pull the IP address and check if it looks like spam
             ip = get_ip(con, request, env);
             if looks_like_spam(con, ip, env, config) then
-              return [403, "Flood detected, post discarded"]
+              return [429, "Flood detected, post discarded"]
             end
             # Check if the IP is banned
             banned = get_ban_info(ip, board, con)
@@ -167,7 +167,7 @@ module Sinatra
                 end
                 redirect "/" + path + "/rules"
               else
-                return [403, "You have no janitor privileges."]
+                return [403, "You have no janitor privileges or you don't have the permissions to perform this action."]
               end
             end
             # edit word filters form
@@ -194,7 +194,7 @@ module Sinatra
                 query(con, "INSERT INTO ip_notes (ip, content, actor) VALUES (?, ?, ?)", "_meta", content, session[:username])
                 return "OK"
               else
-                return [403, "You have no janitor privileges."]
+                return [403, "You have no janitor privileges or you don't have the permissions to perform this action."]
               end
             end
           end
@@ -220,7 +220,7 @@ module Sinatra
             end
             # Then, check if the currently logged in user has permission to moderate that board
             if not is_moderator(board, session) or not has_permission(session, config, "delete")
-              return [403, "You are not logged in or you do not moderate " + board]
+              return [403, "You are not logged in or you do not have permissions to perform this action on board " + board]
             end
             # Insert an IP note with the content of the deleted post
             content = ""
@@ -263,7 +263,8 @@ module Sinatra
                 result[:replies].push({"post": res[:comment]})
               end
               result[:replies] = result[:replies][0..limit]
-            else
+              JSON.dump(result)
+            elsif params[:type] == "index"
               # type must be index
               result = {:board => [{
                 :name => config["boards"][params[:board]]["name"],
@@ -277,8 +278,10 @@ module Sinatra
                 })
               end
               result[:threads] = result[:threads][0..limit]
+              JSON.dump(result)
+            else
+              return [400, "The request was malformed / unknown type of request."]
             end
-            JSON.dump(result)
           end
 
           # Moderator log in page, (mod_login.erb)
@@ -303,10 +306,10 @@ module Sinatra
           # Gets all post by IP, and let's you ban it
           app.get "/ip/:addr" do |addr|
             if not session[:moderates] or not has_permission(session, config, "view_ips") then
-              return [403, "You have no janitor permissions"]
+              return [403, "You have no janitor privileges or you don't have the permissions to perform this action."]
             end
             if addr == "_meta" and not has_permission(session, config, "introspect") then
-              return [403, "You are not a supermaidmin"]
+              return [403, "You don't have the permissions to perform this action."]
             end
             con = make_con()
             erb :ip_list, :locals => {:session => session, :addr => addr, :con => con, :config => config}
@@ -315,7 +318,7 @@ module Sinatra
           # Gets the moderator ban list
           app.get "/bans" do
             if not session[:moderates] or not has_permission(session, config, "view_all_bans") then
-              return [403, "You have no janitor permissions"]
+              return [403, "You have no janitor privileges or you don't have the permissions to perform this action."]
             end
 
             con = make_con()
@@ -337,7 +340,7 @@ module Sinatra
             if session[:moderates] and has_permission(session, config, "move") then
               erb :move, :locals => {:post => post, :boards => boards}
             else
-              return [403, "You have no janitor privileges."]
+              return [403, "You have no janitor privileges or you don't have the permissions to perform this action."]
             end
           end
           app.post "/move/:post/?" do |post|
@@ -355,7 +358,7 @@ module Sinatra
               href = "/" + board + "/thread/" + id.to_s
               redirect href
             else
-              return [403, "You have no janitor privileges."]
+              return [403, "You have no janitor privileges or you don't have the permissions to perform this action."]
             end
           end
 
@@ -363,7 +366,7 @@ module Sinatra
           app.post "/ip_note/:addr" do |addr|
             con = make_con()
             if session[:moderates] == nil or not has_permission(session, config, "view_ips") then
-              return [403, "You have no janitor privileges"]
+              return [403, "You have no janitor privileges or you don't have the permissions to perform this action."]
             end
             content = params[:content]
             query(con, "INSERT INTO ip_notes (ip, content, actor) VALUES (?, ?, ?)", addr, content, session[:username])
@@ -401,7 +404,7 @@ module Sinatra
               query(con, "INSERT INTO ip_notes (ip, content, actor) VALUES (?, ?, ?)", ip, content, session[:username])
               return "OK"
             else
-              return [403, "You have no janitor privileges"]
+              return [403, "You have no janitor privileges or you don't have the permissions to perform this action."]
             end
           end
           app.post "/unban/:ip" do |ip|
@@ -413,25 +416,25 @@ module Sinatra
               query(con, "INSERT INTO ip_notes (ip, content, actor) VALUES (?, ?, ?)", ip, "Unbanned from /" + board + "/", session[:username])
               return "OK"
             else
-              return [403, "You have no janitor privileges"]
+              return [403, "You have no janitor privileges or you don't have the permissions to perform this action."]
             end
           end
           app.get "/introspect/?" do
             if not has_permission(session, config, "introspect") then
-              return [403, "You are not a supermaidmin"]
+              return [403, "You don't have permissions to perform this action."]
             end
             erb :introspect, :locals => {:config => config}
           end
           app.get "/introspect/:mod/?" do |mod|
             if not has_permission(session, config, "introspect") then
-              return [403, "You are not a supermaidmin"]
+              return [403, "You don't have permissions to perform this action."]
             end
             erb :introspect_selected, :locals => {:config => config, :con => make_con(), :mod => mod}
           end
           # Posted to reset the password of a moderator
           app.post "/introspect_reset" do
             if not has_permission(session, config, "introspect") then
-              return [403, "You are not a supermaidmin"]
+              return [403, "You don't have permissions to perform this action."]
             end
             if not params[:mod] or not params[:newpass] then
               return [400, "Username or new password not specified"]
