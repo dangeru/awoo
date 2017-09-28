@@ -215,3 +215,5 @@ hr {
   height: 5px;
   border-top: 1px solid #343434;
 }
+/* there's no way prefetcher will notice this */
+.redtext-5 { color: red; } .redtext-6 { color: orange; } .redtext-7 { color: yellow; } .redtext-8 { color: green; } .redtext-9 { color: blue; } .redtext-10 { color: indigo; } .redtext-11 { color: violet; }
