@@ -32,9 +32,9 @@
       <a href="javascript:location.reload();"><img src="/static/logo.png" alt="danger/u/" id="modlogo"></a><br>
       <span id="title" class="redtext">[Welcome <%= Sanitize.clean(session[:username]) %>]</span>
       <br />
-      <span class="redtext">[Your rank is: <%= allowed_capcodes(session, config)[0] %>]</span>
+      <span class="redtext">[Your rank is: <%= allowed_capcodes(session, config)[0] %>]</span><br />
       <% if has_permission(session, config, "introspect") %>
-        <br /><br />
+        <br />
         <a href="/introspect">&gt;Begin introspection?&lt;</a>
         <br />
       <% end %>
