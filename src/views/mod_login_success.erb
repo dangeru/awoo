@@ -29,7 +29,7 @@
   </head>
   <body>
     <div id="container_login">
-      <a href="javascript:location.reload();"><img src="/static/logo.png" alt="danger/u/" id="modlogo"></a><br>
+      <a href="/"><img src="/static/logo.png" alt="danger/u/" id="modlogo"></a><br>
       <span id="title" class="redtext">[Welcome <%= Sanitize.clean(session[:username]) %>]</span>
       <br />
       <span class="redtext">[Your rank is: <%= allowed_capcodes(session, config)[0] %>]</span><br />
