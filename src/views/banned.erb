@@ -13,7 +13,9 @@
       <div id="title" style="text-align: center;">You are BANNED</div>
       <img src="/static/banned.jpg" alt="banned">
       <div class="comment" style="text-align: center;">
-        You are banned from <span class="redtext">/<%= Sanitize.clean(info["board"])%>/</span>,
+        <% banned_from = "/#{Sanitize.clean(info["board"])}/" %>
+        <% banned_from = "ALL BOARDS" if info["board"] == "all" %>
+        You are banned from <span class="redtext"><%= banned_from %></span>,
         <br />
         With reason: <span class="redtext"><%= Sanitize.clean(info["reason"])%></span>
         <br />
