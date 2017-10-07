@@ -178,11 +178,14 @@
       <% ress = get_board(path, params, session, config) %>
     <% end %>
     <% ress.each do |res| %>
-      <% classes = "" %>
-      <% if res[:is_locked] then classes += " locked " end %>
-      <% if res[:stickyness] then classes += ' sticky-' + res[:stickyness].to_s + ' ' end %>
+      <% classes = [] %>
+      <% if res[:is_locked] then classes.push "locked" end %>
+        <% if res[:stickyness] then
+             classes.push("sticky-" + res[:stickyness].to_s)
+             classes.delete_if do |x| x == "locked" end
+        end %>
       <% if path == "burg" then res[:title] = "burg" end %>
-      <a style="display: inline-block;" data-replies="<%= res[:number_of_replies] %>" href="/<%= res[:board] %>/thread/<%= res[:post_id] %>" class="<%= classes %>">
+      <a style="display: inline-block;" data-replies="<%= res[:number_of_replies] %>" href="/<%= res[:board] %>/thread/<%= res[:post_id] %>" class="<%= classes.join(" ") %>">
         <% if path == "all" then %>
           <span style="color: grey;">/<%= res[:board] %>/</span>
         <% end %>
