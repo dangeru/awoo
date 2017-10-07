@@ -30,10 +30,10 @@
   <body>
     <div id="container_login">
       <a href="javascript:location.reload();"><img src="/static/logo.png" alt="danger/u/" id="modlogo"></a><br>
-      <span id="title" class="redtext">[Welcome <%= Sanitize.clean(session[:username]) %>]</span>
+      <span id="title" class="redtext">[Welcome <%= Sanitize.clean(session[:username]) %>, your rank is: <%= allowed_capcodes(session, config)[0] %>]</span>
       <br />
       <% if has_permission(session, config, "introspect") %>
-        <span class="redtext">[Welcome Supermaidmin.]</span><br /><br />
+        <span class="redtext">[Introspection Menu:]</span><br /><br />
         <a href="/introspect">&gt;Begin introspection?&lt;</a>
         <br />
       <% end %>
