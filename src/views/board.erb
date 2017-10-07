@@ -193,9 +193,9 @@
       </a>
       <% if moderator and has_permission(session, config, "lock") %>
         <% if res[:is_locked] %>
-          <i class="fa fa-unlock-alt" aria-hidden="true" onClick='lockPost(<%= res[:post_id] %>)'></i>
-        <% else %>
           <i class="fa fa-lock" aria-hidden="true" onClick='unlockPost(<%= res[:post_id] %>)'></i>
+        <% else %>
+          <i class="fa fa-unlock-alt" aria-hidden="true" onClick='lockPost(<%= res[:post_id] %>)'></i>
         <% end %>
       <% end %>
       <% if moderator and has_permission(session, config, "sticky") %>
