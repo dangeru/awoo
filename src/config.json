@@ -72,7 +72,7 @@
     {
       "username": "test3",
       "password": "pass",
-      "rank": "Maidmin",
+      "rank": "Mod",
       "boards": [
         "burg"
       ]
@@ -81,7 +81,7 @@
 
   "ranks": {
     "Admin": 4,
-    "Maidmin": 3,
+    "Mod": 3,
     "Janitor": 2,
     "Trial Janitor": 1
   },
