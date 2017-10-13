@@ -7,7 +7,7 @@ Running `sudo make install` will make a user named `awoo`, copy `src` to `/opt/a
 
 ## Tests
 
-To run tests, you'll need the server already running, you can adjust the host and port in `src/test/generic_test.rb` but it defaults to `127.0.0.1:8080`. It will use the /test board and expects three janitors, `test`, who moderates /test and is not a supermaidmin, `test2`, who moderates /test and IS a supermaidmin, and `test3`, who does not moderate test
+To run tests, you'll need the server already running, you can adjust the host and port in `src/test/generic_test.rb` but it defaults to `127.0.0.1:8080`. It will use the /test board and expects three janitors, `test`, who moderates /test and is not a moderator, `test2`, who moderates /test and IS a moderator, and `test3`, who does not moderate test
 
 If you want to test against a production environment but are worried about security, you can change their passwords, the values used when logging in are pulled from config.json
 
