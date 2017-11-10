@@ -77,17 +77,15 @@
               Array.prototype.slice.call(document.getElementsByClassName("referencer")).forEach(function(elem) {
                 var refers_to = elem.getAttribute("data-refers-to");
                 var is = elem.getAttribute("data-is");
-                // hovers(remote, local);
                 var _parent = document.getElementById("comment-" + refers_to).getElementsByClassName("post_number")[0];
                 var new_link = document.createElement("a");
-                new_link.href = "#comment-" + is;// TODO
+                new_link.href = "#comment-" + is;
                 new_link.style.display = "inline-block";
-                new_link.innerText = ">>" + is;// TODO
+                new_link.innerText = ">>" + is;
                 new_link.style.marginLeft = "5px";
                 new_link.style.fontSize = "inherit";
                 new_link.classList.add("redtext");
                 new_link.onmouseover = function() {
-                  //hover(/* TODO, TODO */);
                   hover(is, refers_to);
                 };
                 new_link.onmouseout = function() { unhover(); };
