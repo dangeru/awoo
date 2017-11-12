@@ -89,7 +89,7 @@
                   hover(is, refers_to);
                 };
                 new_link.onmouseout = function() { unhover(); };
-                new_link.onclick = function() { select(refers_to); };
+                new_link.onclick = function(e) { select(is); e.preventDefault(); };
                 _parent.appendChild(new_link);
               });
             }
