@@ -148,6 +148,9 @@
         <% if path == "burg" %>
           <input style='display: none;' type='text' name='title' id='title' value='burg' />
           <input type="radio" value="burg" id="burg" name="comment" /><label style="color: white" for="burg">burg</label><br />
+          <!-- js fixes -->
+          <input type="text" id="comment" style="display: none" /><span style="display: none;" id="wordcount"></span>
+          <!-- end js fixes -->
           <input type="radio" value="angry burg" id="angry_burg" name="comment" /><label style="color: white" for="angry_burg">angry burg</label><br />
         <% else %>
           <div class="comment">Title</div>
