@@ -77,7 +77,9 @@
               Array.prototype.slice.call(document.getElementsByClassName("referencer")).forEach(function(elem) {
                 var refers_to = elem.getAttribute("data-refers-to");
                 var is = elem.getAttribute("data-is");
-                var _parent = document.getElementById("comment-" + refers_to).getElementsByClassName("post_number")[0];
+                var _parent = document.getElementById("comment-" + refers_to);
+                if (_parent == null) return;
+                _parent = _parent.getElementsByClassName("post_number")[0];
                 var new_link = document.createElement("a");
                 new_link.href = "#comment-" + is;
                 new_link.style.display = "inline-block";
