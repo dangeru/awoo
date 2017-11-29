@@ -104,6 +104,7 @@
             });
             var e = document.getElementById("redirect");
             e.value = "false";
+            doWordcount("reply_box");
           }
           var makeClickable = function makeClickable(elem) {
             var child = elem.firstChild;
@@ -199,7 +200,7 @@
           <% if moderator and has_permission(session, config, "view_ips") then %>
             <a style="display: inline-block; font-size: 50%;" href="/ip/<%= res[:ip] %>"><%= res[:ip] %></a>
           <% end %>
-          <span class="post_number" style="display: none;">Post number #<span class="id_link" onClick='document.getElementById("reply_box").innerText += ">><%= res[:post_id] %>"'><%= res[:post_id] %></span>, ID: <span style="color: #<%= res[:hash] %>;"><%= res[:hash] %></span></span><br>
+          <span class="post_number" style="display: none;">Post number #<span class="id_link" onClick='document.getElementById("reply_box").value += ">><%= res[:post_id] %>"'><%= res[:post_id] %></span>, ID: <span style="color: #<%= res[:hash] %>;"><%= res[:hash] %></span></span><br>
           |
           <% res[:comment].split("\n").each do |line| %>
             <% line = line.chomp %>
@@ -301,9 +302,13 @@
             <input type="radio" value="burg" id="burg" name="content" /><label style="color: white" for="burg">burg</label>
           <br />
             <input type="radio" value="angry burg" id="angry_burg" name="content" /><label style="color: white" for="angry_burg">angry burg</label>
+            <input id="reply_box" style="display: none" type="text" /> <!-- resolves wordcount errors -->
             <br />
           <% else %>
             <textarea id="reply_box" name='content' style="width: 100%;" placeholder='Reply'></textarea>
+            <span style="color: white;">
+              <span style="color: white;" class="jsunhide" id="wordcount">0/500</span>
+            </span>
           <% end %>
           <input class="jshide" type="submit" value="Submit without javascript" />
           <input style="display: none" type="text" name="redirect" id="redirect" value="true" />

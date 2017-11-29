@@ -44,17 +44,7 @@
       }
       var ol = function ol() {
         document.getElementById("draggable").style.display = "none";
-        document.getElementById("comment").addEventListener("keyup", function() {
-          var comment = document.getElementById("comment");
-          console.log(comment.value.length);
-          var len = (comment.value.length * 1.03) | 0;
-          var wc = document.getElementById("wordcount");
-          var submit = document.getElementById("submit");
-          wc.style.color = len > 500 ? "red" : "inherit";
-          submit.disabled = len > 500 ? true : false;
-          submit.className = len > 500 ? "special_styled" : "button_styled";
-          wc.innerText = len + "/500";
-        });
+        doWordcount("comment");
         Array.prototype.slice.call(document.getElementsByClassName("fa"), 0).forEach(function(elem) {
           elem.onmousemove = function(e) { move(e) }; // SHOULDN'T NEED THE WRAPPING FUNCTION BUT I DO
           elem.onmouseover = function() {hover(elem);};
