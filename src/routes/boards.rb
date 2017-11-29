@@ -143,7 +143,7 @@ module Sinatra
                 return [404, erb(:notfound)]
               end
               if does_thread_exist(id, path)
-                erb :thread, :locals => {:config => config, :path => path, :id => id, :con => con, :banner => new_banner(path), :moderator => is_moderator(path, session), :session => session, :client_ip => get_ip(con, request, env)}
+                erb :thread, :locals => {:config => config, :path => path, :id => id, :con => con, :banner => new_banner(path), :moderator => is_moderator(path, session), :session => session}
               else
                 return [404, erb(:notfound)]
               end
