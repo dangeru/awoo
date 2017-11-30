@@ -471,10 +471,10 @@ module Sinatra
           app.get API + "/board/:board/detail" do |board|
             content_type 'application/json'
             if config["boards"][board].nil? then
-              return [404, '{"404": "Board not found."}']
+              return [404, JSON.dump({:error => 404, :message => "Board not found."})]
             end
             if config["boards"][board]["hidden"] and not session[:moderates] then
-              return [404, '{"404": "Board not found."}']
+              return [404, JSON.dump({:error => 404, :message => "Board not found."})]
             end
 
             payload = {:name => config["boards"][board]["name"], :desc => config["boards"][board]["desc"], :rules => config["boards"][board]["rules"]}
