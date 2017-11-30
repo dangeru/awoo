@@ -465,26 +465,30 @@ module Sinatra
           end
           # API routes from here down
           app.get API + "/boards" do
+            content_type 'application/json'
             JSON.dump(config["boards"].select do |key, value| session[:username] or not value["hidden"] end.map do |key, value| key end)
           end
           app.get API + "/board/:board/detail" do |board|
+            content_type 'application/json'
             if config["boards"][board].nil? then
-              return [404, "Board not found"]
+              return [404, '{"404": "Board not found."}']
             end
             if config["boards"][board]["hidden"] and not session[:moderates] then
-              return [404, "Board not found"]
+              return [404, '{"404": "Board not found."}']
             end
 
             payload = {:name => config["boards"][board]["name"], :desc => config["boards"][board]["desc"], :rules => config["boards"][board]["rules"]}
             return JSON.dump(payload)
           end
           app.get API + "/board/:board" do |board|
+            content_type 'application/json'
             if board == "all" then
               return JSON.dump(get_all(params, session, config))
             end
             return JSON.dump(get_board(board, params, session, config))
           end
           app.get API + "/thread/:id/metadata" do |id|
+            content_type 'application/json'
             if does_thread_exist id then
               id = id.to_i.to_s
               return JSON.dump(make_metadata(make_con(), id, session, config))
@@ -493,6 +497,7 @@ module Sinatra
             end
           end
           app.get API + "/thread/:id/replies" do |id|
+            content_type 'application/json'
             if does_thread_exist id then
               id = id.to_i.to_s
               return JSON.dump(get_thread_replies(id, session, config))
