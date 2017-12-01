@@ -9,7 +9,6 @@ def new_banner(board)
   end
   if board == "all"
     # glob all banners from all boards
-    puts './static/static/banners/*/*'
     dirs = Dir['./static/static/banners/*/*']
     banner = dirs.select {|f| !File.directory? f}.sample
 
