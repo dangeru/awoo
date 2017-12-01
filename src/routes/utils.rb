@@ -1,3 +1,9 @@
+############################################
+# => utils.rb - Utilities for Awoo.
+# => Awoo Textboard Engine
+# => (c) prefetcher & github commiters 2017
+#
+
 def query(con, stmt, *args)
   return con.prepare(stmt).execute(*args)
 end
