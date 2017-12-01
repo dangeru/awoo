@@ -9,11 +9,12 @@ def new_banner(board)
   end
   if board == "all"
     # glob all banners from all boards
-    dirs = Dir['../static/static/banners/*/*']
+    puts './static/static/banners/*/*'
+    dirs = Dir['./static/static/banners/*/*']
     banner = dirs.select {|f| !File.directory? f}.sample
 
-    # gsub `../static` out of it
-    banner.sub! "../static", ""
+    # gsub `./static` out of it
+    banner.sub! "./static", ""
     return banner
   end
   begin
