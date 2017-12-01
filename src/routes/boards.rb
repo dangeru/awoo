@@ -248,6 +248,7 @@ module Sinatra
 
           # Legacy api, see https://github.com/naomiEve/dangeruAPI
           app.get "/api.php" do
+            content_type 'application/json'
             limit = params[:ln].to_i
             if not limit or limit == 0 then
               limit = 10000
@@ -284,7 +285,7 @@ module Sinatra
               result[:threads] = result[:threads][0..limit]
               JSON.dump(result)
             else
-              return [400, "The request was malformed / unknown type of request."]
+              return [400, JSON.dump({:error => 404, :message => "The request was malformed / unknown type of request."})]
             end
           end
 
@@ -488,7 +489,7 @@ module Sinatra
             if config["boards"][board]["hidden"] and not session[:moderates] then
               return [404, JSON.dump({:error => 404, :message => "Board not found."})]
             end
-            
+
             if board == "all" then
               return JSON.dump(get_all(params, session, config))
             end
