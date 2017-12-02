@@ -1,3 +1,9 @@
+############################################
+# => utils.rb - Utilities for Awoo.
+# => Awoo Textboard Engine
+# => (c) prefetcher & github commiters 2017
+#
+
 def query(con, stmt, *args)
   return con.prepare(stmt).execute(*args)
 end
@@ -6,6 +12,15 @@ end
 def new_banner(board)
   if board.index("..") != nil
     return ""
+  end
+  if board == "all"
+    # glob all banners from all boards
+    dirs = Dir['./static/static/banners/*/*']
+    banner = dirs.select {|f| !File.directory? f}.sample
+
+    # gsub `./static` out of it
+    banner.sub! "./static", ""
+    return banner
   end
   begin
     # this will throw an exception if the folder doesn't exist, hence the rescue

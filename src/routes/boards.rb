@@ -131,7 +131,6 @@ module Sinatra
                 offset = params[:page].to_i * 20;
               end
               if config["boards"][path]["hidden"] and not session["username"] then
-                #return [403, "You have no janitor privileges"]
                 return [404, erb(:notfound)]
               end
               erb :board, :locals => {:path => path, :config => config, :con => con, :offset => offset, :banner => new_banner(path), :moderator => is_moderator(path, session), :session => session, :page => params[:page].to_i}
@@ -139,7 +138,6 @@ module Sinatra
             app.get "/" + path + "/thread/:id" do |id|
               con = make_con()
               if config["boards"][path]["hidden"] and not session["username"] then
-                #return [403, "You have no janitor privileges"]
                 return [404, erb(:notfound)]
               end
               if does_thread_exist(id, path)
@@ -174,6 +172,7 @@ module Sinatra
                 return [403, "You have no janitor privileges or you don't have the permissions to perform this action."]
               end
             end
+
             # edit word filters form
             app.get "/" + path + "/word-filter/?" do
               if not is_moderator(path, session) or not has_permission(session, config, "edit_wordfilters") then
@@ -181,6 +180,7 @@ module Sinatra
               end
               erb :word_filter, :locals => {:config => config, :path => path, :banner => new_banner(path)}
             end
+
             # posted url when saving word filters
             app.post "/" + path + "/word-filter/?" do
               con = make_con()
@@ -248,6 +248,7 @@ module Sinatra
 
           # Legacy api, see https://github.com/naomiEve/dangeruAPI
           app.get "/api.php" do
+            content_type 'application/json'
             limit = params[:ln].to_i
             if not limit or limit == 0 then
               limit = 10000
@@ -284,7 +285,7 @@ module Sinatra
               result[:threads] = result[:threads][0..limit]
               JSON.dump(result)
             else
-              return [400, "The request was malformed / unknown type of request."]
+              return [400, JSON.dump({:error => 404, :message => "The request was malformed / unknown type of request."})]
             end
           end
 
@@ -307,7 +308,7 @@ module Sinatra
             session[:username] = nil
             redirect("/mod", 303);
           end
-          # Gets all post by IP, and let's you ban it
+          # Gets all post by IP, and lets you ban it
           app.get "/ip/:addr" do |addr|
             if not session[:moderates] or not has_permission(session, config, "view_ips") then
               return [403, "You have no janitor privileges or you don't have the permissions to perform this action."]
@@ -488,7 +489,7 @@ module Sinatra
             if config["boards"][board]["hidden"] and not session[:moderates] then
               return [404, JSON.dump({:error => 404, :message => "Board not found."})]
             end
-            
+
             if board == "all" then
               return JSON.dump(get_all(params, session, config))
             end
@@ -500,7 +501,7 @@ module Sinatra
               id = id.to_i.to_s
               return JSON.dump(make_metadata(make_con(), id, session, config))
             else
-              return [404, '{"404": "Thread not found."}']
+              return [404, JSON.dump({:error => 404, :message => "Thread not found."})]
             end
           end
           app.get API + "/thread/:id/replies" do |id|
@@ -509,7 +510,7 @@ module Sinatra
               id = id.to_i.to_s
               return JSON.dump(get_thread_replies(id, session, config))
             else
-              return [404, '{"404": "Thread not found."}']
+              return [404, JSON.dump({:error => 404, :message => "Thread not found."})]
             end
           end
         end
