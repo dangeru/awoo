@@ -3,12 +3,13 @@
   <head>
     <title>/<%= path %>/ - Word filters</title>
     <link rel="stylesheet" type="text/css" href="/static/dangeru.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/font-awesome.min.css">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="shortcut icon" href="/static/favicon.ico">
     <style>
       input[type='text'] {
         style: inline-block;
-        width: 40%;
+        width: 35%;
       }
       button {
         width: 15%;
@@ -24,14 +25,17 @@
           var post = words[pre];
           var pre_inp = document.createElement("input");
           pre_inp.type = "text";
+          pre_inp.classList.add("button_styled");
           pre_inp.value = pre;
           pre_inp.id = "pre-" + i;
           var post_inp = document.createElement("input");
           post_inp.type = "text";
+          post_inp.classList.add("button_styled");
           post_inp.value = post;
           post_inp.id = "post-" + i;
           var button = document.createElement("button");
           button.innerText = "Drop";
+          button.classList.add("special_styled");
           (function(i, button) {
             button.addEventListener("click", function() {
               get(i);
@@ -89,12 +93,12 @@
     <div id="sitecorner">
       <img src="<%= banner %>" alt="danger/u/">
       <div id="title" style="text-align: center;">/<%= path %>/ - Word filters</div>
-      <button onClick='add()'>Add</button>
+      <i class="fa fa-plus" aria-hidden="true" onClick="add()"></i>
       <br />
       <form method="post" action="/<%= path %>/rules/edit" id="editor">
       </form>
       <br />
-      <button onClick='send()'>Save</button>
+      <i class="fa fa-floppy-o" aria-hidden="true" onClick="send()" style="float: right;"></i>
   </div>
   </body>
 </html>
