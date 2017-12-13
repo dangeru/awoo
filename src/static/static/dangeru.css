@@ -8,14 +8,6 @@ img {
     width: 100%;
     padding-bottom: 15px;
 }
-@media only screen and (max-width: 479px) {
-    #maincontainer {
-        width: 90%;
-    }
-    #boardcontainer {
-      margin-bottom: 25px;
-    }
-}
 @font-face {
     font-family: 'CyberpunkWaifus';
     src: url('CyberpunkWaifus.woff') format('woff');
@@ -214,4 +206,27 @@ hr {
   box-shadow: none;
   height: 5px;
   border-top: 1px solid #343434;
+}
+/* mobile beautifier */
+@media only screen and (max-width: 479px) {
+    #maincontainer {
+      margin: 0;
+      border: none;
+      padding: 0;
+      borderRadius: 0;
+      width: 100%;
+    }
+    #sitecorner {
+      margin: 0;
+      border: none;
+      padding: 0;
+      width: 100%;
+    }
+    img {
+      width: 100%;
+      height: auto;
+    }
+    #boardcontainer {
+      margin-bottom: 25px;
+    }
 }

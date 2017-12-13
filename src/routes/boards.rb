@@ -38,8 +38,8 @@ module Sinatra
             ip = get_ip(con, request, env);
             if looks_like_spam(con, ip, env, config) then
               return [429, "Flood detected, post discarded"]
-            elsif title.length > 500 or content.length > 500 then
-              return [431, "Post too long (over 500 characters)"]
+            elsif title.length > 180 or content.length > 500 then
+              return [431, "Post or title too long (over 500 characters)"]
             elsif config["boards"][board]["hidden"] and not session[:username]
               return [403, "You have no janitor permissions"]
             elsif board == "all"
