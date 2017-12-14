@@ -67,7 +67,7 @@ if (typeof(unitedPropertiesIf) != "undefined") {
     options.addEventListener("click", enable);
     options.style.position = "fixed";
     options.style.bottom = "10px";
-    options.style.right = "10px";
+    options.style.left = "10px";
     options.style.padding = "3px";
     options.style.borderRadius = "3px";
     document.body.appendChild(options);
