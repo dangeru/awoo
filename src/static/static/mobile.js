@@ -25,28 +25,6 @@ if (typeof(unitedPropertiesIf) != "undefined") {
   }
 } else {
   var userscript = localStorage.getItem("userscript") == "true";
-  var toggle = function toggle() {
-    localStorage.setItem("userscript", !userscript);
-    window.location.reload();
-  }
-  var options = document.createElement("span");
-  options.style.opacity = 0;
-  options.innerText = "Toggle Userscript (currently "+(userscript ? "on" : "off")+")";
-  options.style.backgroundColor = "white";
-  options.style.color = "black";
-  options.addEventListener("mouseover", function() {
-    options.style.opacity = 1;
-  });
-  options.addEventListener("mouseout", function() {
-    options.style.opacity = 0;
-  });
-  options.addEventListener("click", toggle);
-  options.style.position = "fixed";
-  options.style.bottom = "10px";
-  options.style.right = "10px";
-  options.style.padding = "3px";
-  options.style.borderRadius = "3px";
-  document.getElementsByTagName("body")[0].appendChild(options);
   if (userscript) {
     var s = document.createElement("script");
     s.src = "/static/awoo-catalog/awoo-catalog.user.js";
@@ -56,5 +34,28 @@ if (typeof(unitedPropertiesIf) != "undefined") {
       return value == null ? d : value;
     };
     document.getElementsByTagName("head")[0].appendChild(s);
+  } else {
+    var enable = function enable() {
+      localStorage.setItem("userscript", true);
+      window.location.reload();
+    }
+    var options = document.createElement("span");
+    options.style.opacity = 0;
+    options.innerText = "Toggle Userscript (currently off)";
+    options.style.backgroundColor = "white";
+    options.style.color = "black";
+    options.addEventListener("mouseover", function() {
+      options.style.opacity = 1;
+    });
+    options.addEventListener("mouseout", function() {
+      options.style.opacity = 0;
+    });
+    options.addEventListener("click", enable);
+    options.style.position = "fixed";
+    options.style.bottom = "10px";
+    options.style.right = "10px";
+    options.style.padding = "3px";
+    options.style.borderRadius = "3px";
+    document.body.appendChild(options);
   }
 }
