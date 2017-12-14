@@ -103,7 +103,7 @@
               elem.style.display = "inline-block";
             });
             var e = document.getElementById("redirect");
-            e.value = "false";
+            if (e != null) e.value = "false";
             doWordcount("reply_box");
           }
           var makeClickable = function makeClickable(elem) {

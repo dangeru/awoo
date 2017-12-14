@@ -17,8 +17,9 @@ var unban = function unban(addr, board) {
 	alert("You tried to unban " + addr + " from the board " + board + ", but it's not implemented yet");
 }
 var doWordcount = function doWordcount(comment_id) {
-	document.getElementById(comment_id).addEventListener("keyup", function() {
-		var comment = document.getElementById(comment_id);
+	var comment = document.getElementById(comment_id);
+	if (comment == null) return;
+	comment.addEventListener("keyup", function() {
 		console.log(comment.value.length);
 		var len = (comment.value.length * 1.03) | 0;
 		var wc = document.getElementById("wordcount");
