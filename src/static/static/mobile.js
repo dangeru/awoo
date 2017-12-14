@@ -6,10 +6,10 @@ var init_settings_button = function init_settings_button(text, callback) {
   options.style.backgroundColor = "white";
   options.style.color = "black";
   options.addEventListener("mouseover", function() {
-	options.style.opacity = 1;
+    options.style.opacity = 1;
   });
   options.addEventListener("mouseout", function() {
-	options.style.opacity = 0;
+    options.style.opacity = 0;
   });
   options.addEventListener("click", callback);
   options.style.position = "fixed";
@@ -41,7 +41,7 @@ if (typeof(unitedPropertiesIf) != "undefined") {
   // This looks fragile
   var header = document.getElementsByTagName("img")[0];
   if (header != null) {
-	// Scale to the device width rather than a fixed 395px
+    // Scale to the device width rather than a fixed 395px
     header.style.width = "100%";
     header.style.height = "auto";
   }
@@ -81,11 +81,11 @@ if (typeof(unitedPropertiesIf) != "undefined") {
     };
     add_script();
   } else {
-	// Create the "enable userscript" button in the bottom left
+    // Create the "enable userscript" button in the bottom left
     var enable = function enable() {
       localStorage.setItem("userscript", true);
       window.location.reload();
     }
-	init_settings_button("Enable Userscript", enable);
+    init_settings_button("Enable Userscript", enable);
   }
 }
