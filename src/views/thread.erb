@@ -65,6 +65,16 @@
             }
             <%= mobile_js %>
             var id = <%= id.to_i %>;
+            <% if params[:watch] %>
+              if (typeof(unitedPropertiesIf) != undefined) {
+                try {
+                  unitedPropertiesIf.watchThread(id.toString());
+                } catch (e) {
+                  // Must be on an old version of the app
+                  unitedPropertiesIf.toast("Your version of the app appears to be out of date. The latest version is 4.1.8");
+                }
+              }
+            <% end %>
             if (typeof(unitedPropertiesIf) != "undefined") {
               unitedPropertiesIf.setProperty(board + ":" + id, total_number_of_posts.toString());
             } else {
@@ -131,6 +141,11 @@
             } while (child = child.nextSibling)
           }
           var submit_form = function submit_form(form, route) {
+            if (typeof(unitedPropertiesIf) != undefined) {
+              if (unitedPropertiesIf.getProperty("watch_on_reply").toLowerCase() == "true") {
+                unitedPropertiesIf.watchThread(<%= JSON.dump(id.to_s) %>);
+              }
+            }
             var data = new FormData(form);
             // Ask @lain for what this does
             // unless you need to know what it does because you're a spamfag, in which case get fucked

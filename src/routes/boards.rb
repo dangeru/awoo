@@ -60,7 +60,7 @@ module Sinatra
             end
             # Then get the ID of the just-inserted post and redirect the user to their new thread
             query(con, "SELECT LAST_INSERT_ID() AS id").each do |res|
-              href = "/" + params[:board] + "/thread/" + res["id"].to_s
+              href = "/" + params[:board] + "/thread/" + res["id"].to_s + "?watch=true"
               redirect(href, 303);
             end
             # if there was no "most-recently created post" then we probably have a bigger issue than a failed post
@@ -141,7 +141,7 @@ module Sinatra
                 return [404, erb(:notfound)]
               end
               if does_thread_exist(id, path)
-                erb :thread, :locals => {:config => config, :path => path, :id => id, :con => con, :banner => new_banner(path), :moderator => is_moderator(path, session), :session => session}
+                erb :thread, :locals => {:config => config, :path => path, :id => id, :con => con, :banner => new_banner(path), :moderator => is_moderator(path, session), :session => session, :params => params}
               else
                 return [404, erb(:notfound)]
               end
