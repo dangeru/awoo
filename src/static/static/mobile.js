@@ -1,5 +1,14 @@
 // This needs to be called from within the userscript, so it needs to be global
 var init_settings_button = function init_settings_button(text, callback) {
+  if (typeof(unitedPropertiesIf) != "undefined") {
+	try {
+	  var version_code = parseInt(unitedPropertiesIf.getVersionCode());
+	  // In version 4.1.9, the settings box was inlined into the main settings screen, rendering this panel useless
+	  if (version_code >= 419) return;
+	} catch (e) {
+	  // continue with normal setup
+	}
+  }
   var options = document.createElement("span");
   options.style.opacity = 0;
   options.innerText = text;
