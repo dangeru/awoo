@@ -66,7 +66,7 @@
             <%= mobile_js %>
             var id = <%= id.to_i %>;
             <% if params[:watch] %>
-              if (typeof(unitedPropertiesIf) != undefined) {
+              if (typeof(unitedPropertiesIf) != "undefined") {
                 try {
                   unitedPropertiesIf.watchThread(id.toString());
                 } catch (e) {
