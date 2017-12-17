@@ -141,7 +141,7 @@
             } while (child = child.nextSibling)
           }
           var submit_form = function submit_form(form, route) {
-            if (typeof(unitedPropertiesIf) != undefined) {
+            if (typeof(unitedPropertiesIf) != "undefined") {
               if (unitedPropertiesIf.getProperty("watch_on_reply").toLowerCase() == "true") {
                 unitedPropertiesIf.watchThread(<%= JSON.dump(id.to_s) %>);
               }
