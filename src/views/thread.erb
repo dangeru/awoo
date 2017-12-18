@@ -30,18 +30,33 @@
 }
 </style>
         <script>
+          var replace = function(hash) {
+            history.replaceState(undefined, undefined, "#");
+            history.replaceState(undefined, undefined, hash);
+          }
+          if (!history.replaceState) {
+            replace = function(a, b, hash) {
+              window.location.hash = "#";
+              window.location.hash = hash;
+            };
+          }
+          var to_array = function(thing) {
+            return Array.prototype.slice.call(thing, 0);
+          }
           var select = function select(id) {
-            var replace = function(hash) { history.replaceState(undefined, undefined, hash) }
-            if (!history.replaceState) {
-              replace = function(a, b, hash) { window.location.hash = hash; };
-            }
-            replace("#") // bugfix for webkit
             replace("#comment-" + id.toString()) // bugfix for webkit
-            var elems = document.getElementsByClassName("selected");
-            for (var i = 0; i < elems.length; i++) {
-              elems[i].classList.toggle("selected")
-            }
+            to_array(document.getElementsByClassName("selected")).forEach(function(elem) { elem.classList.toggle("selected"); })
             document.getElementById("comment-" + id.toString()).classList.add("selected")
+          }
+          var select_id = function select_id(id) {
+            replace("#id-" + id.toString()) // bugfix for webkit
+            to_array(document.getElementsByClassName("selected")).forEach(function(elem) { elem.classList.toggle("selected"); })
+            to_array(document.getElementsByClassName("comment")).forEach(function(elem) {
+              if (elem.id == "hover") return;
+              var header = elem.children[0];
+              var hash = header.getElementsByClassName("hash")[0].innerText;
+              if (hash == id) elem.classList.toggle("selected");
+            });
           }
           var hover = function hover(id, hovered) {
             var elem = document.getElementById("comment-" + id.toString());
@@ -62,6 +77,9 @@
           var ol = function ol() {
             if (window.location.hash.indexOf("comment-") == 1) {
               select(window.location.hash.split("comment-")[1]);
+            }
+            if (window.location.hash.indexOf("id-") == 1) {
+              select_id(window.location.hash.split("id-")[1]);
             }
             <%= mobile_js %>
             var id = <%= id.to_i %>;
@@ -215,7 +233,7 @@
           <% if moderator and has_permission(session, config, "view_ips") then %>
             <a style="display: inline-block; font-size: 50%;" href="/ip/<%= res[:ip] %>"><%= res[:ip] %></a>
           <% end %>
-          <span class="post_number" style="display: none;">Post number #<span class="id_link" onClick='document.getElementById("reply_box").value += ">><%= res[:post_id] %>"'><%= res[:post_id] %></span>, ID: <span style="color: #<%= res[:hash] %>;"><%= res[:hash] %></span></span><br>
+          <span class="post_number" style="display: none;">Post number #<span class="id_link" onClick='document.getElementById("reply_box").value += ">><%= res[:post_id] %>"'><%= res[:post_id] %></span>, ID: <span class="hash" style="color: #<%= res[:hash] %>;" onClick="select_id(this.innerText)"><%= res[:hash] %></span></span><br>
           |
           <% res[:comment].split("\n").each do |line| %>
             <% line = line.chomp %>
@@ -281,7 +299,7 @@
         <% i += 1 %>
       <% end %>
 
-      <div style="font-size: 11px;" class="comment">
+      <div style="font-size: 11px;" class="comment-styled">
         Total number of posts: <%= i.to_s %>,
         <script>
           var total_number_of_posts = <%= i.to_s %>;
@@ -322,7 +340,7 @@
           <% else %>
             <textarea id="reply_box" name='content' style="width: 100%;" placeholder='Reply'></textarea>
             <span style="color: white;">
-              <span style="color: white;" class="jsunhide comment" id="wordcount">0/500</span>
+              <span style="color: white;" class="jsunhide comment-styled" id="wordcount">0/500</span>
             </span>
           <% end %>
           <input class="jshide" type="submit" value="Submit without javascript" />
@@ -335,7 +353,7 @@
         <% end %>
       <% end %>
     </div>
-    <footer class="comment" style="font-size: xx-small; text-align: center;">
+    <footer class="comment-styled" style="font-size: xx-small; text-align: center;">
       <%= config["footer"] %>, <a href="https://github.com/dangeru/awoo/" style="font-size: x-small; display: inline-block">Awoo <%= settings.awoo_version %></a>
     </footer>
   </body>
