@@ -53,8 +53,7 @@
             to_array(document.getElementsByClassName("selected")).forEach(function(elem) { elem.classList.toggle("selected"); })
             to_array(document.getElementsByClassName("comment")).forEach(function(elem) {
               if (elem.id == "hover") return;
-              var header = elem.children[0];
-              var hash = header.getElementsByClassName("hash")[0].innerText;
+              var hash = elem.getElementsByClassName("hash")[0].innerText;
               if (hash == id) elem.classList.toggle("selected");
             });
           }
