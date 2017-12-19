@@ -246,6 +246,10 @@ module Sinatra
             end
           end
 
+          app.get "/mobile/?" do
+            redirect("/", 303);
+          end
+
           # Legacy api, see https://github.com/naomiEve/dangeruAPI
           app.get "/api.php" do
             content_type 'application/json'
