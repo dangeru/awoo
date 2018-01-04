@@ -5,11 +5,14 @@
 #
 
 require 'sinatra/base'
+require 'sinatra/namespace'
 require 'json'
 
 require_relative 'routes/boards'
+require_relative 'routes/api'
 require_relative 'routes/errors'
 require_relative 'routes/vichan_compat'
+
 
 class Awoo < Sinatra::Base
   def initialize
@@ -19,7 +22,9 @@ class Awoo < Sinatra::Base
   def instance
     @instance
   end
+  register Sinatra::Namespace
   register Sinatra::Awoo::Routing::Boards
+  register Sinatra::Awoo::Routing::API
   register Sinatra::Awoo::Routing::Errors
   register Sinatra::Awoo::Routing::VichanCompat
   configure do
