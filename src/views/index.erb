@@ -25,7 +25,7 @@
         <span class="redtext" style="text-decoration: underline;">General</span>
         -->
         <% settings.config['boards'].select do |key, val| session[:username] or not val["hidden"] end.each do |key, array| %>
-          <a class="boarda" href="/<%= key %>"><div id="comment"><%= settings.config['boards'][key]['desc'] %></div></a>
+          <a class="boarda comment-styled" href="/<%= key %>"><%= settings.config['boards'][key]['desc'] %></a>
         <% end %><br>
       </div>
     </div>
