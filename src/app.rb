@@ -37,7 +37,7 @@ class Awoo < Sinatra::Base
   enable :sessions
   before do
     headers "X-Powered-By" => "Awoo (https://github.com/dangeru/awoo)"
-    headers "X-Loli-Provider" => "fbi.gov"
+    headers "X-Loli-Provider" => "lolis.download"
   end
   get '/' do
     erb :index
