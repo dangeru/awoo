@@ -35,7 +35,10 @@ class Awoo < Sinatra::Base
   end
   set :root, File.dirname(__FILE__)
   enable :sessions
-
+  before do
+    headers "X-Powered-By" => "Awoo (https://github.com/dangeru/awoo)"
+    headers "X-Lolis" => "fbi.gov"
+  end
   get '/' do
     erb :index
   end
