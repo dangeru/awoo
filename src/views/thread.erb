@@ -81,11 +81,11 @@
               select_id(window.location.hash.split("id-")[1]);
             }
             <%= mobile_js %>
-            var id = <%= id.to_i %>;
+            window.id = <%= id.to_i %>;
             <% if params[:watch] %>
               if (typeof(unitedPropertiesIf) != "undefined") {
                 try {
-                  unitedPropertiesIf.watchThread(id.toString());
+                  unitedPropertiesIf.watchThread(window.id.toString());
                 } catch (e) {
                   // Must be on an old version of the app
                   unitedPropertiesIf.toast("Your version of the app appears to be out of date; The thread could not be added to the thread watcher");
@@ -94,9 +94,9 @@
             <% end %>
             // If userscript is disabled, update prop here. Otherwise it will be updated by the userscript
             if (typeof(unitedPropertiesIf) != "undefined" && unitedPropertiesIf.getProperty("userscript").toUpperCase() != "TRUE") {
-              unitedPropertiesIf.setProperty(board + ":" + id, total_number_of_posts.toString());
+              unitedPropertiesIf.setProperty(window.board + ":" + window.id, total_number_of_posts.toString());
             } else if (localStorage != null && localStorage.getItem("userscript").toUpperCase() != "TRUE") {
-              localStorage.setItem(board + ":" + id, total_number_of_posts.toString());
+              localStorage.setItem(window.board + ":" + window.id, total_number_of_posts.toString());
             }
             if (typeof(unitedPropertiesIf) == "undefined" || unitedPropertiesIf.getProperty("userscript").toUpperCase() == "TRUE") {
               Array.prototype.slice.call(document.getElementsByClassName("post_number"), 0).forEach(function(elem) {
@@ -199,8 +199,8 @@
             <div id="title"><%= Sanitize.clean(res[:title]) %></div>
           <% end %>
           <script>
-            var board = <%= JSON.dump(res[:board]) %>;
-            document.title = <%= JSON.dump(res[:title]) %> + " - danger/" + board + "/";
+            window.board = <%= JSON.dump(res[:board]) %>;
+            document.title = <%= JSON.dump(res[:title]) %> + " - danger/" + window.board + "/";
           </script>
           <%# I WILL MOVE IT LATER I PROMISE %>
           <meta property="og:title" content="<%= Sanitize.clean(res[:title]) %> - /<%= res[:board] %>/">
