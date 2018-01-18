@@ -81,13 +81,13 @@
       }
     </script>
     <script src="/static/common.js"></script>
-    <link rel="stylesheet" type="text/css" href="../static/dangeru.css">
-    <link rel="stylesheet" type="text/css" href="../static/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="/static/dangeru.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/font-awesome.min.css">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta property="og:url" content="http://<%= Config.get['hostname']%>/<%= path %>">
     <meta property="og:title" content="/<%= Config.get['boards'][path]['name'] %>/">
     <meta property="og:description" content="<%= Config.get['boards'][path]['desc'] %>">
-    <link rel="shortcut icon" href="../static/favicon.ico">
+    <link rel="shortcut icon" href="/static/favicon.ico">
   </head>
   <body onLoad='ol();'>
     <div id="boardcontainer">
@@ -105,65 +105,65 @@
   <div id="sitecorner" style="text-align: center;">
     <a href="javascript:location.reload();"><img src="<%= banner %>" alt="danger/u/"></a>
     <div id="boardtitle">/<%= Config.get['boards'][path]['name'] %>/ - <%= Config.get['boards'][path]['desc'] %></div>
-    <span onClick='newThread()' id="newthread">Start a new thread</span>
+    <% hide_newthread = "onClick='newThread()'" %>
+    <% hide_newthread = "style='color: #ED145B;'" if archive %>
+    <% newthread_text = "Start a new thread" %>
+    <% newthread_text = "Archive" if archive %>
+    <span <%= hide_newthread %> id="newthread"><%= newthread_text %></span>
     <div id="draggable" class="ui-widget-content">
-      <form action="/post" method="post" name="newthread">
-        <% if path == "all" %>
-          Post to:
-          <select name="board" id="board">
-            <% Config.get["boards"].select do |key, value| session[:username] or not value["hidden"] end.each do |key, value| %>
-              <% if key == "all" then next end %>
-              <option value="<%= key %>">
-                <%= key %> - <%= value["desc"] %>
-              </option>
-            <% end %>
-          </select>
-          <br />
-        <% else %>
-          <input style='display: none;' type='text' name='board' id='board' value='<%= path %>' />
-        <% end %>
-        <% if path == "burg" %>
-          <input style='display: none;' type='text' name='title' id='title' value='burg' />
-          <input type="radio" value="burg" id="burg" name="comment" /><label style="color: white" for="burg">burg</label><br />
-          <!-- js fixes -->
-          <input type="text" id="comment" style="display: none" /><span style="display: none;" id="wordcount"></span>
-          <!-- end js fixes -->
-          <input type="radio" value="angry burg" id="angry_burg" name="comment" /><label style="color: white" for="angry_burg">angry burg</label><br />
-        <% else %>
-          <div class="comment">Title</div>
-          <input type="text" name="title" id="title" placeholder="Title" />
-          <div class="comment">Comment</div>
-          <textarea name="comment" id="comment"></textarea>
-          <%# Janitors of at least one board can capcode on ANY board %>
-          <% if session[:username] %>
+      <% if not archive %>
+        <form action="/post" method="post" name="newthread">
+          <% if path == "all" %>
+            Post to:
+            <select name="board" id="board">
+              <% Config.get["boards"].select do |key, value| session[:username] or not value["hidden"] end.each do |key, value| %>
+                <% if key == "all" then next end %>
+                <option value="<%= key %>">
+                  <%= key %> - <%= value["desc"] %>
+                </option>
+              <% end %>
+            </select>
             <br />
-            <%= erb :capcode_dropdown, :locals => {:config => Config.get, :session => session} %>
-            <br />
+          <% else %>
+            <input style='display: none;' type='text' name='board' id='board' value='<%= path %>' />
           <% end %>
-          <div id="wordcount" class="comment" style="float: left;">0/500</div><br />
-        <% end %>
-        <input type="submit" id="submit" name="submit" class="button_styled" value="Send" style="float: right; height: 20px; line-height:0;" /><br />
-      </form>
-    </div>
-      <% if moderator and has_permission(session, "edit_wordfilters") %>
-        <hr />
-        <a href="/<%= path %>/word-filter">Edit word filters</a>
+          <% if path == "burg" %>
+            <input style='display: none;' type='text' name='title' id='title' value='burg' />
+            <input type="radio" value="burg" id="burg" name="comment" /><label style="color: white" for="burg">burg</label><br />
+            <!-- js fixes -->
+            <input type="text" id="comment" style="display: none" /><span style="display: none;" id="wordcount"></span>
+            <!-- end js fixes -->
+            <input type="radio" value="angry burg" id="angry_burg" name="comment" /><label style="color: white" for="angry_burg">angry burg</label><br />
+          <% else %>
+            <div class="comment">Title</div>
+            <input type="text" name="title" id="title" placeholder="Title" />
+            <div class="comment">Comment</div>
+            <textarea name="comment" id="comment"></textarea>
+            <%# Janitors of at least one board can capcode on ANY board %>
+            <% if session[:username] %>
+              <br />
+              <%= erb :capcode_dropdown, :locals => {:config => Config.get, :session => session} %>
+              <br />
+            <% end %>
+            <div id="wordcount" class="comment" style="float: left;">0/500</div><br />
+          <% end %>
+          <input type="submit" id="submit" name="submit" class="button_styled" value="Send" style="float: right; height: 20px; line-height:0;" /><br />
+        </form>
       <% end %>
+    </div>
+    <% if moderator and has_permission(session, "edit_wordfilters") %>
+      <hr />
+      <a href="/<%= path %>/word-filter">Edit word filters</a>
+    <% end %>
     <hr />
     <%# Note that we COULD order by `(-1 * sticky), (SELECT MAX(p2.post_id) FROM posts p2 WHERE parent = post_id)` and we wouldn't need the extra `last_bumped` database column, but it would be more cpu/disk work on the database %>
-    <% ress = nil %>
-    <% if path == "all" then %>
-      <% ress = get_all(params, session) %>
-    <% else %>
-      <% ress = get_board(path, params, session) %>
-    <% end %>
     <% ress.each do |res| %>
       <% classes = [] %>
       <% if res[:is_locked] then classes.push "locked" end %>
-        <% if res[:stickyness] then
-             classes.push("sticky-" + res[:stickyness].to_s)
-             classes.delete_if do |x| x == "locked" end
-        end %>
+      <% if res[:stickyness] then
+           classes.push("sticky-" + res[:stickyness].to_s)
+           classes.delete_if do |x| x == "locked" end
+      end %>
       <% if path == "burg" then res[:title] = "burg" end %>
       <a style="display: inline-block;" data-replies="<%= res[:number_of_replies] %>" href="/<%= res[:board] %>/thread/<%= res[:post_id] %>" class="<%= classes.join(" ") %>">
         <% if path == "all" then %>
@@ -201,13 +201,18 @@
     <div id="pagecount_container">
       <% page_clause = "" %>
       <% page_clause = "AND board = '#{con.escape(path)}'" if path != "all" %>
+      <% full_path = "/#{path}/" %>
+      <% if archive then %>
+        <% full_path = "/archive" + full_path %>
+      <% end %>
       <% con.query("SELECT COUNT(*) AS count FROM posts WHERE parent IS NULL #{page_clause}").each do |res| %>
-      <% max = ((res["count"]/20)+1) %>
-      <% max = [page + 5, max].min %>
-      <% min = [0, page - 5].max %>
-      <% (min..max).each do |i| %>
-        <a href="/<%= path %>?page=<%= i.to_s %>" id="pagecount"><%= (i + 1).to_s %></a>
-      <% end end %>
+        <% max = ((res["count"]/20)+1) %>
+        <% max = [page + 5, max].min %>
+        <% min = [0, page - 5].max %>
+        <% (min..max).each do |i| %>
+          <a href="<%= full_path %>?page=<%= i.to_s %>" id="pagecount"><%= (i + 1).to_s %></a>
+        <% end %>
+      <% end %>
     </div>
   </div>
   <footer class="comment" style="font-size: xx-small; text-align: center;">

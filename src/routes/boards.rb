@@ -131,7 +131,25 @@ module Sinatra
               if Config.get["boards"][path]["hidden"] and not session["username"] then
                 return [404, erb(:notfound)]
               end
-              erb :board, :locals => {:path => path, :config => Config.get, :con => con, :offset => offset, :banner => new_banner(path), :moderator => is_moderator(path, session), :session => session, :page => params[:page].to_i}
+              ress = nil
+              if path == "all" then
+                ress = get_all(params, session, offset)
+              else
+                ress = get_board(path, params, session, offset)
+              end
+              erb :board, :locals => {:path => path, :config => Config.get, :con => con, :offset => offset, :banner => new_banner(path), :moderator => is_moderator(path, session), :session => session, :page => params[:page].to_i, :archive => false, :ress => ress}
+            end
+            app.get "/archive/" + path + "/?" do
+              con = make_con()
+              if not params[:page]
+                offset = 0;
+              else
+                offset = params[:page].to_i * 20;
+              end
+              if Config.get["boards"][path]["hidden"] and not session["username"] then
+                return [404, erb(:notfound)]
+              end
+              erb :board, :locals => {:path => path, :config => Config.get, :con => con, :offset => offset, :banner => new_banner(path), :moderator => false, :session => Hash.new, :page => params[:page].to_i, :archive => true, :ress => get_archived_board(con, path, offset)}
             end
             app.get "/" + path + "/thread/:id" do |id|
               con = make_con()

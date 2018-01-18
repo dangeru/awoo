@@ -200,15 +200,11 @@ end
 
 # gets the 20 threads for the requested board at the requested page (default zero, the first page)
 # used in board.erb and the api's /board/:board route
-def get_board(board, params, session)
+def get_board(board, params, session, offset)
   if Config.get["boards"][board]["hidden"] and not session[:moderates] then
     return [404, erb(:notfound)]
   end
   con = make_con()
-  # calculate which 20 posts to show
-  page = 0
-  if params[:page] then page = params[:page].to_i end
-  offset = page * 20;
   # make a thread object for each returned row and return the list of all the thread objects
   results = []
   query(con, "SELECT *, COALESCE(parent, post_id) AS effective_parent, COUNT(*) AS number_of_replies FROM posts WHERE board = ? GROUP BY effective_parent ORDER BY (-1 * sticky), last_bumped DESC LIMIT 20 OFFSET #{offset.to_s};", board).each do |res|
@@ -217,14 +213,10 @@ def get_board(board, params, session)
   return results
 end
 
-def get_all(params, session)
+def get_all(params, session, offset)
   con = make_con()
   allowed_boards = Config.get["boards"].select do |k, v| session[:moderates] or not v["hidden"] end.map do |k, v| k end
   allowed_boards = "(" + (allowed_boards.reduce([]) do |acc, k| acc.push("'" + con.escape(k) + "'") end.join ",") + ")"
-  # calculate which 20 posts to show
-  page = 0
-  if params[:page] then page = params[:page].to_i end
-  offset = page * 20;
   # make a thread object for each returned row and return the list of all the thread objects
   results = []
   query(con, "SELECT *, COALESCE(parent, post_id) AS effective_parent, COUNT(*) AS number_of_replies FROM posts WHERE board IN #{allowed_boards} GROUP BY effective_parent ORDER BY (-1 * sticky), last_bumped DESC LIMIT 20 OFFSET #{offset.to_s};").each do |res|
@@ -348,3 +340,15 @@ def get_archived_thread_replies(id)
   obj
 end
 
+def get_archived_board(con, board, offset)
+  arr = []
+  query(con, "SELECT post_id, title FROM archived_posts WHERE board = ? ORDER BY post_id DESC LIMIT 20 OFFSET #{offset.to_s}", board).each do |res|
+    hash = Hash.new
+    hash[:post_id] = res["post_id"]
+    hash[:title] = res["title"]
+    hash[:board] = board
+    hash[:number_of_replies] = "?";
+    arr.push hash
+  end
+  arr
+end
