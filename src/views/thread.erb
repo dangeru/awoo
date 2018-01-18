@@ -74,11 +74,15 @@
             document.getElementById("hover").style.left = e.clientX + 5 + "px";
           }
           var ol = function ol() {
-            if (window.location.hash.indexOf("comment-") == 1) {
-              select(window.location.hash.split("comment-")[1]);
-            }
-            if (window.location.hash.indexOf("id-") == 1) {
-              select_id(window.location.hash.split("id-")[1]);
+            try {
+              if (window.location.hash.indexOf("comment-") == 1) {
+                select(window.location.hash.split("comment-")[1]);
+              }
+              if (window.location.hash.indexOf("id-") == 1) {
+                select_id(window.location.hash.split("id-")[1]);
+              }
+            } catch (e) {
+              // drop
             }
             <%= mobile_js %>
             window.id = <%= id.to_i %>;
