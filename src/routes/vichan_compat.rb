@@ -16,14 +16,12 @@ module Sinatra
     module Routing
       module VichanCompat
         def self.registered(app)
-          config_raw = File.read('config.json')
-          config = JSON.parse(config_raw)
-          config["boards"].select do |k, board| not board["hidden"] end.each do |path, board|
+          Config.get["boards"].select do |k, board| not board["hidden"] end.each do |path, board|
             app.get "/" + path + "/catalog.json" do
               result = []
               page = 0
               while true do
-                this_page = get_board(path, {:page => page}, session, config)
+                this_page = get_board(path, {:page => page}, session)
                 if this_page.length == 0 then
                   break
                 end

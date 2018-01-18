@@ -17,15 +17,13 @@ module Sinatra
       module Boards
         def self.registered(app)
           # Load up the config.json and read out some variables
-          config_raw = File.read('config.json')
-          config = JSON.parse(config_raw)
-          hostname = config["hostname"]
-          app.set :config, config
+          hostname = Config.get["hostname"]
+          app.set :config, Config.get
           # Load all the boards out of the config file
           boards = []
-          config['boards'].each do |key, array|
-            puts "Loading board " + config['boards'][key]['name'] + "..."
-            boards << config['boards'][key]['name']
+          Config.get['boards'].each do |key, array|
+            puts "Loading board " + Config.get['boards'][key]['name'] + "..."
+            boards << Config.get['boards'][key]['name']
           end
           # Route for making a new OP
           app.post "/post" do
@@ -36,24 +34,24 @@ module Sinatra
             content = params[:comment]
             # Also pull the IP address from the request and check if it looks like spam
             ip = get_ip(con, request, env);
-            if looks_like_spam(con, ip, env, config) then
+            if looks_like_spam(con, ip, env) then
               return [429, "Flood detected, post discarded"]
             elsif title.length > 180 or content.length > 500 then
               return [431, "Post or title too long (over 500 characters)"]
-            elsif config["boards"][board]["hidden"] and not session[:username]
+            elsif Config.get["boards"][board]["hidden"] and not session[:username]
               return [403, "You have no janitor permissions"]
             elsif board == "all"
               return [400, "stop that"]
             end
-            title = apply_word_filters(config, board, title)
-            content = apply_word_filters(config, board, content)
+            title = apply_word_filters(board, title)
+            content = apply_word_filters(board, content)
             # Check if the IP is banned
             banned = get_ban_info(ip, board, con)
             if banned then
-              return erb :banned, :locals => {:info => banned, :config => config}
+              return erb :banned, :locals => {:info => banned, :config => Config.get}
             end
             # Insert the new post into the database
-            if params[:capcode] and params[:capcode].length > 0 and allowed_capcodes(session, config).include? params[:capcode] and session[:username] then
+            if params[:capcode] and params[:capcode].length > 0 and allowed_capcodes(session).include? params[:capcode] and session[:username] then
               query(con, "INSERT INTO posts (board, title, content, ip, janitor) VALUES (?, ?, ?, ?, ?)", board, title, content, ip, params[:capcode] + ":" + session[:username]);
             else
               query(con, "INSERT INTO posts (board, title, content, ip) VALUES (?, ?, ?, ?)", board, title, content, ip);
@@ -72,9 +70,9 @@ module Sinatra
             # replies have a board, a comment and a parent (the post they're responding to)
             board = params[:board]
             content = params[:content]
-            content = apply_word_filters(config, board, content)
+            content = apply_word_filters(board, content)
             parent = params[:parent].to_i
-            if make_metadata(con, parent, session, config)[:number_of_replies] >= config["bump_limit"]
+            if make_metadata(con, parent, session)[:number_of_replies] >= Config.get["bump_limit"]
               return [400, "Bump limit reached"]
             end
             if content.length > 500 then
@@ -82,13 +80,13 @@ module Sinatra
             end
             # Pull the IP address and check if it looks like spam
             ip = get_ip(con, request, env);
-            if looks_like_spam(con, ip, env, config) then
+            if looks_like_spam(con, ip, env) then
               return [429, "Flood detected, post discarded"]
             end
             # Check if the IP is banned
             banned = get_ban_info(ip, board, con)
             if banned then
-              return erb :banned, :locals => {:info => banned, :config => config}
+              return erb :banned, :locals => {:info => banned, :config => Config.get}
             end
             closed = nil
             query(con, "SELECT is_locked FROM posts WHERE post_id = ?", parent).each do |res|
@@ -98,11 +96,11 @@ module Sinatra
               return [400, "That thread doesn't exist"]
             elsif closed != 0 then
               return [400, "That thread has been closed"]
-            elsif config["boards"][board]["hidden"] and not session[:username]
+            elsif Config.get["boards"][board]["hidden"] and not session[:username]
               return [403, "You have no janitor permissions"]
             end
             # Insert the new reply
-            if params[:capcode] and params[:capcode].length > 0 and allowed_capcodes(session, config).include? params[:capcode] and session[:username] then
+            if params[:capcode] and params[:capcode].length > 0 and allowed_capcodes(session).include? params[:capcode] and session[:username] then
               query(con, "INSERT INTO posts (board, parent, content, ip, title, janitor) VALUES (?, ?, ?, ?, NULL, ?)", board, parent, content, ip, params[:capcode] + ":" + session[:username])
             else
               query(con, "INSERT INTO posts (board, parent, content, ip, title) VALUES (?, ?, ?, ?, NULL)", board, parent, content, ip)
@@ -130,18 +128,18 @@ module Sinatra
               else
                 offset = params[:page].to_i * 20;
               end
-              if config["boards"][path]["hidden"] and not session["username"] then
+              if Config.get["boards"][path]["hidden"] and not session["username"] then
                 return [404, erb(:notfound)]
               end
-              erb :board, :locals => {:path => path, :config => config, :con => con, :offset => offset, :banner => new_banner(path), :moderator => is_moderator(path, session), :session => session, :page => params[:page].to_i}
+              erb :board, :locals => {:path => path, :config => Config.get, :con => con, :offset => offset, :banner => new_banner(path), :moderator => is_moderator(path, session), :session => session, :page => params[:page].to_i}
             end
             app.get "/" + path + "/thread/:id" do |id|
               con = make_con()
-              if config["boards"][path]["hidden"] and not session["username"] then
+              if Config.get["boards"][path]["hidden"] and not session["username"] then
                 return [404, erb(:notfound)]
               end
               if does_thread_exist(id, path)
-                erb :thread, :locals => {:config => config, :path => path, :id => id, :con => con, :banner => new_banner(path), :moderator => is_moderator(path, session), :session => session, :params => params}
+                erb :thread, :locals => {:config => Config.get, :path => path, :id => id, :con => con, :banner => new_banner(path), :moderator => is_moderator(path, session), :session => session, :params => params}
               else
                 return [404, erb(:notfound)]
               end
@@ -149,24 +147,22 @@ module Sinatra
 
             # Rules & Editing rules
             app.get "/" + path + "/rules/?" do
-              if config["boards"][path]["hidden"] and not session["username"] then
+              if Config.get["boards"][path]["hidden"] and not session["username"] then
                 return [403, "You have no janitor privileges"]
               end
-              erb :rules, :locals => {:rules => settings.config['boards'][path]['rules'], :moderator => is_moderator(path, session), :path => path, :banner => new_banner(path), :config => config, :session => session}
+              erb :rules, :locals => {:rules => Config.get['boards'][path]['rules'], :moderator => is_moderator(path, session), :path => path, :banner => new_banner(path), :config => Config.get, :session => session}
             end
             app.post "/" + path + "/rules/edit/?" do
-              if is_moderator(path, session) and has_permission(session, config, "edit_rules")
+              if is_moderator(path, session) and has_permission(session, "edit_rules")
                 con = make_con();
                 # insert an IP note with the changes
                 content = "Updated rules for /" + path + "/\n"
-                content += wrap("old rules", settings.config['boards'][path]["rules"]);
+                content += wrap("old rules", Config.get['boards'][path]["rules"]);
                 content += wrap("new rules", params[:rules])
                 query(con, "INSERT INTO ip_notes (ip, content, actor) VALUES (?, ?, ?)", "_meta", content, session[:username])
                 # change the rules and save the changes
-                settings.config['boards'][path]['rules'] = params[:rules]
-                File.open("config.json", "w") do |f|
-                  f.write(JSON.pretty_generate(settings.config))
-                end
+                Config.get['boards'][path]['rules'] = params[:rules]
+                Config.rewrite!
                 redirect "/" + path + "/rules"
               else
                 return [403, "You have no janitor privileges or you don't have the permissions to perform this action."]
@@ -175,26 +171,24 @@ module Sinatra
 
             # edit word filters form
             app.get "/" + path + "/word-filter/?" do
-              if not is_moderator(path, session) or not has_permission(session, config, "edit_wordfilters") then
+              if not is_moderator(path, session) or not has_permission(session, "edit_wordfilters") then
                 return [404, erb(:notfound)]
               end
-              erb :word_filter, :locals => {:config => config, :path => path, :banner => new_banner(path)}
+              erb :word_filter, :locals => {:config => Config.get, :path => path, :banner => new_banner(path)}
             end
 
             # posted url when saving word filters
             app.post "/" + path + "/word-filter/?" do
               con = make_con()
-              if is_moderator(path, session) and has_permission(session, config, "edit_wordfilters") then
+              if is_moderator(path, session) and has_permission(session, "edit_wordfilters") then
                 # update and save the word filters
-                old_words = settings.config['boards'][path]['word-filter'];
-                settings.config['boards'][path]['word-filter'] = JSON.parse(params[:words])
-                File.open("config.json", "w") do |f|
-                  f.write(JSON.pretty_generate(settings.config))
-                end
+                old_words = Config.get['boards'][path]['word-filter'];
+                Config.get['boards'][path]['word-filter'] = JSON.parse(params[:words])
+                Config.rewrite!
                 # save an IP note
                 content = "Updated word filters for /" + path + "/\n"
                 content += wrap("old word filters", JSON.pretty_generate(old_words));
-                content += wrap("new word filters", JSON.pretty_generate(config['boards'][path]["word-filter"]));
+                content += wrap("new word filters", JSON.pretty_generate(Config.get['boards'][path]["word-filter"]));
                 query(con, "INSERT INTO ip_notes (ip, content, actor) VALUES (?, ?, ?)", "_meta", content, session[:username])
                 return "OK"
               else
@@ -223,7 +217,7 @@ module Sinatra
               return [400, "Could not find a post with that ID"]
             end
             # Then, check if the currently logged in user has permission to moderate that board
-            if not is_moderator(board, session) or not has_permission(session, config, "delete")
+            if not is_moderator(board, session) or not has_permission(session, "delete")
               return [403, "You are not logged in or you do not have permissions to perform this action on board " + board]
             end
             # Insert an IP note with the content of the deleted post
@@ -261,7 +255,7 @@ module Sinatra
               id = params[:thread].to_i
               result = {:meta => [], :replies => []}
               #limit += 1
-              get_thread_replies(id, session, config).each do |res|
+              get_thread_replies(id, session).each do |res|
                 if res[:is_op] then
                   result[:meta] = [{
                     "title": res[:title],
@@ -276,10 +270,10 @@ module Sinatra
             elsif params[:type] == "index"
               # type must be index
               result = {:board => [{
-                :name => config["boards"][params[:board]]["name"],
+                :name => Config.get["boards"][params[:board]]["name"],
                 :url => "https://" + hostname + "/" + params[:board]
               }], :threads => []}
-              get_board(params[:board], params, session, config).each do |res|
+              get_board(params[:board], params, session).each do |res|
                 result[:threads].push({
                   :id => res[:post_id],
                   :title => res[:title],
@@ -296,15 +290,15 @@ module Sinatra
           # Moderator log in page, (mod_login.erb)
           app.get "/mod" do
             if session[:moderates] then
-              return erb :mod_login_success, :locals => {:session => session, :config => config}
+              return erb :mod_login_success, :locals => {:session => session, :config => Config.get}
             end
-            erb :mod_login, :locals => {:session => session, :config => config}
+            erb :mod_login, :locals => {:session => session, :config => Config.get}
           end
           # Moderator log in action, checks the username and password against the list of janitors and logs them in if it matches
           app.post "/mod" do
             username = params[:username]
             password = params[:password]
-            return try_login(username, password, config, session, params)
+            return try_login(username, password, session, params)
           end
           # Logout action, logs the user out and redirects to the mod login page
           app.get "/logout" do
@@ -314,39 +308,39 @@ module Sinatra
           end
           # Gets all post by IP, and lets you ban it
           app.get "/ip/:addr" do |addr|
-            if not session[:moderates] or not has_permission(session, config, "view_ips") then
+            if not session[:moderates] or not has_permission(session, "view_ips") then
               return [403, "You have no janitor privileges or you don't have the permissions to perform this action."]
             end
-            if addr == "_meta" and not has_permission(session, config, "introspect") then
+            if addr == "_meta" and not has_permission(session, "introspect") then
               return [403, "You don't have the permissions to perform this action."]
             end
             con = make_con()
-            erb :ip_list, :locals => {:session => session, :addr => addr, :con => con, :config => config}
+            erb :ip_list, :locals => {:session => session, :addr => addr, :con => con, :config => Config.get}
           end
 
           # Gets the moderator ban list
           app.get "/bans" do
-            if not session[:moderates] or not has_permission(session, config, "view_all_bans") then
+            if not session[:moderates] or not has_permission(session, "view_all_bans") then
               return [403, "You have no janitor privileges or you don't have the permissions to perform this action."]
             end
 
             con = make_con()
-            erb :ban_list, :locals => {:con => con, :config => config}
+            erb :ban_list, :locals => {:con => con, :config => Config.get}
           end
 
           # Either locks or unlocks the specified thread
           app.get "/lock/:post/?" do |post|
             con = make_con()
-            return lock_or_unlock(post, true, con, session, config)
+            return lock_or_unlock(post, true, con, session)
           end
           app.get "/unlock/:post/?" do |post|
             con = make_con()
-            return lock_or_unlock(post, false, con, session, config)
+            return lock_or_unlock(post, false, con, session)
           end
 
           # Moves thread from board to board
           app.get "/move/:post/?" do |post|
-            if session[:moderates] and has_permission(session, config, "move") then
+            if session[:moderates] and has_permission(session, "move") then
               erb :move, :locals => {:post => post, :boards => boards}
             else
               return [403, "You have no janitor privileges or you don't have the permissions to perform this action."]
@@ -360,7 +354,7 @@ module Sinatra
             query(con, "SELECT board FROM posts WHERE post_id = ?", post).each do |res|
               prev_board = res["board"]
             end
-            if is_moderator(prev_board, session) and has_permission(session, config, "move")
+            if is_moderator(prev_board, session) and has_permission(session, "move")
               id = post.to_i
               board = params[:board]
               query(con, "UPDATE posts SET board = ? WHERE post_id = ? OR parent = ?", board, id, id)
@@ -374,7 +368,7 @@ module Sinatra
           # Leave notes on an ip address
           app.post "/ip_note/:addr" do |addr|
             con = make_con()
-            if session[:moderates] == nil or not has_permission(session, config, "view_ips") then
+            if session[:moderates] == nil or not has_permission(session, "view_ips") then
               return [403, "You have no janitor privileges or you don't have the permissions to perform this action."]
             end
             content = params[:content]
@@ -386,21 +380,21 @@ module Sinatra
           # Sticky / Unsticky posts
           app.get "/sticky/:id/?" do |post_id|
             con = make_con()
-            sticky_unsticky(post_id, true, con, session, config)
+            sticky_unsticky(post_id, true, con, session)
           end
           app.post "/sticky/:id/?" do |post_id|
             con = make_con()
-            sticky_unsticky(post_id, params[:stickyness].to_i, con, session, config)
+            sticky_unsticky(post_id, params[:stickyness].to_i, con, session)
           end
           app.get "/unsticky/:id/?" do |post_id|
             con = make_con()
-            sticky_unsticky(post_id, false, con, session, config)
+            sticky_unsticky(post_id, false, con, session)
           end
 
           # Ban / Unban an IP
           app.post "/ban/:ip" do |ip|
             con = make_con()
-            if is_moderator(params[:board], session) and has_permission(session, config, "ban") then
+            if is_moderator(params[:board], session) and has_permission(session, "ban") then
               # Insert the ban
               board = params[:board]
               old_date = params[:date].split('/')
@@ -418,7 +412,7 @@ module Sinatra
           end
           app.post "/unban/:ip" do |ip|
             con = make_con()
-            if is_moderator(params[:board], session) and has_permission(session, config, "ban") then
+            if is_moderator(params[:board], session) and has_permission(session, "ban") then
               board = params[:board]
               # delete the ban and insert the ip note
               query(con, "DELETE FROM bans WHERE ip = ? AND board = ?", ip, board)
@@ -429,33 +423,31 @@ module Sinatra
             end
           end
           app.get "/introspect/?" do
-            if not has_permission(session, config, "introspect") then
+            if not has_permission(session, "introspect") then
               return [403, "You don't have permissions to perform this action."]
             end
-            erb :introspect, :locals => {:config => config}
+            erb :introspect, :locals => {:config => Config.get}
           end
           app.get "/introspect/:mod/?" do |mod|
-            if not has_permission(session, config, "introspect") then
+            if not has_permission(session, "introspect") then
               return [403, "You don't have permissions to perform this action."]
             end
-            erb :introspect_selected, :locals => {:config => config, :con => make_con(), :mod => mod}
+            erb :introspect_selected, :locals => {:config => Config.get, :con => make_con(), :mod => mod}
           end
           # Posted to reset the password of a moderator
           app.post "/introspect_reset" do
-            if not has_permission(session, config, "introspect") then
+            if not has_permission(session, "introspect") then
               return [403, "You don't have permissions to perform this action."]
             end
             if not params[:mod] or not params[:newpass] then
               return [400, "Username or new password not specified"]
             end
             found = -1;
-            config["janitors"].length.times do |i|
-              if config["janitors"][i]["username"] == params[:mod] then
+            Config.get["janitors"].length.times do |i|
+              if Config.get["janitors"][i]["username"] == params[:mod] then
                 found = i
-                config["janitors"][i]["password"] = params[:newpass]
-                File.open("config.json", "w") do |f|
-                  f.write(JSON.pretty_generate(settings.config))
-                end
+                Config.get["janitors"][i]["password"] = params[:newpass]
+                Config.rewrite!
                 # rerun will detect that this file has changed and restart the server
                 File.open("_watch", "w") do |f|
                   f.write(Random.rand.hash.to_s)
