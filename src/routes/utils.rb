@@ -4,6 +4,7 @@
 # => (c) prefetcher & github commiters 2017
 #
 
+require 'json'
 require_relative 'config.rb'
 
 def query(con, stmt, *args)
@@ -326,4 +327,21 @@ def does_thread_exist(id, board="")
   end
 
   return exists
+end
+
+def does_archived_thread_exist(id, board, con)
+  exists = false
+  query(con, "SELECT * FROM archived_posts WHERE post_id=? AND board = ?", id, board).each do |res|
+    exists = true
+  end
+  return exists
+end
+
+def get_archived_thread_replies(id)
+  obj = nil
+  puts 'archive/' + id.to_s + '.json'
+  File.open 'archive/' + id.to_s + '.json' do |contents|
+    obj = JSON.parse contents.read, {:symbolize_names => true}
+  end
+  obj
 end

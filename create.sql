@@ -27,3 +27,8 @@ CREATE TABLE ip_notes (
 	created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	actor TEXT NOT NULL
 );
+CREATE TABLE archived_posts (
+	post_id INTEGER NOT NULL PRIMARY KEY,
+	board TEXT NOT NULL,
+	title TEXT NOT NULL
+);
