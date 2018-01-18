@@ -204,6 +204,9 @@
       <% full_path = "/#{path}/" %>
       <% if archive then %>
         <% full_path = "/archive" + full_path %>
+        <% if path == "all" then %>
+          <% full_path = "/archive/" %>
+        <% end %>
       <% end %>
       <% con.query("SELECT COUNT(*) AS count FROM posts WHERE parent IS NULL #{page_clause}").each do |res| %>
         <% max = ((res["count"]/20)+1) %>

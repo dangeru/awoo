@@ -216,6 +216,16 @@ module Sinatra
             end
           end
 
+          app.get "/archive/?" do
+            con = make_con()
+            if not params[:page]
+              offset = 0;
+            else
+              offset = params[:page].to_i * 20;
+            end
+            erb :board, :locals => {:path => "all", :config => Config.get, :con => con, :offset => offset, :banner => new_banner("all"), :moderator => false, :session => Hash.new, :page => params[:page].to_i, :archive => true, :ress => get_all_archived(con, offset)}
+          end
+
           # Route for moderators to delete a post (and all of its replies, if it's an OP)
           app.get "/delete/:post_id" do |post_id|
             con = make_con()
