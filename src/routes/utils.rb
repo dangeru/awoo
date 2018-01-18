@@ -5,6 +5,7 @@
 #
 
 require 'json'
+require 'mysql2'
 require_relative 'config.rb'
 
 def query(con, stmt, *args)
@@ -128,12 +129,12 @@ end
 
 # Makes an object for a thread's metadata from the given hash, used in the api's thread/:id/metadata route
 # used in get_board which is used in the API's board/:board route and also views/board.erb
-def make_metadata_from_hash(res, session)
+def make_metadata_from_hash(res, session, override = false)
   is_op = res["parent"] == nil
   # keys common to all posts (OPs and replies)
   obj = {:post_id => res["post_id"], :board => res["board"], :is_op => is_op, :comment => res["content"], :date_posted => res["date_posted"].strftime('%s').to_i}
   # Put ip in the object if the user has permission to see it
-  if is_moderator(res["board"], session) and has_permission(session, "view_ips") then
+  if (is_moderator(res["board"], session) and has_permission(session, "view_ips")) or override then
     obj[:ip] = res["ip"]
   end
   # the janitor's capcode
@@ -233,17 +234,20 @@ def get_all(params, session)
 end
 
 # Gets the replies to a given thread
-def get_thread_replies(id, session)
-  con = make_con()
+def get_thread_replies(id, session, con = nil, override = false)
+  con = make_con() if con.nil?
   results = []
   id = id.to_i.to_s
   #
   query(con, "SELECT * FROM posts WHERE COALESCE(parent, post_id) = ?", id).each do |res|
-    results.push(make_metadata_from_hash(res, session));
+    results.push(make_metadata_from_hash(res, session, override));
   end
   # dirty fucking hack
   results[0][:number_of_replies] = results.length
-  if Config.get["boards"][results[0][:board]]["hidden"] and not session[:moderates] then
+  if not Config.get["boards"].has_key? results[0][:board] then
+    return [400, "That board no longer exists"]
+  end
+  if Config.get["boards"][results[0][:board]]["hidden"] and not session[:moderates] and not override then
     return [403, "You have no janitor permissions"]
   end
   return results
@@ -311,16 +315,15 @@ def allowed_capcodes(session)
   return res
 end
 
-def does_thread_exist(id, board="")
+def does_thread_exist(id, board="", con = nil)
+  con = make_con() if con.nil?
   exists = false
 
-  unless board.empty?
-    con = make_con()
+  if not board.empty?
     query(con, "SELECT * FROM posts WHERE post_id=? AND board=? AND parent IS NULL", id, board).each do |res|
       exists = true
     end
   else
-    con = make_con()
     query(con, "SELECT * FROM posts WHERE post_id=? AND parent IS NULL", id).each do |res|
       exists = true
     end
@@ -339,9 +342,47 @@ end
 
 def get_archived_thread_replies(id)
   obj = nil
-  puts 'archive/' + id.to_s + '.json'
   File.open 'archive/' + id.to_s + '.json' do |contents|
     obj = JSON.parse contents.read, {:symbolize_names => true}
   end
   obj
+end
+
+def archive_thread(con, id)
+  data = get_thread_replies(id, Hash.new, con, true)
+  if data[0] == 400 then
+    puts "The board for thread " + id.to_s + " does not exist anymore, not archiving"
+    return
+  end
+  board = data[0][:board]
+  title = data[0][:title]
+  begin
+    con.query("BEGIN")
+    query(con, "INSERT INTO archived_posts (post_id, title, board) VALUES (?, ?, ?)", id, title, board)
+    query(con, "DELETE FROM posts WHERE post_id = ? OR parent = ?", id, id)
+    con.query("COMMIT")
+    out = JSON.dump(data)
+    File.open 'archive/' + id.to_s + '.json', 'w' do |file|
+      file.write out
+    end
+  rescue Interrupt, SignalException => e
+    puts "User cancel, rolling back transaction and dying"
+    con.query("ROLLBACK")
+    raise e
+  rescue Exception => e
+    puts "Error archiving thread, rolling back transaction"
+    con.query("ROLLBACK")
+    puts e
+  end
+end
+def prune!
+  con = make_con()
+  query(con, "SELECT post_id FROM posts WHERE parent IS NULL AND UNIX_TIMESTAMP(last_bumped) < ?",
+        # 20 days
+        Time.new.strftime("%s").to_i - (60*60*24*20)).each do |row|
+    id = row["post_id"].to_i
+    puts "Archiving thread " + id.to_s
+    archive_thread(con, id)
+    puts "Archived thread " + id.to_s
+  end
 end

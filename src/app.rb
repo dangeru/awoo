@@ -12,6 +12,7 @@ require_relative 'routes/boards'
 require_relative 'routes/api'
 require_relative 'routes/errors'
 require_relative 'routes/vichan_compat'
+require_relative 'routes/utils'
 
 
 class Awoo < Sinatra::Base
@@ -32,6 +33,7 @@ class Awoo < Sinatra::Base
     set :port, config['port']
     set :awoo_version, '1.0.0'
     set :public_folder, File.dirname(__FILE__) + '/static'
+	prune!
   end
   set :root, File.dirname(__FILE__)
   enable :sessions

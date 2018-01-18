@@ -190,6 +190,9 @@
   <body onLoad='ol();'>
     <div id="sitecorner">
       <a href="/<%= path %>"><img src="<%= banner %>" alt="danger/u/"></a>
+      <% if archived then %>
+        <div class="title" style="color: #ED145B; text-align: center;">This thread is permenantly archived</div>
+      <% end %>
       <span id="hover" class="comment" style="display: none"></span>
       <% last_date_modified = 0 %>
       <% i = 0 %>
@@ -319,12 +322,16 @@
       </script>
       <br />
       <% if is_locked then %>
-        <div id="lockedcontainer" style="text-align: center;">
-          <div class="redtext">This thread is closed.</div>
-          <% if moderator and has_permission(session, "lock") %>
-            <i class="fa fa-lock" aria-hidden="true" onClick='unlockPost(<%= id.to_i.to_s %>)'></i>
-          <% end %>
-        </div>
+        <% if archived then %>
+          <div class="title" style="color: #ED145B; text-align: center;">This thread is permenantly archived</div>
+        <% else %>
+          <div id="lockedcontainer" style="text-align: center;">
+            <div class="redtext">This thread is closed.</div>
+            <% if moderator and has_permission(session, "lock") %>
+              <i class="fa fa-lock" aria-hidden="true" onClick='unlockPost(<%= id.to_i.to_s %>)'></i>
+            <% end %>
+          </div>
+        <% end %>
       <% else %>
         <a href="javascript:location.reload();">Refresh</a>
         <form id="form" action='/reply' method='post' style="text-align: center;">
