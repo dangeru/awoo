@@ -32,20 +32,20 @@
       <a href="/"><img src="/static/logo.png" alt="danger/u/" id="modlogo"></a><br>
       <span id="title" class="redtext">[Welcome <%= Sanitize.clean(session[:username]) %>]</span>
       <br />
-      <span class="redtext">[Your rank is: <%= allowed_capcodes(session, config)[0] %>]</span><br />
-      <% if has_permission(session, config, "introspect") %>
+      <span class="redtext">[Your rank is: <%= allowed_capcodes(session)[0] %>]</span><br />
+      <% if has_permission(session, "introspect") %>
         <br />
         <a href="/introspect">&gt;Begin introspection?&lt;</a>
         <br />
       <% end %>
       <span class="redtext">[You moderate:]</span><br />
-      <% config["boards"].select do |board, v| session[:moderates].include? board end.each do |board, v| %>
+      <% Config.get["boards"].select do |board, v| session[:moderates].include? board end.each do |board, v| %>
         <span id="<%= board %>" onClick="showActions(this.id)" class="comment">/<%= board %>/</span>
         <div id="actions-<%= board %>" style="display: none;">
-          <% if has_permission(session, config, "edit_wordfilters") %>
+          <% if has_permission(session, "edit_wordfilters") %>
             <a href="/<%= board %>/word-filter">Edit word filters</a>
           <% end %>
-          <% if has_permission(session, config, "edit_rules") %>
+          <% if has_permission(session, "edit_rules") %>
             <a href="/<%= board %>/rules">Edit rules</a>
           <% end %>
           <a href="/<%= board %>/">Go to board</a>

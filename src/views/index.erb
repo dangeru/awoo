@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <HTML>
   <head>
-    <title><%= settings.config["title"] %></title>
+    <title><%= Config.get["title"] %></title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <link rel="stylesheet" type="text/css" href="static/dangeru.css">
     <meta name="description" content="danger/u/ - dangerous opinions. danger/u/ is a textboard based off danger/u/ from VA-11 HALL-A Cyberpunk Bartender Action.">
@@ -24,8 +24,8 @@
         <!--
         <span class="redtext" style="text-decoration: underline;">General</span>
         -->
-        <% settings.config['boards'].select do |key, val| session[:username] or not val["hidden"] end.each do |key, array| %>
-          <a class="boarda comment-styled" href="/<%= key %>"><%= settings.config['boards'][key]['desc'] %></a>
+        <% Config.get['boards'].select do |key, val| session[:username] or not val["hidden"] end.each do |key, array| %>
+          <a class="boarda comment-styled" href="/<%= key %>"><%= Config.get['boards'][key]['desc'] %></a>
         <% end %><br>
       </div>
     </div>

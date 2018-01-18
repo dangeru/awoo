@@ -18,7 +18,7 @@
       <br />
       <hr />
       <br />
-      <% config["janitors"].each do |mod| %>
+      <% Config.get["janitors"].each do |mod| %>
         <% username = mod["username"] %>
         <a href="/introspect/<%= Sanitize.clean(username) %>"><%= Sanitize.clean(username) %></a>
         <br />

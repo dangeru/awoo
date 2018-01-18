@@ -43,7 +43,7 @@
     <br />
     <div id="maincontainer" style="overflow: hidden; color: white; padding: 10px;">
       <div class="title" style="color: #ED145B;">Information for IP <%= Sanitize.clean(addr) %></div>
-      <% if has_permission(session, config, "ban") %>
+      <% if has_permission(session, "ban") %>
         <form action="/ban/<%= addr %>" method="post" id="ban-form">
           <select id="board" name="board">
             <% session[:moderates].each do |board| %>
@@ -63,7 +63,7 @@
         <h3 class="redtext">
           Banned from <%= res["board"] %> until <%= res["date_of_unban"].strftime '%c' %> for reason "<%= Sanitize.clean(res["reason"]) %>"
           <form id="<%= id %>" action="/unban/<%= addr %>" method="post"><input type="hidden" name="board" value="<%= res["board"] %>" /></form>
-          <% if has_permission(session, config, "ban") %>
+          <% if has_permission(session, "ban") %>
             <button onClick="submit_form(document.getElementById('<%= id %>'), '/unban/<%= Sanitize.clean(addr) %>')">Unban</button>
           <% end %>
         </h3>
@@ -80,7 +80,7 @@
           <div class="comment">OP with title <a style='display: inline-block;' href="/<%= res["board"] %>/thread/<%= res["post_id"] %>"><%= res["title"] %></a>
         <% end %>
           in /<%= res["board"] %>/ on <%= res["date_posted"].strftime '%c' %>.
-          <% if has_permission(session, config, "delete") %>
+          <% if has_permission(session, "delete") %>
             <i class="fa fa-trash" aria-hidden="true" onClick='deletePost(<%= res["post_id"] %>)'></i>
           <% end %>
         </div>
@@ -94,7 +94,7 @@
         <div style="font-size: 50%;">
           <div class="comment">
             <%= res["created"].strftime '%c' %>
-            <% if has_permission(session, config, "introspect") then %>
+            <% if has_permission(session, "introspect") then %>
               <% mod = res["actor"] %>
               Created by: <a style="display: inline-block;" href="/introspect/<%= mod %>"><%= mod %></a>
             <% end %>
@@ -112,7 +112,7 @@
       <button onClick="submit_form(document.getElementById('ip-note-form'), '/ip_note/<%= Sanitize.clean(addr) %>')">Submit</button>
     </div>
     <footer class="comment" style="font-size: xx-small; text-align: center;">
-      <%= config["footer"] %>, <a href="https://github.com/dangeru/awoo/" style="font-size: x-small;">Awoo <%= settings.awoo_version %></a>
+      <%= Config.get["footer"] %>, <a href="https://github.com/dangeru/awoo/" style="font-size: x-small;">Awoo <%= settings.awoo_version %></a>
     </footer>
   </body>
 </HTML>

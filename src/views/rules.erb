@@ -23,7 +23,7 @@
       <pre class="comment" id="rules">
 <%= Sanitize.clean(rules) %>
       </pre>
-      <% if has_permission(session, config, "edit_rules") %>
+      <% if has_permission(session, "edit_rules") %>
         <form method="post" action="/<%= path %>/rules/edit" style="display:none;" id="editor">
           <textarea style="resize: none; width: 370px; height: 230px;" name="rules"><%= rules %></textarea>
           <input type="submit" name="submit" value="Change" />

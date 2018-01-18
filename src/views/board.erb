@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
   <head>
-    <title>/<%= settings.config['boards'][path]['name'] %>/ - <%= settings.config['boards'][path]['desc'] %></title>
+    <title>/<%= Config.get['boards'][path]['name'] %>/ - <%= Config.get['boards'][path]['desc'] %></title>
     <style>
     #draggable {
       width: 320px;
@@ -84,19 +84,19 @@
     <link rel="stylesheet" type="text/css" href="../static/dangeru.css">
     <link rel="stylesheet" type="text/css" href="../static/css/font-awesome.min.css">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta property="og:url" content="http://<%= settings.config['hostname']%>/<%= path %>">
-    <meta property="og:title" content="/<%= settings.config['boards'][path]['name'] %>/">
-    <meta property="og:description" content="<%= settings.config['boards'][path]['desc'] %>">
+    <meta property="og:url" content="http://<%= Config.get['hostname']%>/<%= path %>">
+    <meta property="og:title" content="/<%= Config.get['boards'][path]['name'] %>/">
+    <meta property="og:description" content="<%= Config.get['boards'][path]['desc'] %>">
     <link rel="shortcut icon" href="../static/favicon.ico">
   </head>
   <body onLoad='ol();'>
     <div id="boardcontainer">
-      <span class="boarda"><a href="/" style='display: inline-block;'><%= settings.config['title'] %></a> [</span>
-      <% settings.config['boards'].select do |key, val| session[:username] or not val["hidden"] end.each_with_index do |(key, array), index| %>
+      <span class="boarda"><a href="/" style='display: inline-block;'><%= Config.get['title'] %></a> [</span>
+      <% Config.get['boards'].select do |key, val| session[:username] or not val["hidden"] end.each_with_index do |(key, array), index| %>
         <a style='display: inline-block;' class="boarda" href="/<%= key %>"><%= key %></a>
         <% minquota = 2 %>
         <% minquota = 1 if session[:moderates] %>
-        <% unless index == settings.config['boards'].size - minquota %>
+        <% unless index == Config.get['boards'].size - minquota %>
           <span class="boarda"> / </span>
         <% end %>
       <% end %><span class="boarda">]</span>
@@ -104,14 +104,14 @@
     <div id="hover" style="display: none;"></div>
   <div id="sitecorner" style="text-align: center;">
     <a href="javascript:location.reload();"><img src="<%= banner %>" alt="danger/u/"></a>
-    <div id="boardtitle">/<%= settings.config['boards'][path]['name'] %>/ - <%= settings.config['boards'][path]['desc'] %></div>
+    <div id="boardtitle">/<%= Config.get['boards'][path]['name'] %>/ - <%= Config.get['boards'][path]['desc'] %></div>
     <span onClick='newThread()' id="newthread">Start a new thread</span>
     <div id="draggable" class="ui-widget-content">
       <form action="/post" method="post" name="newthread">
         <% if path == "all" %>
           Post to:
           <select name="board" id="board">
-            <% config["boards"].select do |key, value| session[:username] or not value["hidden"] end.each do |key, value| %>
+            <% Config.get["boards"].select do |key, value| session[:username] or not value["hidden"] end.each do |key, value| %>
               <% if key == "all" then next end %>
               <option value="<%= key %>">
                 <%= key %> - <%= value["desc"] %>
@@ -137,7 +137,7 @@
           <%# Janitors of at least one board can capcode on ANY board %>
           <% if session[:username] %>
             <br />
-            <%= erb :capcode_dropdown, :locals => {:config => config, :session => session} %>
+            <%= erb :capcode_dropdown, :locals => {:config => Config.get, :session => session} %>
             <br />
           <% end %>
           <div id="wordcount" class="comment" style="float: left;">0/500</div><br />
@@ -145,7 +145,7 @@
         <input type="submit" id="submit" name="submit" class="button_styled" value="Send" style="float: right; height: 20px; line-height:0;" /><br />
       </form>
     </div>
-      <% if moderator and has_permission(session, config, "edit_wordfilters") %>
+      <% if moderator and has_permission(session, "edit_wordfilters") %>
         <hr />
         <a href="/<%= path %>/word-filter">Edit word filters</a>
       <% end %>
@@ -153,9 +153,9 @@
     <%# Note that we COULD order by `(-1 * sticky), (SELECT MAX(p2.post_id) FROM posts p2 WHERE parent = post_id)` and we wouldn't need the extra `last_bumped` database column, but it would be more cpu/disk work on the database %>
     <% ress = nil %>
     <% if path == "all" then %>
-      <% ress = get_all(params, session, config) %>
+      <% ress = get_all(params, session) %>
     <% else %>
-      <% ress = get_board(path, params, session, config) %>
+      <% ress = get_board(path, params, session) %>
     <% end %>
     <% ress.each do |res| %>
       <% classes = [] %>
@@ -171,14 +171,14 @@
         <% end %>
         <%= Sanitize.clean(res[:title]) %>
       </a>
-      <% if moderator and has_permission(session, config, "lock") %>
+      <% if moderator and has_permission(session, "lock") %>
         <% if res[:is_locked] %>
           <i class="fa fa-lock" aria-hidden="true" onClick='unlockPost(<%= res[:post_id] %>)'></i>
         <% else %>
           <i class="fa fa-unlock-alt" aria-hidden="true" onClick='lockPost(<%= res[:post_id] %>)'></i>
         <% end %>
       <% end %>
-      <% if moderator and has_permission(session, config, "sticky") %>
+      <% if moderator and has_permission(session, "sticky") %>
         <%# Sticky / Unsticky post %>
         <% if not res[:sticky] %>
           <i class="fa fa-thumb-tack" aria-hidden="true" onClick='stickyPost(<%= res[:post_id] %>)'></i>
@@ -186,13 +186,13 @@
           <i class="fa fa-ban" aria-hidden="true" onClick='unstickyPost(<%= res[:post_id] %>)'></i>
         <% end %>
       <% end %>
-      <% if moderator and has_permission(session, config, "delete") %>
+      <% if moderator and has_permission(session, "delete") %>
         <i class="fa fa-trash" aria-hidden="true" onClick='deletePost(<%= res[:post_id] %>)'></i>
       <% end %>
-      <% if moderator and has_permission(session, config, "move") %>
+      <% if moderator and has_permission(session, "move") %>
         <i class="fa fa-refresh" aria-hidden="true" onClick="window.location.replace('/move/<%= res[:post_id] %>');"></i>
       <% end %>
-      <% if moderator and has_permission(session, config, "view_ips") %>
+      <% if moderator and has_permission(session, "view_ips") %>
         <a style="display: inline-block; font-size: 50%;" href="/ip/<%= res[:ip] %>"><%= res[:ip] %></a>
       <% end %>
       <br />
@@ -211,7 +211,7 @@
     </div>
   </div>
   <footer class="comment" style="font-size: xx-small; text-align: center;">
-    <%= config["footer"] %>, <a href="https://github.com/dangeru/awoo/" style="font-size: x-small; display: inline-block;">Awoo <%= settings.awoo_version %></a>
+    <%= Config.get["footer"] %>, <a href="https://github.com/dangeru/awoo/" style="font-size: x-small; display: inline-block;">Awoo <%= settings.awoo_version %></a>
   </footer>
   </body>
 </html>

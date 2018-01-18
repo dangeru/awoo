@@ -16,7 +16,7 @@
       }
     </style>
     <script>
-      var words = <%= JSON.dump(config["boards"][path]["word-filter"]) %>;
+      var words = <%= JSON.dump(Config.get["boards"][path]["word-filter"]) %>;
       var ol = function ol() {
         var editor = document.getElementById("editor");
         editor.innerHTML = "";
