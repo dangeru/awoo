@@ -140,16 +140,7 @@ module Sinatra
               end
               if does_thread_exist(id, path)
                 erb :thread, :locals => {:config => Config.get, :path => path, :id => id, :con => con, :banner => new_banner(path), :moderator => is_moderator(path, session), :session => session, :params => params, :replies => get_thread_replies(id.to_i.to_s, session)}
-              else
-                return [404, erb(:notfound)]
-              end
-            end
-            app.get "/" + path + "/thread/:id/archived" do |id|
-              con = make_con()
-              if Config.get["boards"][path]["hidden"] and not session["username"] then
-                return [404, erb(:notfound)]
-              end
-              if does_archived_thread_exist(id, path, con)
+              elsif does_archived_thread_exist(id, path, con)
                 erb :thread, :locals => {:config => Config.get, :path => path, :id => id, :con => con, :banner => new_banner(path), :moderator => false, :session => Hash.new, :params => Hash.new, :replies => get_archived_thread_replies(id.to_i)}
               else
                 return [404, erb(:notfound)]
