@@ -6,6 +6,16 @@
 require_relative 'utils.rb'
 require 'json'
 module ThreadGC
+  def self.ensure_update(con)
+    con.query "SET sql_notes = 0;"
+    con.query "
+CREATE TABLE IF NOT EXISTS archived_posts (
+	post_id INTEGER NOT NULL PRIMARY KEY,
+	board TEXT NOT NULL,
+	title TEXT NOT NULL
+);"
+    con.query "SET sql_notes = 1;"
+  end
   def self.archive_thread(con, id)
     data = get_thread_replies(id, Hash.new, con, true)
     if data[0] == 400 then
@@ -35,6 +45,7 @@ module ThreadGC
   end
   def self.prune!
     con = make_con()
+    ensure_update(con)
     query(con, "SELECT post_id FROM posts WHERE parent IS NULL AND sticky = 0 AND UNIX_TIMESTAMP(last_bumped) < ?",
           # 20 days
           Time.new.strftime("%s").to_i - (60*60*24*20)).each do |row|
@@ -43,5 +54,6 @@ module ThreadGC
       archive_thread(con, id)
       puts "Archived thread " + id.to_s
     end
+    puts "All threads pruned"
   end
 end
