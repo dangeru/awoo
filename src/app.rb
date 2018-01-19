@@ -1,7 +1,7 @@
 ############################################
 # => app.rb - Main Renderer
 # => Awoo Textboard Engine
-# => (c) prefetcher & github commiters 2017
+# => (c) prefetcher & github commiters 2018
 #
 
 require 'sinatra/base'

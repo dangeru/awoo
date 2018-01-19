@@ -1,7 +1,7 @@
 ############################################
 # => utils.rb - Utilities for Awoo.
 # => Awoo Textboard Engine
-# => (c) prefetcher & github commiters 2017
+# => (c) prefetcher & github commiters 2018
 #
 
 require 'json'

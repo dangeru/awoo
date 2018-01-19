@@ -1,7 +1,7 @@
 ############################################
 # => vichan_compat.rb - vichan compatibility layer for Awoo.
 # => Awoo Textboard Engine
-# => (c) prefetcher & github commiters 2017
+# => (c) prefetcher & github commiters 2018
 #
 
 require_relative 'utils'
