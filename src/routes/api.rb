@@ -25,7 +25,6 @@ module Sinatra
               if Config.get["boards"][board]["hidden"] and not session[:moderates] then
                 return [404, JSON.dump({:error => 404, :message => "Board not found."})]
               end
-
               payload = {
                 :name => Config.get["boards"][board]["name"],
                 :desc => Config.get["boards"][board]["desc"],
@@ -41,11 +40,16 @@ module Sinatra
               if Config.get["boards"][board]["hidden"] and not session[:moderates] then
                 return [404, JSON.dump({:error => 404, :message => "Board not found."})]
               end
+              if not params[:page]
+                offset = 0;
+              else
+                offset = params[:page].to_i * 20;
+              end
 
               if board == "all" then
-                return JSON.dump(get_all(params, session))
+                return JSON.dump(get_all(params, session, offset))
               end
-              return JSON.dump(get_board(board, params, session))
+              return JSON.dump(get_board(board, params, session, offset))
             end
             get "/thread/:id/metadata" do |id|
               content_type 'application/json'
