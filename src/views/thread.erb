@@ -99,7 +99,7 @@
             // If userscript is disabled, update prop here. Otherwise it will be updated by the userscript
             if (typeof(unitedPropertiesIf) != "undefined" && unitedPropertiesIf.getProperty("userscript").toUpperCase() != "TRUE") {
               unitedPropertiesIf.setProperty(window.board + ":" + window.id, total_number_of_posts.toString());
-            } else if (localStorage != null && localStorage.getItem("userscript").toUpperCase() != "TRUE") {
+            } else if (localStorage != null && localStorage.getItem("userscript") !== null && localStorage.getItem("userscript").toUpperCase() != "TRUE") {
               localStorage.setItem(window.board + ":" + window.id, total_number_of_posts.toString());
             }
             if (typeof(unitedPropertiesIf) == "undefined" || unitedPropertiesIf.getProperty("userscript").toUpperCase() == "TRUE") {
