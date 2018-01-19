@@ -324,10 +324,17 @@ def does_thread_exist(id, board="", con = nil)
   return exists
 end
 
-def does_archived_thread_exist(id, board, con)
+def does_archived_thread_exist(id, board = nil, con = nil)
+  con = make_con if con.nil?
   exists = false
-  query(con, "SELECT * FROM archived_posts WHERE post_id=? AND board = ?", id, board).each do |res|
-    exists = true
+  if board then
+    query(con, "SELECT * FROM archived_posts WHERE post_id=? AND board = ?", id, board).each do |res|
+      exists = true
+    end
+  else
+    query(con, "SELECT * FROM archived_posts WHERE post_id=?", id).each do |res|
+      exists = true
+    end
   end
   return exists
 end
