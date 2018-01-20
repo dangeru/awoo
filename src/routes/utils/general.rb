@@ -31,7 +31,7 @@ def new_banner(board)
   end
   begin
     # this will throw an exception if the folder doesn't exist, hence the rescue
-    dirs = Dir.entries(File.dirname(__FILE__) + "/../static/static/banners/" + board)
+    dirs = Dir.entries(File.dirname(__FILE__) + "/../../static/static/banners/" + board)
     # we have to remove "." and ".." from the list, but this will also remove all hidden files
     return "/static/banners/" + board + "/" + dirs.select {|f| !File.directory? f}.sample
   rescue
