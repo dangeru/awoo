@@ -189,15 +189,11 @@
     <% end %>
 
     <div id="pagecount_container">
-      <% page_clause = "" %>
-      <% page_clause = "AND board = '#{con.escape(path)}'" if path != "all" %>
-      <% con.query("SELECT COUNT(*) AS count FROM posts WHERE parent IS NULL #{page_clause}").each do |res| %>
-        <% max = ((res["count"]/20)+1) %>
-        <% max = [page + 5, max].min %>
-        <% min = [0, page - 5].max %>
-        <% (min..max).each do |i| %>
-          <a href="<%= page_url_generator.call(path, request, params, i) %>" class="pagecount"><%= (i + 1).to_s %></a>
-        <% end %>
+      <% max = ((count/20)+1) %> <!-- TODO rethink this math -->
+      <% max = [page + 5, max].min %>
+      <% min = [0, page - 5].max %>
+      <% (min..max).each do |i| %>
+        <a href="<%= page_url_generator.call(path, request, params, i) %>" class="pagecount"><%= (i + 1).to_s %></a>
       <% end %>
     </div>
   </div>

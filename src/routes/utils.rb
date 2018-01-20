@@ -394,13 +394,17 @@ def get_search_results(params, con, offset, session)
     restrict_args << params[:board_select]
   end
   where_clause = "title LIKE ? " + exclude + " " + restrict
-  make_query = ->(where_clause) do
-    query = "SELECT post_id, title, board FROM posts WHERE #{where_clause}"
+  make_query = ->(where_clause, for_count) do
+    cols = "post_id, title, board"
+    cols = "COUNT(*) AS count" if for_count
+    limit = "LIMIT 20 OFFSET #{offset}"
+    limit = "" if for_count
+    query = "SELECT #{cols} FROM posts WHERE #{where_clause}"
     query += " UNION ALL "
-    query += "SELECT post_id, title, board FROM archived_posts WHERE #{where_clause} LIMIT 20 OFFSET #{offset}"
+    query += "SELECT #{cols} FROM archived_posts WHERE #{where_clause} #{limit}"
     query
   end
-  first_query = make_query.call where_clause
+  first_query = make_query.call where_clause, false
   results = []
   args = ["%" + params[:search_text] + "%"]
   args += exclude_args
@@ -410,9 +414,16 @@ def get_search_results(params, con, offset, session)
   query(con, first_query, *args).each do |res|
     results << make_archived_hash(res)
   end
-  return results unless results.empty?
+  if not results.empty?
+    q = make_query.call where_clause, true
+    count = 0
+    query(con, q, *args).each do |res|
+      count = res["count"]
+    end
+    return [results, count]
+  end
   words = params[:search_text].split
-  if words.length == 1 then return [] end
+  if words.length == 1 then return [[], 0] end
   titles = []
   title_args = []
   words.each do |word|
@@ -420,7 +431,7 @@ def get_search_results(params, con, offset, session)
     title_args << "%" + word + "%"
   end
   where_clause = "(" + titles.join(" OR ") + ") " + exclude + " " + restrict
-  second_query = make_query.call where_clause
+  second_query = make_query.call where_clause, false
   args = title_args
   args += exclude_args
   args += restrict_args
@@ -429,7 +440,39 @@ def get_search_results(params, con, offset, session)
   query(con, second_query, *args).each do |res|
     results << make_archived_hash(res)
   end
-  return results
+  return [results, results.length] if results.length < 20
+  q = make_query.call where_clause, true
+  count = 0
+  query(con, q, *args).each do |res|
+    count = res["count"]
+  end
+  return [results, count]
+end
+def posts_count(con, board)
+  count = 0
+  if board == "all" then
+    query(con, "SELECT COUNT(*) AS count FROM posts WHERE parent IS NULL").each do |res|
+      count = res["count"]
+    end
+  else
+    query(con, "SELECT COUNT(*) AS count FROM posts WHERE board = ? AND parent IS NULL", board).each do |res|
+      count = res["count"]
+    end
+  end
+  return count
+end
+def archived_posts_count(con, board)
+  count = 0
+  if board == "all" then
+    query(con, "SELECT COUNT(*) AS count FROM archived_posts").each do |res|
+      count = res["count"]
+    end
+  else
+    query(con, "SELECT COUNT(*) AS count FROM archived_posts WHERE board = ?", board).each do |res|
+      count = res["count"]
+    end
+  end
+  return count
 end
 
 Default_page_generator = ->(board, request, params, index) do
