@@ -4,9 +4,10 @@
 # => (c) prefetcher & github commiters 2018
 #
 
-require 'json'
-require 'mysql2'
 require_relative 'config.rb'
+require 'mysql2'
+require 'json'
+require 'erb'
 
 def query(con, stmt, *args)
   return con.prepare(stmt).execute(*args)
@@ -372,4 +373,76 @@ def get_all_archived(con, offset)
     arr.push make_archived_hash(res)
   end
   arr
+end
+def get_search_results(params, con, offset, session)
+  exclude = []
+  exclude_args = []
+  if not session[:username] then
+    Config.get["boards"].to_a.each do |b|
+      if b[1]["hidden"] then
+        exclude << "board != ?"
+        exclude_args << b[0]
+      end
+    end
+  end
+  exclude = exclude.join(" AND ")
+  exclude = " AND " + exclude if not exclude.empty?
+  restrict = ""
+  restrict_args = []
+  if params[:board_select] != "all" then
+    restrict = "AND board = ?"
+    restrict_args << params[:board_select]
+  end
+  where_clause = "title LIKE ? " + exclude + " " + restrict
+  make_query = ->(where_clause) do
+    query = "SELECT post_id, title, board FROM posts WHERE #{where_clause}"
+    query += " UNION ALL "
+    query += "SELECT post_id, title, board FROM archived_posts WHERE #{where_clause} LIMIT 20 OFFSET #{offset}"
+    query
+  end
+  first_query = make_query.call where_clause
+  results = []
+  args = ["%" + params[:search_text] + "%"]
+  args += exclude_args
+  args += restrict_args
+  args += args
+  #puts first_query, args.join(",")
+  query(con, first_query, *args).each do |res|
+    results << make_archived_hash(res)
+  end
+  return results unless results.empty?
+  words = params[:search_text].split
+  if words.length == 1 then return [] end
+  titles = []
+  title_args = []
+  words.each do |word|
+    titles << "title LIKE ?"
+    title_args << "%" + word + "%"
+  end
+  where_clause = "(" + titles.join(" OR ") + ") " + exclude + " " + restrict
+  second_query = make_query.call where_clause
+  args = title_args
+  args += exclude_args
+  args += restrict_args
+  args += args
+  #puts second_query, args.join(",")
+  query(con, second_query, *args).each do |res|
+    results << make_archived_hash(res)
+  end
+  return results
+end
+
+Default_page_generator = ->(board, request, params, index) do
+  "/" + board + "/?page=" + index.to_s
+end
+Archive_page_generator = ->(board, request, params, index) do
+  if board == "all" then
+    return "/archive/?page=" + index.to_s
+  end
+  "/archive/" + board + "/?page=" + index.to_s
+end
+Search_page_generator = ->(board, request, params, index) do
+  "/search_results/?page=" + index.to_s +
+    "&search_text=" + ERB::Util.url_encode(params[:search_text]) +
+    "&board_select=" + ERB::Util.url_encode(params[:board_select])
 end

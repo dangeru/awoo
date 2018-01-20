@@ -90,17 +90,7 @@
     <link rel="shortcut icon" href="/static/favicon.ico">
   </head>
   <body onLoad='ol();'>
-    <div id="boardcontainer">
-      <span class="boarda"><a href="/" style='display: inline-block;'><%= Config.get['title'] %></a> [</span>
-      <% Config.get['boards'].select do |key, val| session[:username] or not val["hidden"] end.each_with_index do |(key, array), index| %>
-        <a style='display: inline-block;' class="boarda" href="/<%= key %>"><%= key %></a>
-        <% minquota = 2 %>
-        <% minquota = 1 if session[:moderates] %>
-        <% unless index == Config.get['boards'].size - minquota %>
-          <span class="boarda"> / </span>
-        <% end %>
-      <% end %><span class="boarda">]</span>
-    </div><hr>
+    <%= erb :boardcontainer %>
     <div id="hover" style="display: none;"></div>
   <div id="sitecorner" style="text-align: center;">
     <a href="javascript:location.reload();"><img src="<%= banner %>" alt="danger/u/"></a>
@@ -201,19 +191,12 @@
     <div id="pagecount_container">
       <% page_clause = "" %>
       <% page_clause = "AND board = '#{con.escape(path)}'" if path != "all" %>
-      <% full_path = "/#{path}/" %>
-      <% if archive then %>
-        <% full_path = "/archive" + full_path %>
-        <% if path == "all" then %>
-          <% full_path = "/archive/" %>
-        <% end %>
-      <% end %>
       <% con.query("SELECT COUNT(*) AS count FROM posts WHERE parent IS NULL #{page_clause}").each do |res| %>
         <% max = ((res["count"]/20)+1) %>
         <% max = [page + 5, max].min %>
         <% min = [0, page - 5].max %>
         <% (min..max).each do |i| %>
-          <a href="<%= full_path %>?page=<%= i.to_s %>" id="pagecount"><%= (i + 1).to_s %></a>
+          <a href="<%= page_url_generator.call(path, request, params, i) %>" class="pagecount"><%= (i + 1).to_s %></a>
         <% end %>
       <% end %>
     </div>

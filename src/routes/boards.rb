@@ -137,7 +137,7 @@ module Sinatra
               else
                 ress = get_board(path, params, session, offset)
               end
-              erb :board, :locals => {:path => path, :config => Config.get, :con => con, :offset => offset, :banner => new_banner(path), :moderator => is_moderator(path, session), :session => session, :page => params[:page].to_i, :archive => false, :ress => ress}
+              erb :board, :locals => {:path => path, :config => Config.get, :con => con, :offset => offset, :banner => new_banner(path), :moderator => is_moderator(path, session), :session => session, :page => params[:page].to_i, :archive => false, :ress => ress, :page_url_generator => Default_page_generator, :request => request, :params => params}
             end
             app.get "/archive/" + path + "/?" do
               con = make_con()
@@ -149,7 +149,7 @@ module Sinatra
               if Config.get["boards"][path]["hidden"] and not session["username"] then
                 return [404, erb(:notfound)]
               end
-              erb :board, :locals => {:path => path, :config => Config.get, :con => con, :offset => offset, :banner => new_banner(path), :moderator => false, :session => Hash.new, :page => params[:page].to_i, :archive => true, :ress => get_archived_board(con, path, offset)}
+              erb :board, :locals => {:path => path, :config => Config.get, :con => con, :offset => offset, :banner => new_banner(path), :moderator => false, :session => Hash.new, :page => params[:page].to_i, :archive => true, :ress => get_archived_board(con, path, offset), :page_url_generator => pass(archive_page_generator), :request => request, :params => params}
             end
             app.get "/" + path + "/thread/:id" do |id|
               con = make_con()
@@ -223,7 +223,7 @@ module Sinatra
             else
               offset = params[:page].to_i * 20;
             end
-            erb :board, :locals => {:path => "all", :config => Config.get, :con => con, :offset => offset, :banner => new_banner("all"), :moderator => false, :session => Hash.new, :page => params[:page].to_i, :archive => true, :ress => get_all_archived(con, offset)}
+              erb :board, :locals => {:path => "all", :config => Config.get, :con => con, :offset => offset, :banner => new_banner("all"), :moderator => false, :session => Hash.new, :page => params[:page].to_i, :archive => true, :ress => get_all_archived(con, offset), :page_url_generator => Archive_page_generator, :request => request, :params => params}
           end
 
           # Route for moderators to delete a post (and all of its replies, if it's an OP)
@@ -488,6 +488,19 @@ module Sinatra
               return [400, "Moderator with username " + params[:mod] + " could not be found in config[\"janitors\"]"]
             end
             return [200, "OK"]
+          end
+          app.get "/search/?" do
+            erb :search, :locals => {:banner => new_banner("all")}
+          end
+          app.get "/search_results/?" do
+            con = make_con()
+            if not params[:page]
+              offset = 0;
+            else
+              offset = params[:page].to_i * 20;
+            end
+            ress = get_search_results(params, con, offset, session)
+            erb :board, :locals => {:path => params[:board_select], :config => Config.get, :con => con, :offset => offset, :banner => new_banner("all"), :moderator => is_moderator("all", session), :session => session, :page => params[:page].to_i, :archive => false, :ress => ress, :page_url_generator => Search_page_generator, :request => request, :params => params}
           end
         end
       end

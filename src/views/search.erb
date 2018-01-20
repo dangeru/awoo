@@ -1,0 +1,42 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>Search</title>
+    <script>
+      var ol = function ol() {
+        <%= mobile_js %>
+      }
+    </script>
+    <link rel="stylesheet" type="text/css" href="/static/dangeru.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="/static/favicon.ico">
+  </head>
+  <body onLoad='ol();' class="comment-styled">
+    <%= erb :boardcontainer %>
+    <div id="sitecorner" style="text-align: center;">
+      <a href="javascript:location.reload();"><img src="<%= banner %>" alt="danger/u/"></a>
+      <h1>Search</h1>
+      <hr />
+      <form action="/search_results" method="get" style="line-height: 1.2em;">
+        <label for="search_text">Keyword(s):</label>
+        <input type="text" id="search_text" name="search_text" class="text_input" />
+        <br />
+        <label for="board_select">Restrict to board:</label>
+        <% boards = Config.get["boards"].to_a.reject do |k| k[0] == "all" end %>
+        <% boards.select! do |k| session[:username] or not k[1]["hidden"] end %>
+        <% boards.map! do |k| [k[0], "/" + k[0] + "/ - " + k[1]["desc"]] end %>
+        <% boards.insert 0, ["all", "All Boards"] %>
+        <select id="board_select" name="board_select" class="text_input">
+          <% boards.each do |l| %>
+            <option value="<%= l[0] %>"><%= Sanitize.clean l[1] %></option>
+          <% end %>
+        </select>
+        <br />
+        <input type="submit" class="button_styled" />
+      </form>
+    </div>
+    <footer class="comment" style="font-size: xx-small; text-align: center;">
+      <%= Config.get["footer"] %>, <a href="https://github.com/dangeru/awoo/" style="font-size: x-small; display: inline-block;">Awoo <%= settings.awoo_version %></a>
+    </footer>
+  </body>
+</html>

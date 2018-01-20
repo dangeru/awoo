@@ -1,0 +1,12 @@
+    <div id="boardcontainer">
+      <span class="boarda"><a href="/" style='display: inline-block;'><%= Config.get['title'] %></a> [</span>
+      <% Config.get['boards'].select do |key, val| session[:username] or not val["hidden"] end.each_with_index do |(key, array), index| %>
+        <a style='display: inline-block;' class="boarda" href="/<%= key %>"><%= key %></a>
+        <% minquota = 2 %>
+        <% minquota = 1 if session[:moderates] %>
+        <% unless index == Config.get['boards'].size - minquota %>
+          <span class="boarda"> / </span>
+        <% end %>
+      <% end %><span class="boarda">]</span>
+    </div><hr>
+

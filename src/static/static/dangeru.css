@@ -72,7 +72,7 @@ div {
     margin: 0 auto;
     position: relative;
 }
-textarea, #draggable > form > input[type='text'] {
+textarea, #draggable > form > input[type='text'], .text_input {
     resize: none;
     background-color: #262626;
     color: white;
@@ -106,7 +106,7 @@ textarea, #draggable > form > input[type='text'] {
 #boardid {
     display: inline;
 }
-#pagecount {
+.pagecount {
     display: inline;
     font-size: smaller;
 }
