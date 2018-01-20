@@ -189,10 +189,11 @@
     <% end %>
 
     <div id="pagecount_container">
-      <% max = ((count/20)+1) %> <!-- TODO rethink this math -->
+      <% max = (count.to_f/20).ceil %>
+      <% max = 1 if max.zero? %>
       <% max = [page + 5, max].min %>
       <% min = [0, page - 5].max %>
-      <% (min..max).each do |i| %>
+      <% (min...max).each do |i| %>
         <a href="<%= page_url_generator.call(path, request, params, i) %>" class="pagecount"><%= (i + 1).to_s %></a>
       <% end %>
     </div>
