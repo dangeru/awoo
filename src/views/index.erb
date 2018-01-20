@@ -26,7 +26,14 @@
         -->
         <% Config.get['boards'].select do |key, val| session[:username] or not val["hidden"] end.each do |key, array| %>
           <a class="boarda comment-styled" href="/<%= key %>"><%= Config.get['boards'][key]['desc'] %></a>
-        <% end %><br>
+        <% end %><br />
+      </div>
+      <div class="comment-styled" style="margin: 20px;">
+        <% query(con, "SELECT (SELECT COUNT(*) FROM posts WHERE parent IS NULL) AS ops, (SELECT COUNT(*) FROM posts) AS total, (SELECT COUNT(*) FROM archived_posts) AS archived").each do |res| %>
+          Currently serving <span style="font-weight: bold;"><%= res["ops"] %></span>
+          threads bumped in the last 20 days, with <span style="font-weight: bold;"><%= res["total"] - res["ops"] %></span>
+          replies, as well as <span style="font-weight: bold;"><%= res["archived"] %></span> <a style="display: inline-block;" href="/archive">archived threads</a>.
+        <% end %>
       </div>
     </div>
     <div style="text-align: center;">

@@ -4,24 +4,23 @@
 # => (c) prefetcher & github commiters 2018
 #
 
-require 'sinatra/base'
 require 'sinatra/namespace'
+require 'sinatra/base'
 require 'json'
 
-require_relative 'routes/boards'
-require_relative 'routes/api'
-require_relative 'routes/errors'
 require_relative 'routes/vichan_compat'
 require_relative 'routes/thread_gc'
+require_relative 'routes/boards'
+require_relative 'routes/errors'
+require_relative 'routes/utils'
+require_relative 'routes/api'
 
 
 class Awoo < Sinatra::Base
+  attr_reader :instance
   def initialize
     super
     @instance = self
-  end
-  def instance
-    @instance
   end
   register Sinatra::Namespace
   register Sinatra::Awoo::Routing::Boards
@@ -42,6 +41,6 @@ class Awoo < Sinatra::Base
     headers "X-Loli-Provider" => "lolis.download"
   end
   get '/' do
-    erb :index
+    erb :index, :locals => {:con => make_con()}
   end
 end
