@@ -48,6 +48,11 @@
     document.getElementById("hover").style.top = e.clientY + 5 + "px";
     document.getElementById("hover").style.left = e.clientX + 5 + "px";
   }
+  var multiview_ol = function multiview_ol() {
+    Array.prototype.slice.call(document.getElementsByClassName("post_number"), 0).forEach(function(elem) {
+      elem.style.display = "inline-block";
+    })
+  }
 </script>
 <style>
 .redtext {
@@ -58,5 +63,8 @@
   z-index: 10;
   background-color: black;
   border: 2px solid gold;
+}
+.post_number {
+  font-size: 65%;
 }
 </style>

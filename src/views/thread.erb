@@ -22,9 +22,6 @@
   background-color: black;
   border: 2px solid gold;
 }
-.post_number {
-  font-size: 65%;
-}
 .id_link:hover {
   text-decoration: underline;
 }
@@ -107,9 +104,7 @@
               localStorage.setItem(window.board + ":" + window.id, total_number_of_posts.toString());
             }
             if (typeof(unitedPropertiesIf) == "undefined" || unitedPropertiesIf.getProperty("userscript").toUpperCase() == "TRUE") {
-              Array.prototype.slice.call(document.getElementsByClassName("post_number"), 0).forEach(function(elem) {
-                elem.style.display = "inline-block";
-              })
+              multiview_ol();
               Array.prototype.slice.call(document.getElementsByClassName("referencer")).forEach(function(elem) {
                 var refers_to = elem.getAttribute("data-refers-to");
                 var is = elem.getAttribute("data-is");
