@@ -46,6 +46,7 @@ def get_ip(request, env)
   if ip == "127.0.0.1"
     ip = env["HTTP_X_FORWARDED_FOR"]
   end
+  ip = "127.0.0.1" if ip.nil?
   return ip
 end
 
