@@ -25,7 +25,9 @@ def get_search_results(params, con, offset, session)
   end
   where_clause = "title LIKE ? " + exclude + " " + restrict
   make_query = ->(where_clause, for_count) do
-    cols = "post_id, title, board"
+    cols = %w(post_id title board)
+    #cols.map! do |c| c + " COLLATE utf8mb4_unicode_ci" end # This hack is only here because pref has a shit mysql server
+    cols = cols.join ", "
     cols = "COUNT(*) AS count" if for_count
     limit = "LIMIT 20 OFFSET #{offset}"
     limit = "" if for_count
