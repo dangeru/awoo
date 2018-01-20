@@ -55,12 +55,10 @@ module Sinatra
               content_type 'application/json'
               con = make_con()
               id = id.to_i.to_s
-              if does_thread_exist id, '', con then
-                return JSON.dump(make_metadata(con, id, session))
-              elsif does_archived_thread_exist id, nil, con then
+              if does_archived_thread_exist id, nil, con then
                 return JSON.dump(get_archived_thread_replies(id)[0])
               else
-                return [404, JSON.dump({:error => 404, :message => "Thread not found."})]
+                return JSON.dump(make_metadata(con, id, session))
               end
             end
             get "/thread/:id/replies" do |id|

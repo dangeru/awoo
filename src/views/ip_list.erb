@@ -20,6 +20,12 @@
       .redtext {
         display: inline-block;
       }
+      #hover {
+        position: fixed;
+        z-index: 10;
+        background-color: black;
+        border: 2px solid gold;
+      }
     </style>
     <script>
       $( function() {
@@ -43,8 +49,53 @@
       var select = function select(direct, parent, board) {
         window.location.href = "/" + board + "/thread/" + parent.toString() + "#comment-" + direct.toString();
       }
-      var hover = function() {};
-      var unhover = function() {};
+      post_cache = {};
+      global_key = null;
+      var retrieve = function retrieve(id, key, hovered, board) {
+        post_cache[key] = true;
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == 4) {
+              if (xhr.status != 200) {
+                alert("errno = -EINVAL; return;\n\n" + xhr.responseText)
+              }
+              post_cache[key] = JSON.parse(xhr.responseText)["comment"];
+              if (key == global_key) {
+                hover(id, hovered, board);
+              }
+            }
+        }
+        xhr.open("GET", "/api/v2/thread/" + id + "/metadata");
+        xhr.send();
+      }
+      var hover = function hover(id, hovered, board) {
+        if (typeof(unitedPropertiesIf) != "undefined") return; // don't show #hover on mobile
+        var key = board + ":" + id;
+        global_key = key;
+        if (key in post_cache) {
+          if (typeof(post_cache[key]) == "string") {
+            document.getElementById("hover").innerText = post_cache[key];
+          } else {
+            document.getElementById("hover").innerText = "Loading...";
+          }
+        } else {
+          document.getElementById("hover").innerText = "Loading...";
+          retrieve(id, key, hovered, board);
+        }
+        document.getElementById("hover").style.display = "inline-block";
+        var hovered_elem = document.getElementById("comment-" + hovered.toString())
+        hovered_elem.onmousemove = move;
+      }
+      var unhover = function unhover() {
+        global_key = null;
+        document.getElementById("hover").innerHTML = ""
+        document.getElementById("hover").style.display = "none";
+      }
+      var move = function move(e) {
+        document.getElementById("hover").style.top = e.clientY + 5 + "px";
+        document.getElementById("hover").style.left = e.clientX + 5 + "px";
+      }
+
     </script>
   </head>
   <body>
@@ -78,6 +129,7 @@
         </h3>
       <% end %>
       <%# We're actually left joining the table `posts` on itself here to get the title of the OP the comment is replying to, if there is one %>
+      <span id="hover" class="comment" style="display: none"></span>
       <% query(con, "SELECT posts.*, titles.title AS linked_title FROM posts LEFT JOIN posts titles ON posts.parent = titles.post_id WHERE posts.ip = ? AND posts.board IN #{boards}", addr).each do |res| %>
         <% if res["parent"] then %>
           <div class="comment">Reply to

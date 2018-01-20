@@ -88,10 +88,11 @@ end
 # takes an id, pulls the relevant bits from the database and delegates the creation of the object to make_metadata_from_hash
 def make_metadata(con, id, session)
   id = id.to_i.to_s;
-  result = [400, "No results found"]
+  result = nil
   query(con, "SELECT *, (SELECT COUNT(*) FROM posts WHERE parent = ?) + 1 AS number_of_replies FROM posts WHERE post_id = ?", id, id).each do |hash|
     result = make_metadata_from_hash(hash, session)
   end
+  return [400, "No results found"] if result.nil?
   if Config.get["boards"][result[:board]]["hidden"] and not session[:moderates] then
     return "You have no janitor permissions"
   end
