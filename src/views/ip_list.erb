@@ -11,9 +11,14 @@
     <link rel="shortcut icon" href="/static/favicon.ico">
     <script src="/static/common.js"></script>
     <style>
-      .entry {
+      .ip-note {
         border-left: 2px solid grey;
+      }
+      .entry {
         padding-left: 10px;
+      }
+      .redtext {
+        display: inline-block;
       }
     </style>
     <script>
@@ -35,7 +40,11 @@
         xhr.open("POST", route);
         xhr.send(data);
       }
-
+      var select = function select(direct, parent, board) {
+        window.location.href = "/" + board + "/thread/" + parent.toString() + "#comment-" + direct.toString();
+      }
+      var hover = function() {};
+      var unhover = function() {};
     </script>
   </head>
   <body>
@@ -44,7 +53,7 @@
     <div id="maincontainer" style="overflow: hidden; color: white; padding: 10px;">
       <div class="title" style="color: #ED145B;">Information for IP <%= Sanitize.clean(addr) %></div>
       <% if has_permission(session, "ban") %>
-        <form action="/ban/<%= addr %>" method="post" id="ban-form">
+        <form action="/ban/<%= addr %>" method="post" id="ban-form" style="display: inline-block;">
           <select id="board" name="board">
             <% session[:moderates].each do |board| %>
               <option value="<%= board %>"><%= board %></option>
@@ -80,12 +89,9 @@
           <div class="comment">OP with title <a style='display: inline-block;' href="/<%= res["board"] %>/thread/<%= res["post_id"] %>"><%= res["title"] %></a>
         <% end %>
           in /<%= res["board"] %>/ on <%= res["date_posted"].strftime '%c' %>.
-          <% if has_permission(session, "delete") %>
-            <i class="fa fa-trash" aria-hidden="true" onClick='deletePost(<%= res["post_id"] %>)'></i>
-          <% end %>
         </div>
         <div class="entry">
-          <div class="comment"><%= Sanitize.clean(res["content"]).gsub("\n", "<br />") %></div>
+          <%= erb :comment, :locals => {:board => res["board"], :res => make_metadata_from_hash(res, session), :moderator => true} %>
         </div>
         <br />
       <% end %>
@@ -100,7 +106,7 @@
             <% end %>
           </div>
         </div>
-        <div class="entry">
+        <div class="entry ip-note">
           <pre class="comment"><%= Sanitize.clean(res["content"]).gsub("\n", "<br />") %></pre>
         </div>
         <br />
