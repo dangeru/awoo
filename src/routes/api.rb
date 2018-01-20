@@ -73,6 +73,26 @@ module Sinatra
                 return [404, JSON.dump({:error => 404, :message => "Thread not found."})]
               end
             end
+            post "/search/?" do
+              con = make_con()
+              if not params[:page]
+                offset = 0;
+              else
+                offset = params[:page].to_i * 20;
+              end
+              (ress, _) = get_search_results(params, con, offset, session)
+              return JSON.dump(ress);
+            end
+            post "/advanced_search/?" do
+              con = make_con()
+              if not params[:page]
+                offset = 0;
+              else
+                offset = params[:page].to_i * 20;
+              end
+              (ress, _) = get_search_results(params, con, offset, session, true)
+              return JSON.dump(ress);
+            end
           end
         end
       end
