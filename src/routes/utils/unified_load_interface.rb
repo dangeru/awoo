@@ -80,11 +80,7 @@ def make_metadata_from_hash(res, session, override = false)
   if res["ip"].nil? then
     obj[:hash] = "FFFFFF";
   else
-    if is_op then
-      obj[:hash] = Digest::SHA256.hexdigest(res["ip"] + res["post_id"].to_s)[0..5]
-    else
-      obj[:hash] = Digest::SHA256.hexdigest(res["ip"] + res["parent"].to_s)[0..5]
-    end
+    obj[:hash] = make_hash(res["ip"], is_op ? res["post_id"] : res["parent"])
   end
   return obj;
 end
@@ -239,4 +235,6 @@ def archived_posts_count(con, board)
   end
   return count
 end
-
+def make_hash(ip, post_id)
+  return Digest::SHA256.hexdigest(ip + post_id.to_s)[0..5]
+end

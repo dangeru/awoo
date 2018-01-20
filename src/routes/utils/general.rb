@@ -41,7 +41,7 @@ def new_banner(board)
 end
 
 # this function tries to get the IP from the request, and if we're behind a reverse proxy it tries to get it from the environment variables
-def get_ip(con, request, env)
+def get_ip(request, env)
   ip = request.ip
   if ip == "127.0.0.1"
     ip = env["HTTP_X_FORWARDED_FOR"]

@@ -89,6 +89,7 @@
             }
             <%= mobile_js %>
             window.id = <%= id.to_i %>;
+            window.your_hash = <%= JSON.dump(your_hash); %>;
             <% if params[:watch] %>
               if (typeof(unitedPropertiesIf) != "undefined") {
                 try {

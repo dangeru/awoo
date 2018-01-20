@@ -33,7 +33,7 @@ module Sinatra
             title = params[:title]
             content = params[:comment]
             # Also pull the IP address from the request and check if it looks like spam
-            ip = get_ip(con, request, env);
+            ip = get_ip(request, env);
             if looks_like_spam(con, ip, env) then
               return [429, "Flood detected, post discarded"]
             elsif title.length > 180 or content.length > 500 then
@@ -79,7 +79,7 @@ module Sinatra
               return [431, "Reply too long (over 500 characters)"]
             end
             # Pull the IP address and check if it looks like spam
-            ip = get_ip(con, request, env);
+            ip = get_ip(request, env);
             if looks_like_spam(con, ip, env) then
               return [429, "Flood detected, post discarded"]
             end
@@ -157,7 +157,7 @@ module Sinatra
                 return [404, erb(:notfound)]
               end
               if does_thread_exist(id, path, con)
-                erb :thread, :locals => {:config => Config.get, :path => path, :id => id, :con => con, :banner => new_banner(path), :moderator => is_moderator(path, session), :session => session, :params => params, :replies => get_thread_replies(id.to_i.to_s, session, con), :archived => false}
+                erb :thread, :locals => {:config => Config.get, :path => path, :id => id, :con => con, :banner => new_banner(path), :moderator => is_moderator(path, session), :session => session, :params => params, :replies => get_thread_replies(id.to_i.to_s, session, con), :archived => false, :your_hash => make_hash(get_ip(request, env), id)}
               elsif does_archived_thread_exist(id, path, con)
                 erb :thread, :locals => {:config => Config.get, :path => path, :id => id, :con => con, :banner => new_banner(path), :moderator => false, :session => Hash.new, :params => Hash.new, :replies => get_archived_thread_replies(id.to_i), :archived => true}
               else
