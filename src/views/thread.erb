@@ -216,11 +216,11 @@
           <meta property="og:title" content="<%= Sanitize.clean(res[:title]) %> - /<%= res[:board] %>/">
           <meta property="og:description" content="<%= Sanitize.clean(res[:comment]) %>">
           <% if moderator and res[:sticky] and has_permission(session, "sticky") then %>
-            <form id="sticky-form" action="/sticky/<%= res[:post_id] %>" method="POST" style="color: white;">
-              Adjust Stickynes
-              <input type="number" name="stickyness" value="<%= res[:stickyness] %>" />
+            <form id="sticky-form" action="/sticky/<%= res[:post_id] %>" method="POST" class="comment-styled" style="display: inline-block;">
+              <label for="stickyness">Adjust Stickyness </label>
+              <input type="number" class="text_input" name="stickyness" style="width: 5em;" value="<%= res[:stickyness] %>" />
             </form>
-            <button onClick="submit_form(document.getElementById('sticky-form'), '/sticky/<%= res[:post_id] %>')">Submit</button>
+            <button class="button_styled" onClick="submit_form(document.getElementById('sticky-form'), '/sticky/<%= res[:post_id] %>')">Submit</button>
           <% end %>
         <% end %>
         <div class="comment" id="comment-<%= res[:post_id] %>">
