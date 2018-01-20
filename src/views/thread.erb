@@ -46,7 +46,10 @@
           var select = function select(id) {
             replace("#comment-" + id.toString()) // bugfix for webkit
             to_array(document.getElementsByClassName("selected")).forEach(function(elem) { elem.classList.toggle("selected"); })
-            document.getElementById("comment-" + id.toString()).classList.add("selected")
+            var comment = document.getElementById("comment-" + id.toString());
+            if (comment == null) return;
+            comment.classList.add("selected")
+            comment.scrollIntoView(true);
           }
           var select_id = function select_id(id) {
             replace("#id-" + id.toString()) // bugfix for webkit
