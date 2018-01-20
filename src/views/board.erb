@@ -188,15 +188,7 @@
       <br />
     <% end %>
 
-    <div id="pagecount_container">
-      <% max = (count.to_f/20).ceil %>
-      <% max = 1 if max.zero? %>
-      <% max = [page + 5, max].min %>
-      <% min = [0, page - 5].max %>
-      <% (min...max).each do |i| %>
-        <a href="<%= page_url_generator.call(path, request, params, i) %>" class="pagecount"><%= (i + 1).to_s %></a>
-      <% end %>
-    </div>
+    <%= erb :pagecounter, :locals => {:count => count, :page_url_generator => page_url_generator, :page => page, :path => path} %>
   </div>
   <footer class="comment" style="font-size: xx-small; text-align: center;">
     <%= Config.get["footer"] %>, <a href="https://github.com/dangeru/awoo/" style="font-size: x-small; display: inline-block;">Awoo <%= settings.awoo_version %></a>

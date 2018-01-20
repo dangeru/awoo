@@ -46,9 +46,10 @@ end
 # Makes an object for a thread's metadata from the given hash, used in the api's thread/:id/metadata route
 # used in get_board which is used in the API's board/:board route and also views/board.erb
 def make_metadata_from_hash(res, session, override = false)
-  is_op = res["parent"] == nil
+  is_op = res["title"] != nil
   # keys common to all posts (OPs and replies)
-  obj = {:post_id => res["post_id"], :board => res["board"], :is_op => is_op, :comment => res["content"], :date_posted => res["date_posted"].strftime('%s').to_i}
+  obj = {:post_id => res["post_id"], :board => res["board"], :is_op => is_op, :comment => res["content"]}
+  obj[:date_posted] = res["date_posted"] ? res["date_posted"].strftime('%s').to_i : 0;
   # Put ip in the object if the user has permission to see it
   if (is_moderator(res["board"], session) and has_permission(session, "view_ips")) or override then
     obj[:ip] = res["ip"]
@@ -60,10 +61,13 @@ def make_metadata_from_hash(res, session, override = false)
   # keys only applicable to OPs
   if is_op
     obj[:title] = res["title"]
-    obj[:last_bumped] = res["last_bumped"].strftime("%s").to_i;
+    obj[:last_bumped] = res["last_bumped"] ? res["last_bumped"].strftime("%s").to_i : 0;
     obj[:is_locked] = res["is_locked"] != 0
     obj[:number_of_replies] = res["number_of_replies"]
-    obj[:sticky] = res["sticky"] != 0
+    obj[:sticky] = res["sticky"] != 0 and not res["sticky"].nil?
+    if res["sticky"].nil? then
+      res["sticky"] = 0
+    end
     # technically stickyness is zero for all unstickied posts, but only send it if the post is stickied anyways
     if res["sticky"] > 0 then
       obj[:stickyness] = res["sticky"]
@@ -191,11 +195,7 @@ def make_archived_hash(res, board = nil)
   hash[:title] = res["title"]
   hash[:board] = board
   hash[:number_of_replies] = "?";
-  if board.nil?
-    hash[:board] = res["board"]
-  else
-    hash["board"] = board
-  end
+  hash[:board] = board ? board : res["board"]
   hash
 end
 def get_archived_board(con, board, offset)
@@ -239,3 +239,4 @@ def archived_posts_count(con, board)
   end
   return count
 end
+

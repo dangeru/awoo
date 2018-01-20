@@ -19,4 +19,8 @@ Search_page_generator = ->(board, request, params, index) do
     "&search_text=" + ERB::Util.url_encode(params[:search_text]) +
     "&board_select=" + ERB::Util.url_encode(params[:board_select])
 end
-
+Search_page_generator_advanced = ->(board, request, params, index) do
+  "/advanced_search_results/?page=" + index.to_s +
+    "&search_text=" + ERB::Util.url_encode(params[:search_text]) +
+    "&board_select=" + ERB::Util.url_encode(params[:board_select])
+end

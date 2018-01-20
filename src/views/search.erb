@@ -6,6 +6,11 @@
       var ol = function ol() {
         <%= mobile_js %>
       }
+      var toggle_advanced = function toggle_advanced() {
+        var advanced = document.getElementById("advanced").checked;
+        var action = advanced ? "/advanced_search_results" : "/search_results";
+        document.getElementById("the_form").action = action;
+      }
     </script>
     <link rel="stylesheet" type="text/css" href="/static/dangeru.css">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -17,7 +22,7 @@
       <a href="javascript:location.reload();"><img src="<%= banner %>" alt="danger/u/"></a>
       <h1>Search</h1>
       <hr />
-      <form action="/search_results" method="get" style="line-height: 1.2em;">
+      <form id="the_form" action="/search_results" method="get" style="line-height: 1.2em;">
         <label for="search_text">Keyword(s):</label>
         <input type="text" id="search_text" name="search_text" class="text_input" />
         <br />
@@ -31,6 +36,9 @@
             <option value="<%= l[0] %>"><%= Sanitize.clean l[1] %></option>
           <% end %>
         </select>
+        <br />
+        <label for="advanced">Search contents?</label>
+        <input type="checkbox" onChange="toggle_advanced();" id="advanced" name="advanced" />
         <br />
         <input type="submit" class="button_styled" />
       </form>

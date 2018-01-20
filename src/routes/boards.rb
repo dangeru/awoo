@@ -502,6 +502,16 @@ module Sinatra
             (ress, count) = get_search_results(params, con, offset, session)
             erb :board, :locals => {:path => params[:board_select], :config => Config.get, :con => con, :offset => offset, :banner => new_banner("all"), :moderator => is_moderator("all", session), :session => session, :page => params[:page].to_i, :archive => false, :ress => ress, :page_url_generator => Search_page_generator, :request => request, :params => params, :count => count}
           end
+          app.get "/advanced_search_results/?" do
+            con = make_con()
+            if not params[:page]
+              offset = 0;
+            else
+              offset = params[:page].to_i * 20;
+            end
+            (ress, count) = get_search_results(params, con, offset, session, true)
+            erb :advanced_search_results, :locals => {:ress => ress, :count => count, :page_url_generator => Search_page_generator_advanced, :page => params[:page].to_i}
+          end
         end
       end
     end
