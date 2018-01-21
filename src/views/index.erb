@@ -29,10 +29,14 @@
         <% end %><br />
       </div>
       <div class="comment-styled" style="margin: 20px;">
-        <% query(con, "SELECT (SELECT COUNT(*) FROM posts WHERE parent IS NULL) AS ops, (SELECT COUNT(*) FROM posts) AS total, (SELECT COUNT(*) FROM archived_posts) AS archived").each do |res| %>
+        <% query(con, "SELECT (SELECT COUNT(*) FROM posts WHERE parent IS NULL) AS ops, (SELECT COUNT(*) FROM posts) AS total, (SELECT COUNT(*) FROM archived_posts) AS archived, (SELECT COUNT(*) FROM posts WHERE board = ? AND content = ?) AS burg_burg, (SELECT COUNT(*) FROM posts WHERE board = ?) AS burg_total", "burg", "burg", "burg").each do |res| %>
           Currently serving <span style="font-weight: bold;"><%= res["ops"] %></span>
           threads bumped in the last 20 days, with <span style="font-weight: bold;"><%= res["total"] - res["ops"] %></span>
           replies, as well as <span style="font-weight: bold;"><%= res["archived"] %></span> <a style="display: inline-block;" href="/archive">archived threads</a>.
+          <br /><br />
+          There are <span style="font-weight: bold;"><%= res["burg_burg"] %></span>
+          burgs and <span style="font-weight: bold;"><%= res["burg_total"] - res["burg_burg"] %></span>
+          angry burgs.
         <% end %>
       </div>
     </div>
