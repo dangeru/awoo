@@ -5,78 +5,76 @@
     <% else %>
       <img class="burg" src="/static/angryburg.jpg" />
     <% end %>
-    <% i += 1 %>
-    </div> <%# close .comment div %>
-    <% next %>
-  <% end %>
-  <% if res[:capcode] %>
-    <div class="redtext">##<%= res[:capcode] %>##</div><br>
-  <% end %>
-  <% if moderator and has_permission(session, "delete") then %>
-    <i class="fa fa-trash offset-left" aria-hidden="true" onClick='deletePost(<%= res[:post_id] %>)'></i>
-  <% end %>
-  <% if moderator and has_permission(session, "view_ips") then %>
-    <a style="display: inline-block; font-size: 50%;" href="/ip/<%= res[:ip] %>"><%= res[:ip] %></a>
-  <% end %>
-  <span class="post_number" style="display: none;">Post number #<span class="id_link" onClick='document.getElementById("reply_box").value += ">><%= res[:post_id] %>"'><%= res[:post_id] %></span>, ID: <span class="hash" style="color: #<%= res[:hash] %>;" onClick="select_id(this.innerText)"><%= res[:hash] %></span></span><br />
-  |
-  <% res[:comment].split("\n").each do |line| %>
-    <% line = line.chomp %>
-    <%
-      consecutive = 1
-      j = 0
-      line.split(">").each do |x|
-        # If we haven't hit the first > yet, then display it normally (no red text)
-        if j == 0
-          %><%= Sanitize.clean(x) %><%
-        else
-          # If we've hit the second > in a row, and it's not immediately followed by a third >, it's a link to a thread
-          # either in the format >>1234 or >>/board/1234, where the first one must be in the current thread and the second
-          # one must be an OP on that board
-          if x.length > 0 and consecutive == 3
-            x_split = x.split(" ")
-            target = x_split[0].split("/")
-            if target.length == 1 then
-              # it's in the format >>1234
-              orig_target = target[0]
-              target[0] = target[0].to_i.to_s # sanitize so they don't inject javascriot
-              %><a class="redtext referencer" data-refers-to="<%= target[0] %>" data-is="<%= res[:post_id] %>" onMouseOver='hover(<%= target[0] %>, <%= res[:post_id] %>, <%= JSON.dump(board) %>)' onMouseOut="unhover()" onClick='select(<%= target[0] %>, <%= res[:parent] %>, <%= JSON.dump(board) %>)'>&gt;<%= Sanitize.clean(orig_target) %></a> <%= Sanitize.clean(x_split[1..(x_split.length - 1)].join(" ")) %></a><%
-            else
-              # it's in the format >>/board/1234, so extract `board` and `1234` and make the link
-              target_board = Sanitize.clean(target[1]).gsub("\"", "")
-              target_thread = target[2].to_i.to_s
-              href = "/" + target_board.to_s + "/thread/" + target_thread.to_s
-              %><a class="redtext" href="<%= href %>">&gt;<%= Sanitize.clean(x_split[0]) %></a> <%= Sanitize.clean(x_split[1..(x_split.length - 1)].join(" ")) %></a><%
-            end
-          elsif x.length > 0 and consecutive == 4 then
-            # If we've hit the third > in a row, and it's not immediately followed by a fourth >, it's a link to another board
-            # in the format >>/board/ or >>board
-            x_split = x.split(" ")
-            target_board_split = x_split[0].split("/")
-            # Assume >>/board/ at first
-            target_board = target_board_split[1]
-            if target_board_split.length == 1 then
-              # if there were no slashes in the first word, assume >>board
-              target_board = target_board_split[0]
-            end
-            # make the link
-            %><a class="redtext" href="/<%= target_board %>">&gt;<%= Sanitize.clean(x_split[0]) %></a> <%= Sanitize.clean(x_split[1..(x_split.length - 1)].join(" ")) %></a><%
+  <% else %>
+    <% if res[:capcode] %>
+      <div class="redtext">##<%= res[:capcode] %>##</div><br>
+    <% end %>
+    <% if moderator and has_permission(session, "delete") then %>
+      <i class="fa fa-trash offset-left" aria-hidden="true" onClick='deletePost(<%= res[:post_id] %>)'></i>
+    <% end %>
+    <% if moderator and has_permission(session, "view_ips") then %>
+      <a style="display: inline-block; font-size: 50%;" href="/ip/<%= res[:ip] %>"><%= res[:ip] %></a>
+    <% end %>
+    <span class="post_number" style="display: none;">Post number #<span class="id_link" onClick='document.getElementById("reply_box").value += ">><%= res[:post_id] %>"'><%= res[:post_id] %></span>, ID: <span class="hash" style="color: #<%= res[:hash] %>;" onClick="select_id(this.innerText)"><%= res[:hash] %></span></span><br />
+    |
+    <% res[:comment].split("\n").each do |line| %>
+      <% line = line.chomp %>
+      <%
+        consecutive = 1
+        j = 0
+        line.split(">").each do |x|
+          # If we haven't hit the first > yet, then display it normally (no red text)
+          if j == 0
+            %><%= Sanitize.clean(x) %><%
           else
-            # it's some other form of red text, just display it as red text
-            %><span class="redtext redtext-<%= consecutive %>">&gt;<%= Sanitize.clean(x) %></span><%
+            # If we've hit the second > in a row, and it's not immediately followed by a third >, it's a link to a thread
+            # either in the format >>1234 or >>/board/1234, where the first one must be in the current thread and the second
+            # one must be an OP on that board
+            if x.length > 0 and consecutive == 3
+              x_split = x.split(" ")
+              target = x_split[0].split("/")
+              if target.length == 1 then
+                # it's in the format >>1234
+                orig_target = target[0]
+                target[0] = target[0].to_i.to_s # sanitize so they don't inject javascriot
+                %><a class="redtext referencer" data-refers-to="<%= target[0] %>" data-is="<%= res[:post_id] %>" onMouseOver='hover(<%= target[0] %>, <%= res[:post_id] %>, <%= JSON.dump(board) %>)' onMouseOut="unhover()" onClick='select(<%= target[0] %>, <%= res[:parent] %>, <%= JSON.dump(board) %>)'>&gt;<%= Sanitize.clean(orig_target) %></a> <%= Sanitize.clean(x_split[1..(x_split.length - 1)].join(" ")) %></a><%
+              else
+                # it's in the format >>/board/1234, so extract `board` and `1234` and make the link
+                target_board = Sanitize.clean(target[1]).gsub("\"", "")
+                target_thread = target[2].to_i.to_s
+                href = "/" + target_board.to_s + "/thread/" + target_thread.to_s
+                %><a class="redtext" href="<%= href %>">&gt;<%= Sanitize.clean(x_split[0]) %></a> <%= Sanitize.clean(x_split[1..(x_split.length - 1)].join(" ")) %></a><%
+              end
+            elsif x.length > 0 and consecutive == 4 then
+              # If we've hit the third > in a row, and it's not immediately followed by a fourth >, it's a link to another board
+              # in the format >>/board/ or >>board
+              x_split = x.split(" ")
+              target_board_split = x_split[0].split("/")
+              # Assume >>/board/ at first
+              target_board = target_board_split[1]
+              if target_board_split.length == 1 then
+                # if there were no slashes in the first word, assume >>board
+                target_board = target_board_split[0]
+              end
+              # make the link
+              %><a class="redtext" href="/<%= target_board %>">&gt;<%= Sanitize.clean(x_split[0]) %></a> <%= Sanitize.clean(x_split[1..(x_split.length - 1)].join(" ")) %></a><%
+            else
+              # it's some other form of red text, just display it as red text
+              %><span class="redtext redtext-<%= consecutive %>">&gt;<%= Sanitize.clean(x) %></span><%
+            end
           end
+          # calculations for the number of consecutive > characters
+          if x.length == 0 then
+            consecutive += 1
+          else
+            consecutive = 2
+          end
+          # counter, largely unused now that I have the `consecutive` variable
+          j += 1
         end
-        # calculations for the number of consecutive > characters
-        if x.length == 0 then
-          consecutive += 1
-        else
-          consecutive = 2
-        end
-        # counter, largely unused now that I have the `consecutive` variable
-        j += 1
-      end
-    %>
-    <br />
+      %>
+      <br />
+    <% end %>
   <% end %>
 </div>
 <br />
