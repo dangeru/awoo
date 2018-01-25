@@ -93,6 +93,7 @@ def make_metadata(con, id, session)
     result = make_metadata_from_hash(hash, session)
   end
   return [400, "No results found"] if result.nil?
+  return [400, "Board does not exist"] if not Config.get["boards"].include? result[:board]
   if Config.get["boards"][result[:board]]["hidden"] and not session[:moderates] then
     return "You have no janitor permissions"
   end
