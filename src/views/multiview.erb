@@ -5,7 +5,7 @@
     <%= Sanitize.clean(res[:linked_title]) %>
   </a>
 <% else %>
-  <div class="comment">OP with title <a style='display: inline-block;' href="/<%= res[:board] %>/thread/<%= res[:post_id] %>"><%= res[:title] %></a>
+  <div class="comment">OP with title <a style='display: inline-block;' href="/<%= res[:board] %>/thread/<%= res[:post_id] %>"><%= Sanitize.clean res[:title] %></a>
 <% end %>
 in /<%= res[:board] %>/ on <%= (res[:date_posted] != 0) ? Time.at(res[:date_posted]).strftime('%c') : "???" %>.
 </div>
