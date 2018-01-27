@@ -515,6 +515,13 @@ module Sinatra
             (ress, count) = get_search_results(params, con, offset, session, true)
             erb :advanced_search_results, :locals => {:ress => ress, :count => count, :page_url_generator => Search_page_generator_advanced, :page => params[:page].to_i}
           end
+          app.after do
+            if (Random.rand * 100).round == 92 then
+              start = Time.new
+              100.times do GC.start end
+              puts "Garbage collection took #{1000 * (Time.new - start)}ms"
+            end
+          end
         end
       end
     end
