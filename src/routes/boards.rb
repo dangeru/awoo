@@ -481,6 +481,9 @@ module Sinatra
                 File.open("_watch", "w") do |f|
                   f.write(Random.rand.hash.to_s)
                 end
+                Process.kill 9, Process.pid # just to be safe
+                # if you set up rack to persist sessions over reboots, this will all be pointless
+                # because reseting a rouge janitor's password won't log out their existing sessions
                 break
               end
             end
