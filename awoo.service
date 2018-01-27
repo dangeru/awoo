@@ -11,3 +11,4 @@ User=awoo
 Group=awoo
 WorkingDirectory=/opt/awoo/src
 ExecStart=/usr/bin/env rerun -b -p _watch rackup
+Environment=RUBYOPT=-w

@@ -5,4 +5,4 @@
 #
 
 require_relative 'config.rb'
-%w(general moderation unified_load_interface search page_generators).each do |f| require_relative "utils/#{f}.rb" end
+%w(general moderation unified_load_interface search page_generators awoo_updater).each do |f| require_relative "utils/#{f}.rb" end
