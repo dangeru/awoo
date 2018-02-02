@@ -17,10 +17,10 @@
     </script>
   </head>
   <body onLoad='ol();'>
-    <a href="../../"><img src="/static/logo.png" alt="danger/u/" style="width: 395px; height: 130px;"></a>
+    <a href="../../"><img src="/static/logo.png" alt="danger/u/" class="header-unbound"></a>
     <br />
-    <div id="maincontainer" style="overflow: hidden; color: white; padding: 10px;">
-      <div class="title" style="color: #ED145B;">Search results</div>
+    <div id="maincontainer">
+      <div class="title">Search results</div>
       <%# We're actually left joining the table `posts` on itself here to get the title of the OP the comment is replying to, if there is one %>
       <span id="hover" class="comment" style="display: none"></span>
       <% ress.each do |res| %>
@@ -29,8 +29,8 @@
     </div>
     <%= erb :pagecounter, :locals => {:count => count, :page_url_generator => page_url_generator, :page => page, :path => "all"} %>
     </div>
-    <footer class="comment" style="font-size: xx-small; text-align: center;">
-      <%= Config.get["footer"] %>, <a href="https://github.com/dangeru/awoo/" style="font-size: x-small;">Awoo <%= settings.awoo_version %></a>
+    <footer class="comment-styled">
+      <%= Config.get["footer"] %>, <a href="https://github.com/dangeru/awoo/" class="footer">Awoo <%= settings.awoo_version %></a>
     </footer>
   </body>
 </HTML>

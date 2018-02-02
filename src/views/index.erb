@@ -13,14 +13,14 @@
     </script>
   </head>
   <body onLoad='ol()'>
-    <img src="static/logo.png" alt="danger/u/" style="width: 395px; height: 130px;">
-    <div style="text-align: center;">
+    <img src="static/logo.png" alt="danger/u/" id="header" class="header-unbound">
+    <div id="index-news">
       <span class="comment">Latest news:</span>
       <span class="redtext">02/09/17: we switched to Awoo! The new app is finally up too!</span>
     </div>
     <br>
-    <div id="maincontainer" style="overflow: hidden;">
-      <div style="margin: 20px; line-height: 1.5; columns: 2;">
+    <div id="maincontainer">
+      <div id="index-boards">
         <!--
         <span class="redtext" style="text-decoration: underline;">General</span>
         -->
@@ -28,7 +28,7 @@
           <a class="boarda comment-styled" href="/<%= key %>"><%= Config.get['boards'][key]['desc'] %></a>
         <% end %><br />
       </div>
-      <div class="comment-styled" style="margin: 20px;">
+      <div class="comment-styled boarda-margin">
         <% query(con, "SELECT (SELECT COUNT(*) FROM posts WHERE parent IS NULL) AS ops, (SELECT COUNT(*) FROM posts) AS total, (SELECT COUNT(*) FROM archived_posts) AS archived, (SELECT COUNT(*) FROM posts WHERE board = ? AND content = ?) AS burg_burg, (SELECT COUNT(*) FROM posts WHERE board = ?) AS burg_total", "burg", "burg", "burg").each do |res| %>
           Currently serving <span style="font-weight: bold;"><%= res["ops"] %></span>
           threads bumped in the last 20 days, with <span style="font-weight: bold;"><%= res["total"] - res["ops"] %></span>
@@ -42,10 +42,8 @@
         <% end %>
       </div>
     </div>
-    <div style="text-align: center;">
-    </div><br>
-    <footer class="comment" style="font-size: xx-small; text-align: center;">
-      <%= Config.get["footer"] %>, <a href="https://github.com/dangeru/awoo/" style="font-size: x-small; display: inline-block;">Awoo <%= settings.awoo_version %></a>
+    <footer class="comment">
+      <%= Config.get["footer"] %>, <a href="https://github.com/dangeru/awoo/" class="footer">Awoo <%= settings.awoo_version %></a>
     </footer>
   </body>
 </HTML>

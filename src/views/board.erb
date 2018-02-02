@@ -8,7 +8,7 @@
       height: auto;
       padding: 0.5em;
       background-color: black;
-      border: 1px solid /* black */ white;
+      border: 1px solid white;
       text-align: center;
       color: white;
     }
@@ -96,7 +96,7 @@
     <a href="javascript:location.reload();"><img src="<%= banner %>" alt="danger/u/"></a>
     <div id="boardtitle">/<%= Config.get['boards'][path]['name'] %>/ - <%= Config.get['boards'][path]['desc'] %></div>
     <% hide_newthread = "onClick='newThread()'" %>
-    <% hide_newthread = "style='color: #ED145B;'" if archive %>
+    <% hide_newthread = "style='color: #ED145B;'" if archive %> <!-- TODO refactor into class so it can be themed -->
     <% newthread_text = "Start a new thread" %>
     <% newthread_text = "Archive" if archive %>
     <span <%= hide_newthread %> id="newthread"><%= newthread_text %></span>
@@ -119,11 +119,11 @@
           <% end %>
           <% if path == "burg" %>
             <input style='display: none;' type='text' name='title' id='title' value='burg' />
-            <input type="radio" value="burg" id="burg" name="comment" /><label style="color: white" for="burg">burg</label><br />
+            <input type="radio" value="burg" id="burg" name="comment" /><label class="comment-styled" for="burg">burg</label><br />
             <!-- js fixes -->
             <input type="text" id="comment" style="display: none" /><span style="display: none;" id="wordcount"></span>
             <!-- end js fixes -->
-            <input type="radio" value="angry burg" id="angry_burg" name="comment" /><label style="color: white" for="angry_burg">angry burg</label><br />
+            <input type="radio" value="angry burg" id="angry_burg" name="comment" /><label class="comment-styled" for="angry_burg">angry burg</label><br />
           <% else %>
             <div class="comment">Title</div>
             <input type="text" name="title" id="title" placeholder="Title" />
@@ -137,7 +137,7 @@
             <% end %>
             <div id="wordcount" class="comment" style="float: left;">0/500</div><br />
           <% end %>
-          <input type="submit" id="submit" name="submit" class="button_styled" value="Send" style="float: right; height: 20px; line-height:0;" /><br />
+          <input type="submit" id="submit" name="submit" class="button_styled" value="Send" /><br />
         </form>
       <% end %>
     </div>
@@ -157,7 +157,7 @@
       <% if path == "burg" then res[:title] = "burg" end %>
       <a style="display: inline-block;" data-replies="<%= res[:number_of_replies] %>" href="/<%= res[:board] %>/thread/<%= res[:post_id] %>" class="<%= classes.join(" ") %>">
         <% if path == "all" then %>
-          <span style="color: grey;">/<%= res[:board] %>/</span>
+          <span style="all_extra_board">/<%= res[:board] %>/</span>
         <% end %>
         <%= Sanitize.clean(res[:title]) %>
       </a>
@@ -190,8 +190,8 @@
 
     <%= erb :pagecounter, :locals => {:count => count, :page_url_generator => page_url_generator, :page => page, :path => path} %>
   </div>
-  <footer class="comment" style="font-size: xx-small; text-align: center;">
-    <%= Config.get["footer"] %>, <a href="https://github.com/dangeru/awoo/" style="font-size: x-small; display: inline-block;">Awoo <%= settings.awoo_version %></a>
+  <footer class="comment">
+    <%= Config.get["footer"] %>, <a href="https://github.com/dangeru/awoo/" class="footer">Awoo <%= settings.awoo_version %></a>
   </footer>
   </body>
 </html>

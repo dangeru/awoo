@@ -7,20 +7,20 @@
     <link rel="shortcut icon" href="static/favicon.ico">
   </head>
   <body>
-    <a href="/"><img src="/static/logo.png" alt="danger/u/" style="width: 395px; height: 130px;"></a>
+    <a href="/"><img src="/static/logo.png" alt="danger/u/" id="header"></a>
     <br />
-    <div id="maincontainer" style="overflow: hidden; color: white; padding: 10px;">
-      <div class="title" style="color: #ED145B;">Showing Global Ban List</div>
+    <div id="maincontainer">
+      <div class="title" class="red">Showing Global Ban List</div>
       <br>
       <% query(con, "SELECT * FROM bans WHERE date_of_unban > CURRENT_TIMESTAMP()").each do |res| %>
-        <div class="comment">IP: <a href="/ip/<%= Sanitize.clean(res["ip"])%>" style="text-align: left; display: inline-block;"><span class="redtext"><%= Sanitize.clean(res["ip"])%></span></a></div>
+        <div class="comment">IP: <a href="/ip/<%= Sanitize.clean(res["ip"])%>" style="display: inline-block;" class-"red"><%= Sanitize.clean(res["ip"])%></a></div>
         <div class="comment">Got banned from board <span class="redtext">/<%= Sanitize.clean(res["board"])%>/</span>, for reason: <span class="redtext"><%= Sanitize.clean(res["reason"])%></span></div>
         <div class="comment">The date of unban will be on: <span class="redtext"><%= Sanitize.clean(res["date_of_unban"])%></span></div>
         <hr />
       <% end %>
     </div>
-    <footer class="comment" style="font-size: xx-small; text-align: center;">
-      <%= config["footer"] %>, <a href="https://github.com/dangeru/awoo/" style="font-size: x-small;">Awoo <%= settings.awoo_version %></a>
+    <footer class="comment">
+      <%= config["footer"] %>, <a href="https://github.com/dangeru/awoo/" class="footer">Awoo <%= settings.awoo_version %></a>
     </footer>
   </body>
 </html>

@@ -8,18 +8,13 @@
     <meta property="og:url" content="http://<%= Config.get['hostname']%>/">
     <meta property="og:title" content="404">
     <meta property="og:description" content="Not found.">
-    <style>
-      .redtext:hover {
-        text-decoration: underline;
-      }
-    </style>
   </head>
   <body>
     <div id="sitecorner">
       <a href="/"><img src="/static/logo.png"></a>
       <div id="title" style="text-align: center;">404 - Not Found</div>
       <img src="/static/dorothycry.gif" alt="Picture of crying Dorothy">
-      <div class="comment" style="text-align: center;">Maybe you should <span class="redtext" onClick="history.go(-1)">go back</span> ?</div>
+      <div class="comment" style="text-align: center;">Maybe you should <span class="a-like" onClick="history.go(-1)">go back</span> ?</div>
     </div>
   </body>
 </html>

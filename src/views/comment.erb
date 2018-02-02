@@ -15,7 +15,7 @@
     <% if moderator and has_permission(session, "view_ips") then %>
       <a style="display: inline-block; font-size: 50%;" href="/ip/<%= res[:ip] %>"><%= res[:ip] %></a>
     <% end %>
-    <span class="post_number" style="display: none;">Post number #<span class="id_link" onClick='document.getElementById("reply_box").value += ">><%= res[:post_id] %>"'><%= res[:post_id] %></span>, ID: <span class="hash" style="color: #<%= res[:hash] %>;" onClick="select_id(this.innerText)"><%= res[:hash] %></span></span><br />
+    <span class="post_number" style="display: none;">Post number #<span class="id_link a-like" onClick='document.getElementById("reply_box").value += ">><%= res[:post_id] %>"'><%= res[:post_id] %></span>, ID: <span class="hash" style="color: #<%= res[:hash] %>;" onClick="select_id(this.innerText)"><%= res[:hash] %></span></span><br />
     |
     <% res[:comment].split("\n").each do |line| %>
       <% line = line.chomp %>

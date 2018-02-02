@@ -41,10 +41,10 @@
     </script>
   </head>
   <body>
-    <a href="../../"><img src="/static/logo.png" alt="danger/u/" style="width: 395px; height: 130px;"></a>
+    <a href="../../"><img src="/static/logo.png" alt="danger/u/" id="header" class="header-unbound"></a>
     <br />
-    <div id="maincontainer" style="overflow: hidden; color: white; padding: 10px;">
-      <div class="title" style="color: #ED145B;">Information for IP <%= Sanitize.clean(addr) %></div>
+    <div id="maincontainer">
+      <div class="title" class="red">Information for IP <%= Sanitize.clean(addr) %></div>
       <% if has_permission(session, "ban") %>
         <form action="/ban/<%= addr %>" method="post" id="ban-form" style="display: inline-block;">
           <select id="board" name="board">
@@ -79,7 +79,7 @@
       end.each do |res| %>
         <%= erb :multiview, :locals => {:board => res[:board], :res => res, :moderator => true} %>
       <% end %>
-      <div class="title" style="color: #ED145B;">IP Notes</div>
+      <div class="title" class="red">IP Notes</div>
       <% query(con, "SELECT content, created, actor FROM ip_notes WHERE ip = ? ORDER BY created", addr).each do |res| %>
         <div style="font-size: 50%;">
           <div class="comment">
@@ -99,10 +99,10 @@
         <textarea name="content" placeholder="New note for this IP"></textarea>
         <br />
       </form>
-      <button onClick="submit_form(document.getElementById('ip-note-form'), '/ip_note/<%= Sanitize.clean(addr) %>')">Submit</button>
+      <button onClick="submit_form(document.getElementById('ip-note-form'), '/ip_note/<%= Sanitize.clean(addr) %>')" class="special_styled">Submit</button>
     </div>
-    <footer class="comment" style="font-size: xx-small; text-align: center;">
-      <%= Config.get["footer"] %>, <a href="https://github.com/dangeru/awoo/" style="font-size: x-small;">Awoo <%= settings.awoo_version %></a>
+    <footer class="comment">
+      <%= Config.get["footer"] %>, <a href="https://github.com/dangeru/awoo/" class="footer">Awoo <%= settings.awoo_version %></a>
     </footer>
   </body>
 </HTML>

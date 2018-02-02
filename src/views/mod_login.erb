@@ -35,12 +35,12 @@
         <div class="redtext">[Username: <input type="text" name="username" id="username" placeholder="Username" class="special_styled"/>]</div>
         <div class="redtext">[Password: <input type="password" name="password" id="password" placeholder="Password" class="special_styled"/>]</div>
         <br />
-        <input type="submit" name="submit" class="special_styled" id="submit" value="Send" />
+        <input type="submit" name="submit" class="special_styled" value="Send" />
       </form>
       <br />
     </div>
-    <footer class="comment" style="font-size: xx-small; text-align: center;">
-      <%= Config.get["footer"] %>, <a href="https://github.com/dangeru/awoo/" style="font-size: x-small;">Awoo <%= settings.awoo_version %></a>
+    <footer class="comment">
+      <%= Config.get["footer"] %>, <a href="https://github.com/dangeru/awoo/" class="footer">Awoo <%= settings.awoo_version %></a>
     </footer>
   </body>
 </HTML>

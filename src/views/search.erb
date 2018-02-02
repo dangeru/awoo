@@ -22,7 +22,7 @@
       <a href="javascript:location.reload();"><img src="<%= banner %>" alt="danger/u/"></a>
       <h1>Search</h1>
       <hr />
-      <form id="the_form" action="/search_results" method="get" style="line-height: 1.2em;">
+      <form id="the_form" action="/search_results" method="get" class="search-form">
         <label for="search_text">Keyword(s):</label>
         <input type="text" id="search_text" name="search_text" class="text_input" />
         <br />
@@ -43,8 +43,8 @@
         <input type="submit" class="button_styled" />
       </form>
     </div>
-    <footer class="comment" style="font-size: xx-small; text-align: center;">
-      <%= Config.get["footer"] %>, <a href="https://github.com/dangeru/awoo/" style="font-size: x-small; display: inline-block;">Awoo <%= settings.awoo_version %></a>
+    <footer class="comment">
+      <%= Config.get["footer"] %>, <a href="https://github.com/dangeru/awoo/" class="footer">Awoo <%= settings.awoo_version %></a>
     </footer>
   </body>
 </html>
