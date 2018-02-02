@@ -70,7 +70,33 @@
             document.getElementById("hover").style.top = e.clientY + 5 + "px";
             document.getElementById("hover").style.left = e.clientX + 5 + "px";
           }
+          var fetch_number = function fetch_number() {
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == 4) {
+                  if (xhr.status != 200) {
+                    return; // silently ignore the error, maybe the thread was deleted or they disconnected from wifi
+                  }
+                  try {
+                    var new_num = JSON.parse(xhr.responseText)["number_of_replies"]
+                    if (total_number_of_posts == null) {
+                      total_number_of_posts = new_num;
+                      return;
+                    }
+                    if (new_num > total_number_of_posts) {
+                      if (confirm("New replies detected - reload?")) window.location.reload();
+                      total_number_of_posts = new_num; // do not prompt twice (unless there are EVEN MORE replies)
+                    }
+                  } catch (e) {
+                    console.log(e);
+                  }
+                }
+            }
+            xhr.open("GET", "/api/v2/thread/" + window.id.toString() + "/metadata");
+            xhr.send();
+          }
           var ol = function ol() {
+            setInterval(fetch_number, 60000); // 60 seconds
             try {
               if (window.location.hash.indexOf("comment-") == 1) {
                 select(window.location.hash.split("comment-")[1]);
