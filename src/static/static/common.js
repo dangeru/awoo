@@ -24,7 +24,13 @@ var doWordcount = function doWordcount(comment_id) {
 		var len = (comment.value.length * 1.03) | 0;
 		var wc = document.getElementById("wordcount");
 		var submit = document.getElementById("submit");
-		wc.style.color = len > 500 ? "red" : "white";
+		if (len > 500) {
+			wc.classList.add("red");
+			wc.classList.remove("comment-styled");
+		} else {
+			wc.classList.remove("red");
+			wc.classList.add("comment-styled");
+		}
 		if (submit != null) {
 			submit.disabled = len > 500 ? true : false;
 			submit.className = len > 500 ? "special_styled" : "button_styled";
