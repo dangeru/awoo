@@ -7,7 +7,7 @@
     <% end %>
   <% else %>
     <% if res[:capcode] %>
-      <div class="redtext">##<%= res[:capcode] %>##</div><br>
+      <div class="redtext">##<%= res[:capcode] %>##</div>
     <% end %>
     <% if moderator and has_permission(session, "delete") then %>
       <i class="fa fa-trash offset-left" aria-hidden="true" onClick='deletePost(<%= res[:post_id] %>)'></i>
