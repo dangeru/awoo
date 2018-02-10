@@ -246,7 +246,7 @@ hr {
   color: #ED145B;
 }
 footer, .footer {
-  font-size: xx-small;
+  font-size: xx-small !important; /* to override comment-styled which sets 18px */
   text-align: center;
 }
 a.footer {
