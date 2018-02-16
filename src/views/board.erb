@@ -157,7 +157,7 @@
       <% if path == "burg" then res[:title] = "burg" end %>
       <a style="display: inline-block;" data-replies="<%= res[:number_of_replies] %>" href="/<%= res[:board] %>/thread/<%= res[:post_id] %>" class="<%= classes.join(" ") %>">
         <% if path == "all" then %>
-          <span style="all_extra_board">/<%= res[:board] %>/</span>
+          <span class="all_extra_board">/<%= res[:board] %>/</span>
         <% end %>
         <%= Sanitize.clean(res[:title]) %>
       </a>
