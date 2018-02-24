@@ -43,10 +43,11 @@ def get_search_results(params, con, offset, session, advanced = false)
     #second_only_clause = advanced ? "(" : "";
     advanced_cols = (advanced and not for_count) ? ", content, parent, ip, date_posted, janitor" : ""
     advanced_hack = (advanced and not for_count) ? ", NULL AS content, NULL as parent, NULL as ip, NULL as date_posted, NULL as janitor" : ""
-    query = "SELECT #{cols}#{advanced_cols} FROM posts WHERE #{first_only_where_clause} #{where_clause}"
+    # TODO get number of posts correctly
+    query = "SELECT (SELECT COUNT(*) FROM posts p WHERE posts.post_id = p.post_id OR p.parent = posts.post_id) AS number_of_replies, #{cols}#{advanced_cols} FROM posts WHERE #{first_only_where_clause} #{where_clause}"
     query += " UNION ALL "
-    query += "SELECT #{cols}#{advanced_hack} FROM archived_posts WHERE (#{where_clause} #{limit}"
-    query
+    query += "SELECT number_of_posts AS number_of_replies, #{cols}#{advanced_hack} FROM archived_posts WHERE (#{where_clause} #{limit}"
+    return query
   end
   first_only_where_clause = advanced ? "(content LIKE ? OR " : "("
   first_query = make_query.call where_clause, false, first_only_where_clause
@@ -58,7 +59,7 @@ def get_search_results(params, con, offset, session, advanced = false)
   args.insert(0, args[0]) if advanced
   puts first_query, args.join(",")
   query(con, first_query, *args).each do |res|
-    results << make_metadata_from_hash(res, session)
+    results << make_metadata_from_hash(res, session).tap do |x| x[:is_locked] = false end
   end
   if not results.empty?
     q = make_query.call where_clause, true, first_only_where_clause
@@ -94,7 +95,7 @@ def get_search_results(params, con, offset, session, advanced = false)
   second_query = make_query.call where_clause, false, first_only_where_clause
   puts second_query, args.join(",")
   query(con, second_query, *args).each do |res|
-    results << make_metadata_from_hash(res, session)
+    results << make_metadata_from_hash(res, session).tap do |x| x[:is_locked] = false end
   end
   add_all_linked_titles(results, con) if advanced
   return [results, results.length] if results.length < 20

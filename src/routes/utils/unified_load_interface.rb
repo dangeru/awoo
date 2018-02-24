@@ -191,20 +191,20 @@ def make_archived_hash(res, board = nil)
   hash[:post_id] = res["post_id"]
   hash[:title] = res["title"]
   hash[:board] = board
-  hash[:number_of_replies] = "?";
+  hash[:number_of_replies] = res["number_of_posts"]
   hash[:board] = board ? board : res["board"]
   hash
 end
 def get_archived_board(con, board, offset)
   arr = []
-  query(con, "SELECT post_id, title FROM archived_posts WHERE board = ? ORDER BY post_id DESC LIMIT 20 OFFSET #{offset.to_s}", board).each do |res|
+  query(con, "SELECT post_id, title, number_of_posts FROM archived_posts WHERE board = ? ORDER BY post_id DESC LIMIT 20 OFFSET #{offset.to_s}", board).each do |res|
     arr.push make_archived_hash(res, board)
   end
   arr
 end
 def get_all_archived(con, offset)
   arr = []
-  query(con, "SELECT post_id, title, board FROM archived_posts ORDER BY post_id DESC LIMIT 20 OFFSET #{offset.to_s}").each do |res|
+  query(con, "SELECT post_id, title, board, number_of_posts FROM archived_posts ORDER BY post_id DESC LIMIT 20 OFFSET #{offset.to_s}").each do |res|
     arr.push make_archived_hash(res)
   end
   arr

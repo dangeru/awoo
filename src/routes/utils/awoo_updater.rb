@@ -12,7 +12,21 @@ CREATE TABLE IF NOT EXISTS archived_posts (
     con.query "ALTER TABLE posts DEFAULT CHARACTER SET 'utf8mb4';"
     con.query "ALTER TABLE archived_posts CONVERT TO CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci';"
     con.query "ALTER TABLE posts CONVERT TO CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci';"
+    con.query "ALTER TABLE archived_posts ;"
+    begin
+      con.query "alter table archived_posts add column burg_total int;"
+    rescue
+    end
+    begin
+      con.query "alter table archived_posts add column burg_burg int;"
+    rescue
+    end
+    begin
+      con.query "alter table archived_posts add column number_of_posts int;"
+    rescue
+    end
     con.query "SET sql_notes = 1;"
+    query(con, "UPDATE archived_posts SET burg_total = ?, burg_burg = ? WHERE board != ?", 0, 0, "burg")
   end
   def self.userscript_pull()
     system("git -C #{File.dirname(__FILE__) + "/../../static/static/awoo-catalog"} pull")
