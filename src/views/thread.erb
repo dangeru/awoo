@@ -70,6 +70,32 @@
             document.getElementById("hover").style.top = e.clientY + 5 + "px";
             document.getElementById("hover").style.left = e.clientX + 5 + "px";
           }
+          var confirm_reload = function confirm_reload() {
+            var span = document.createElement("span");
+            span.style.backgroundColor = "black";
+            span.style.border = "4px solid #ED145B";
+            span.style.padding = "6px";
+            span.style.position = "fixed";
+            span.style.top = "10%";
+            span.style.right = "10%";
+            span.style.color = "#ED145B";
+            span.style.fontSize = "1.5em";
+            span.appendChild(document.createTextNode("New replies detected - reload?"));
+            span.appendChild(document.createElement("br"));
+            var yes = document.createElement("button");
+            yes.innerText = "Yes";
+            yes.addEventListener("click", function() {
+              window.location.reload();
+            });
+            var no = document.createElement("button");
+            no.innerText = "No";
+            no.addEventListener("click", function() {
+              span.outerHTML = "";
+            });
+            span.appendChild(no);
+            span.appendChild(yes);
+            document.body.appendChild(span);
+          }
           var fetch_number = function fetch_number() {
             var xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function() {
@@ -84,7 +110,7 @@
                       return;
                     }
                     if (new_num > total_number_of_posts) {
-                      if (confirm("New replies detected - reload?")) window.location.reload();
+                      confirm_reload();
                       total_number_of_posts = new_num; // do not prompt twice (unless there are EVEN MORE replies)
                     }
                   } catch (e) {
