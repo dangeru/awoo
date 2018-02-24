@@ -40,10 +40,8 @@ def get_search_results(params, con, offset, session, advanced = false)
     cols = "COUNT(*) AS count" if for_count
     limit = "LIMIT 20 OFFSET #{offset}"
     limit = "" if for_count
-    #second_only_clause = advanced ? "(" : "";
     advanced_cols = (advanced and not for_count) ? ", content, parent, ip, date_posted, janitor" : ""
     advanced_hack = (advanced and not for_count) ? ", NULL AS content, NULL as parent, NULL as ip, NULL as date_posted, NULL as janitor" : ""
-    # TODO get number of posts correctly
     query = "SELECT (SELECT COUNT(*) FROM posts p WHERE posts.post_id = p.post_id OR p.parent = posts.post_id) AS number_of_replies, #{cols}#{advanced_cols} FROM posts WHERE #{first_only_where_clause} #{where_clause}"
     query += " UNION ALL "
     query += "SELECT number_of_posts AS number_of_replies, #{cols}#{advanced_hack} FROM archived_posts WHERE (#{where_clause} #{limit}"
@@ -104,6 +102,5 @@ def get_search_results(params, con, offset, session, advanced = false)
   query(con, q, *args).each do |res|
     count = res["count"]
   end
-  add_all_linked_titles(results, con) if advanced
   return [results, count]
 end

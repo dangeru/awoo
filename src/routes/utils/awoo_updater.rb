@@ -12,7 +12,6 @@ CREATE TABLE IF NOT EXISTS archived_posts (
     con.query "ALTER TABLE posts DEFAULT CHARACTER SET 'utf8mb4';"
     con.query "ALTER TABLE archived_posts CONVERT TO CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci';"
     con.query "ALTER TABLE posts CONVERT TO CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci';"
-    con.query "ALTER TABLE archived_posts ;"
     begin
       con.query "alter table archived_posts add column burg_total int;"
     rescue
