@@ -29,10 +29,12 @@
         <% end %><br />
       </div>
       <div class="comment-styled boarda-margin">
-        <% query(con, "SELECT (SELECT COUNT(*) FROM posts WHERE parent IS NULL) AS ops, (SELECT COUNT(*) FROM posts) AS total, (SELECT COUNT(*) FROM archived_posts) AS archived, (SELECT COUNT(*) FROM posts WHERE board = ? AND content = ?) + (SELECT SUM(COALESCE(burg_burg, 0)) FROM archived_posts) AS burg_burg, (SELECT COUNT(*) FROM posts WHERE board = ?) + (SELECT SUM(COALESCE(burg_total, 0)) FROM archived_posts) AS burg_total", "burg", "burg", "burg").each do |res| %>
+        <% query(con, "SELECT (SELECT COUNT(*) FROM posts WHERE parent IS NULL) AS ops, (SELECT COUNT(*) FROM posts) AS total, (SELECT COUNT(*) FROM archived_posts) AS archived, (SELECT SUM(number_of_posts) FROM archived_posts) AS archived_posts, (SELECT COUNT(*) FROM posts WHERE board = ? AND content = ?) + (SELECT SUM(COALESCE(burg_burg, 0)) FROM archived_posts) AS burg_burg, (SELECT COUNT(*) FROM posts WHERE board = ?) + (SELECT SUM(COALESCE(burg_total, 0)) FROM archived_posts) AS burg_total", "burg", "burg", "burg").each do |res| %>
           Currently serving <span style="font-weight: bold;"><%= res["ops"] %></span>
           threads bumped in the last 20 days, with <span style="font-weight: bold;"><%= res["total"] - res["ops"] %></span>
-          replies, as well as <span style="font-weight: bold;"><%= res["archived"] %></span> <a style="display: inline-block;" href="/archive">archived threads</a>.
+          replies, as well as <span style="font-weight: bold;"><%= res["archived"] %></span> <a style="display: inline-block;" href="/archive">archived threads</a>
+          and <span style="font-weight: bold;"><%= (res["archived_posts"] - res["archived"]).to_i %></span>
+          archived replies.
           <br /><br />
           <a class="boarda comment-styled" href="/search">Search for posts</a>
           <br />
