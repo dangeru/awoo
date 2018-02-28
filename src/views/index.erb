@@ -11,6 +11,17 @@
         <%= mobile_js %>
       }
     </script>
+    <style>
+      .index-links > a {
+        font-size: 18px;
+        border-bottom: 1px solid #404040;
+        display: inline-block;
+      }
+      .index-links > a:hover {
+        border-bottom: 1px solid white;
+        text-decoration: none;
+      }
+    </style>
   </head>
   <body onLoad='ol()'>
     <img src="static/logo.png" alt="danger/u/" id="header" class="header-unbound">
@@ -28,15 +39,16 @@
           <a class="boarda comment-styled" href="/<%= key %>"><%= Config.get['boards'][key]['desc'] %></a>
         <% end %><br />
       </div>
-      <div class="comment-styled boarda-margin">
+      <div class="comment-styled boarda-margin index-links">
         <% query(con, "SELECT (SELECT COUNT(*) FROM posts WHERE parent IS NULL) AS ops, (SELECT COUNT(*) FROM posts) AS total, (SELECT COUNT(*) FROM archived_posts) AS archived, (SELECT SUM(number_of_posts) FROM archived_posts) AS archived_posts, (SELECT COUNT(*) FROM posts WHERE board = ? AND content = ?) + (SELECT SUM(COALESCE(burg_burg, 0)) FROM archived_posts) AS burg_burg, (SELECT COUNT(*) FROM posts WHERE board = ?) + (SELECT SUM(COALESCE(burg_total, 0)) FROM archived_posts) AS burg_total", "burg", "burg", "burg").each do |res| %>
           Currently serving <span style="font-weight: bold;"><%= res["ops"] %></span>
           threads bumped in the last 20 days, with <span style="font-weight: bold;"><%= res["total"] - res["ops"] %></span>
-          replies, as well as <span style="font-weight: bold;"><%= res["archived"] %></span> <a style="display: inline-block;" href="/archive">archived threads</a>
+          replies, as well as <span style="font-weight: bold;"><%= res["archived"] %></span> <a href="/archive">archived threads</a>
           and <span style="font-weight: bold;"><%= (res["archived_posts"] - res["archived"]).to_i %></span>
           archived replies.
           <br /><br />
-          <a class="boarda comment-styled" href="/search">Search for posts</a>
+          <a class="boarda" href="/search">Search for posts</a>
+          <br />
           <br />
           There are <span style="font-weight: bold;"><%= res["burg_burg"].to_i %></span>
           burgs and <span style="font-weight: bold;"><%= (res["burg_total"] - res["burg_burg"]).to_i %></span>
