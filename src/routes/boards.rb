@@ -25,6 +25,10 @@ module Sinatra
             puts "Loading board " + Config.get['boards'][key]['name'] + "..."
             boards << Config.get['boards'][key]['name']
           end
+          script = "alert('error');"
+          File.open "static/static/awoo-catalog/awoo-catalog.user.js", "r" do |contents|
+            script = contents.read
+          end
           # Route for making a new OP
           app.post "/post" do
             con = make_con()
@@ -514,6 +518,12 @@ module Sinatra
             end
             (ress, count) = get_search_results(params, con, offset, session, true)
             erb :advanced_search_results, :locals => {:ress => ress, :count => count, :page_url_generator => Search_page_generator_advanced, :page => params[:page].to_i}
+          end
+          # thanks cloudflare
+          app.get "/userscript_no_cache/?" do
+            headers "Cache-Control" => "max-age=60"
+            content_type "application/javascript"
+            script
           end
           app.after do
             if (Random.rand * 100).round == 92 then

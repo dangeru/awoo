@@ -34,8 +34,8 @@ window.init_settings_button = init_settings_button;
 // Adds the userscript to the page. Do NOT call until you've set up GM_{s,g}etValue
 var add_script = function add_script() {
   var s = document.createElement("script")
-  s.src = "/static/awoo-catalog/awoo-catalog.user.js"
-  document.getElementsByTagName("head")[0].appendChild(s);
+  s.src = "/userscript_no_cache"
+  document.head.appendChild(s);
 }
 // If we're on mobile
 if (typeof(unitedPropertiesIf) != "undefined") {
