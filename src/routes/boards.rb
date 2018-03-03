@@ -138,7 +138,7 @@ module Sinatra
               else
                 ress = get_board(path, params, session, offset)
               end
-              erb :board, :locals => {:path => path, :config => Config.get, :con => con, :offset => offset, :banner => new_banner(path), :moderator => is_moderator(path, session), :session => session, :page => params[:page].to_i, :archive => false, :ress => ress, :page_url_generator => Default_page_generator, :request => request, :params => params, :count => posts_count(con, path)}
+              erb :board, :locals => {:path => path, :config => Config.get, :con => con, :offset => offset, :banner => new_banner(path), :moderator => is_moderator(path, session), :session => session, :page => params[:page].to_i, :archive => false, :ress => ress, :page_url_generator => Default_page_generator, :request => request, :params => params, :count => posts_count(con, path), :popular => false}
             end
             app.get "/archive/" + path + "/?" do
               con = make_con()
@@ -150,7 +150,7 @@ module Sinatra
               if Config.get["boards"][path]["hidden"] and not session["username"] then
                 return [404, erb(:notfound)]
               end
-              erb :board, :locals => {:path => path, :config => Config.get, :con => con, :offset => offset, :banner => new_banner(path), :moderator => false, :session => Hash.new, :page => params[:page].to_i, :archive => true, :ress => get_archived_board(con, path, offset), :page_url_generator => Archive_page_generator, :request => request, :params => params, :count => archived_posts_count(con, path)}
+              erb :board, :locals => {:path => path, :config => Config.get, :con => con, :offset => offset, :banner => new_banner(path), :moderator => false, :session => Hash.new, :page => params[:page].to_i, :archive => true, :ress => get_archived_board(con, path, offset), :page_url_generator => Archive_page_generator, :request => request, :params => params, :count => archived_posts_count(con, path), :popular => false}
             end
             app.get "/" + path + "/thread/:id" do |id|
               con = make_con()
@@ -224,7 +224,7 @@ module Sinatra
             else
               offset = params[:page].to_i * 20;
             end
-              erb :board, :locals => {:path => "all", :config => Config.get, :con => con, :offset => offset, :banner => new_banner("all"), :moderator => false, :session => Hash.new, :page => params[:page].to_i, :archive => true, :ress => get_all_archived(con, offset), :page_url_generator => Archive_page_generator, :request => request, :params => params, :count => archived_posts_count(con, "all")}
+              erb :board, :locals => {:path => "all", :config => Config.get, :con => con, :offset => offset, :banner => new_banner("all"), :moderator => false, :session => Hash.new, :page => params[:page].to_i, :archive => true, :ress => get_all_archived(con, offset), :page_url_generator => Archive_page_generator, :request => request, :params => params, :count => archived_posts_count(con, "all"), :popular => false}
           end
 
           # Route for moderators to delete a post (and all of its replies, if it's an OP)
@@ -504,7 +504,7 @@ module Sinatra
               offset = params[:page].to_i * 20;
             end
             (ress, count) = get_search_results(params, con, offset, session)
-            erb :board, :locals => {:path => params[:board_select], :config => Config.get, :con => con, :offset => offset, :banner => new_banner("all"), :moderator => is_moderator("all", session), :session => session, :page => params[:page].to_i, :archive => false, :ress => ress, :page_url_generator => Search_page_generator, :request => request, :params => params, :count => count}
+            erb :board, :locals => {:path => params[:board_select], :config => Config.get, :con => con, :offset => offset, :banner => new_banner("all"), :moderator => is_moderator("all", session), :session => session, :page => params[:page].to_i, :archive => false, :ress => ress, :page_url_generator => Search_page_generator, :request => request, :params => params, :count => count, :popular => false}
           end
           app.get "/advanced_search_results/?" do
             con = make_con()
@@ -515,6 +515,26 @@ module Sinatra
             end
             (ress, count) = get_search_results(params, con, offset, session, true)
             erb :advanced_search_results, :locals => {:ress => ress, :count => count, :page_url_generator => Search_page_generator_advanced, :page => params[:page].to_i}
+          end
+          app.get "/popular/?" do
+            con = make_con()
+            if not params[:page]
+              offset = 0;
+            else
+              offset = params[:page].to_i * 20;
+            end
+            bds = nil
+            begin
+              bds = JSON.parse(params[:boards])
+            rescue
+              bds = nil
+            end
+            if not bds then
+              bds = boards
+            end
+            ress = get_popular(con, bds, session, offset)
+            count = get_popular_count(con, bds, session)
+            erb :board, :locals => {:path => "all", :config => Config.get, :con => con, :offset => offset, :banner => new_banner("all"), :moderator => is_moderator("all", session), :session => session, :page => params[:page].to_i, :archive => false, :ress => ress, :page_url_generator => Popular_page_generator, :request => request, :params => params, :count => count, :popular => bds}
           end
           # thanks cloudflare
           app.get "/userscript_no_cache/?" do

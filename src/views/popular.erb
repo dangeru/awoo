@@ -1,0 +1,52 @@
+<script>
+  popular_board_select_open = false;
+  var popular_select_boards = function popular_select_boards() {
+    if (popular_board_select_open) return;
+    popular_board_select_open = true;
+    var dialog = document.createElement("div");
+    document.body.appendChild(dialog);
+    /*
+<div style="z-index: 100; font-size: 1em; font-family: sans-serif; background-color: #ddd; color: black; position: fixed; top: 10%; left: 10%; width: 60%; padding: 10%;" id="popular_board_select_dialog">
+    Select the boards you want to see
+    <div id="board_select_full_list"></div>
+	<button id="popular_board_select_save">Go</button><br />
+    <button id="popular_board_select_dismiss">Cancel</button>
+</div>
+    */
+    dialog.outerHTML = "<div style=\"z-index: 100; font-size: 1em; font-family: sans-serif; background-color: #ddd; color: black; position: fixed; top: 10%; left: 10%; width: 60%; padding: 10%;\" id=\"popular_board_select_dialog\">\n    Select the boards you want to see\n    <div id=\"board_select_full_list\"></div>\n\t<button id=\"popular_board_select_save\">Go</button><br />\n    <button id=\"popular_board_select_dismiss\">Cancel</button>\n</div>\n"
+    var board_select_full_list = document.getElementById("board_select_full_list");
+    document.getElementById("popular_board_select_save").addEventListener("click", function() {
+      var boards = [];
+      Array.prototype.slice.call(board_select_full_list.getElementsByTagName("input"), 0).forEach(function(elem) {
+        if (elem.checked) boards.push(elem.getAttribute("data-board"));
+      });
+      if (boards.length == 0) {
+        alert("No boards selected, cancelling");
+        return;
+      }
+      window.location.href = "/popular?boards=" + encodeURIComponent(JSON.stringify(boards));
+    });
+    document.getElementById("popular_board_select_dismiss").addEventListener("click", function() {
+      document.getElementById("popular_board_select_dialog").outerHTML = "";
+      popular_board_select_open = false;
+    });
+    var popular_all_boards = <%= JSON.dump(get_viewable_boards(session, Config.get["boards"].map { |k, v| k })) %>;
+    var popular_selected_boards = <%= JSON.dump(get_viewable_boards(session, popular)) %>;
+    for (var i = 0; i < popular_all_boards.length; i++) {
+      var board = popular_all_boards[i];
+      if (board == "all") continue;
+      var check = document.createElement("input");
+      check.type = "checkbox";
+      check.setAttribute("data-board", board);
+      var label = document.createElement("label");
+      label.innerText = board;
+      check.id = "popular-board-list-item-" + board;
+      check.checked = popular_selected_boards.indexOf(board) >= 0;
+      label.setAttribute("for", check.id);
+      board_select_full_list.appendChild(check);
+      board_select_full_list.appendChild(label);
+      board_select_full_list.appendChild(document.createElement("br"));
+    }
+  }
+</script>
+<a onClick='popular_select_boards()'>Filter Boards</a>

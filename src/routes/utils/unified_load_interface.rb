@@ -109,6 +109,7 @@ def get_board(board, params, session, offset)
   con = make_con()
   # make a thread object for each returned row and return the list of all the thread objects
   results = []
+  # Note that we COULD order by `(-1 * sticky), (SELECT MAX(p2.post_id) FROM posts p2 WHERE parent = post_id)` and we wouldn't need the extra `last_bumped` database column, but it would be more cpu/disk work on the database
   query(con, "SELECT *, COALESCE(parent, post_id) AS effective_parent, COUNT(*) AS number_of_replies FROM posts WHERE board = ? GROUP BY effective_parent ORDER BY (-1 * sticky), last_bumped DESC LIMIT 20 OFFSET #{offset.to_s};", board).each do |res|
     results.push(make_metadata_from_hash(res, session))
   end
@@ -238,4 +239,28 @@ def archived_posts_count(con, board)
 end
 def make_hash(ip, post_id)
   return Digest::SHA256.hexdigest(ip + post_id.to_s)[0..5]
+end
+def get_popular(con, boards, session, offset)
+  boards = get_viewable_boards(session, boards)
+  boards = "(" + (boards.map do |b| "'" + con.escape(b) + "'" end).join(",") + ")"
+  results = []
+  query(con, "SELECT *, COALESCE(parent, post_id) AS effective_parent, COUNT(*) AS number_of_replies, (10000 * COUNT(*)) / (NOW() - date_posted) as rate FROM posts WHERE board IN #{boards} GROUP BY effective_parent ORDER BY rate DESC LIMIT 20 OFFSET #{offset.to_s};").each do |res|
+    results.push(make_metadata_from_hash(res, session))
+  end
+  return results
+end
+def get_popular_count(con, boards, session)
+  boards = get_viewable_boards(session, boards)
+  boards = "(" + (boards.map do |b| "'" + con.escape(b) + "'" end).join(",") + ")"
+  result = 0
+  query(con, "SELECT COUNT(*) AS count FROM posts WHERE board IN #{boards};").each do |res|
+    result = res["count"]
+  end
+  return result
+end
+def get_viewable_boards(session, boards)
+  if session[:moderates] then
+    return boards
+  end
+  return boards.select do |b| not Config.get["boards"][b]["hidden"] end
 end

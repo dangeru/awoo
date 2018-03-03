@@ -151,8 +151,11 @@
       <a href="<%= page_url_generator.call(path, request, params, page - 1) %>">Previous Page</a>
       <a href="<%= page_url_generator.call(path, request, params, 0) %>">First Page</a>
     <% end %>
+    <% if popular %>
+      <hr />
+      <%= erb :popular, :locals => {:popular => popular, :session => session} %>
+    <% end %>
     <hr />
-    <%# Note that we COULD order by `(-1 * sticky), (SELECT MAX(p2.post_id) FROM posts p2 WHERE parent = post_id)` and we wouldn't need the extra `last_bumped` database column, but it would be more cpu/disk work on the database %>
     <% ress.each do |res| %>
       <% classes = [] %>
       <% if res[:is_locked] then classes.push "locked" end %>
