@@ -5,7 +5,7 @@
             session[:username] or not val["hidden"]
         end.map do |k, v|
             k
-        end.insert(0, "search").map do |k|
+        end.insert(0, "search").push("popular").map do |k|
             "<a href='/" + k + "/' style='display: inline-block;' class='boarda'>" + k + "</a>"
         end.join " / " %>
         ]
