@@ -145,6 +145,12 @@
       <hr />
       <a href="/<%= path %>/word-filter">Edit word filters</a>
     <% end %>
+    <% if page != 0 %>
+      <hr />
+      <div class="comment-styled">You are viewing older posts</div>
+      <a href="<%= page_url_generator.call(path, request, params, page - 1) %>">Previous Page</a>
+      <a href="<%= page_url_generator.call(path, request, params, 0) %>">First Page</a>
+    <% end %>
     <hr />
     <%# Note that we COULD order by `(-1 * sticky), (SELECT MAX(p2.post_id) FROM posts p2 WHERE parent = post_id)` and we wouldn't need the extra `last_bumped` database column, but it would be more cpu/disk work on the database %>
     <% ress.each do |res| %>
