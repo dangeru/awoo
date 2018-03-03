@@ -541,7 +541,7 @@ module Sinatra
             headers "Cache-Control" => "max-age=60"
             content_type "application/javascript"
             if not script then
-              File.open "static/static/awoo-catalog/awoo-catalog.user.js", "r" do |contents|
+              File.open "static/static/awoo-catalog.user.js", "r" do |contents|
                 script = contents.read
               end
             end
