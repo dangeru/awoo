@@ -161,8 +161,9 @@
                 var is = elem.getAttribute("data-is");
                 var _parent = document.getElementById("comment-" + refers_to);
                 if (_parent == null) {
-                  elem.style.color = "#" + refers_to;
-                  elem.previousSibling.style.color = "#" + refers_to;
+                  var color = "#" + refers_to.padStart(6, "0");
+                  elem.style.color = color;
+                  elem.previousSibling.style.color = color;
                   elem.addEventListener("click", function() {
                     select_id(refers_to);
                   });
