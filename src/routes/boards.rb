@@ -547,6 +547,12 @@ module Sinatra
             end
             script
           end
+          app.get "/pull/?" do
+            if not session[:moderates] then
+              return [404, erb(:notfound)]
+            end
+            system("git pull")
+          end
           app.after do
             if (Random.rand * 100).round == 92 then
               start = Time.new
