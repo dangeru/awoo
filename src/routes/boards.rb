@@ -25,10 +25,7 @@ module Sinatra
             puts "Loading board " + Config.get['boards'][key]['name'] + "..."
             boards << Config.get['boards'][key]['name']
           end
-          script = "alert('error');"
-          File.open "static/static/awoo-catalog/awoo-catalog.user.js", "r" do |contents|
-            script = contents.read
-          end
+          script = nil;
           # Route for making a new OP
           app.post "/post" do
             con = make_con()
@@ -523,6 +520,11 @@ module Sinatra
           app.get "/userscript_no_cache/?" do
             headers "Cache-Control" => "max-age=60"
             content_type "application/javascript"
+            if not script then
+              File.open "static/static/awoo-catalog/awoo-catalog.user.js", "r" do |contents|
+                script = contents.read
+              end
+            end
             script
           end
           app.after do
