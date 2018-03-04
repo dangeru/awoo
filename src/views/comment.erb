@@ -39,6 +39,7 @@
                 orig_target = target[0]
                 if orig_target.match(/^[0-9a-fA-F]*$/) then
                   target[0] = target[0].to_i(16).to_s(16) # sanitize so they don't inject javascript
+                  target[0] = target[0].rjust(orig_target.length, "0")
                   %><a class="redtext referencer" data-refers-to="<%= target[0] %>" data-is="<%= res[:post_id] %>" onMouseOver='hover(<%= JSON.dump target[0] %>, <%= JSON.dump res[:post_id] %>, <%= JSON.dump board %>)' onMouseOut="unhover()" onClick='select(<%= JSON.dump target[0] %>, <%= JSON.dump res[:parent] %>, <%= JSON.dump board %>)'>&gt;<%= Sanitize.clean(orig_target) %></a> <%= Sanitize.clean(x_split[1..(x_split.length - 1)].join(" ")) %></a><%
                 else
                   %><span class="redtext redtext-<%= consecutive %>">&gt;<%= Sanitize.clean(x) %></span><%
