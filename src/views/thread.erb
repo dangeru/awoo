@@ -161,11 +161,11 @@
                 var is = elem.getAttribute("data-is");
                 var _parent = document.getElementById("comment-" + refers_to);
                 if (_parent == null) {
-                  var color = refers_to.padStart(6, "0");
+                  var color = refers_to;
                   if (!color.match(RegExp("[0-9a-fA-F]{6}"))) {
                     return;
                   }
-                  color = "#" + color;
+                  color = "#" + color.padStart(6, "0");
                   elem.style.color = color;
                   elem.previousSibling.style.color = color;
                   elem.addEventListener("click", function() {
