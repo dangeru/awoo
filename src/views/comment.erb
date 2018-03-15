@@ -33,8 +33,10 @@
             # one must be an OP on that board
             if x.length > 0 and consecutive == 3
               x_split = x.split(" ")
-              target = x_split[0].split("/")
-              if target.length == 1 then
+              target = x_split[0]&.split("/")
+              if not target
+                ;
+              elsif target.length == 1 then
                 # it's in the format >>1234 or >>ab1e02
                 orig_target = target[0]
                 if orig_target.match(/^[0-9a-fA-F]*$/) then
