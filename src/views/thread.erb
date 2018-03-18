@@ -267,7 +267,7 @@
           <% end %>
           <script>
             window.board = <%= JSON.dump(res[:board]) %>;
-            document.title = <%= JSON.dump(res[:title]) %> + " - danger/" + window.board + "/";
+            document.title = <%= JSON.dump(res[:title].gsub('</script>', "")) %> + " - danger/" + window.board + "/";
           </script>
           <%# I WILL MOVE IT LATER I PROMISE %>
           <meta property="og:title" content="<%= Sanitize.clean(res[:title]) %> - /<%= res[:board] %>/">
