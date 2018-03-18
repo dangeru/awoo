@@ -23,7 +23,7 @@
         consecutive = 1
         j = 0
         # TODO this method of splitting means trailing >s are omitted
-        line.split(">").each do |x|
+        line.split(">", -1).each do |x|
           # If we haven't hit the first > yet, then display it normally (no red text)
           if j == 0
             %><%= Sanitize.clean(x) %><%
