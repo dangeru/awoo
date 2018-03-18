@@ -22,7 +22,7 @@
       <%
         consecutive = 1
         j = 0
-        # TODO this method of splitting means trailing >s are omitted
+        # the extra -1 below ensures that extra >s at the end of a line do not get stripped off
         line.split(">", -1).each do |x|
           # If we haven't hit the first > yet, then display it normally (no red text)
           if j == 0
