@@ -7,15 +7,15 @@
     <link rel="shortcut icon" href="static/favicon.ico">
   </head>
   <body>
-    <a href="/"><img src="/static/logo.png" alt="danger/u/" id="header"></a>
     <br />
+    <a href="/"><img src="/static/logo.png" alt="danger/u/" id="header" class="header-unbound"></a>
     <div id="maincontainer">
       <div class="title" class="red">Showing Global Ban List</div>
       <br>
       <% query(con, "SELECT * FROM bans WHERE date_of_unban > CURRENT_TIMESTAMP()").each do |res| %>
-        <div class="comment">IP: <a href="/ip/<%= Sanitize.clean(res["ip"])%>" style="display: inline-block;" class-"red"><%= Sanitize.clean(res["ip"])%></a></div>
-        <div class="comment">Got banned from board <span class="redtext">/<%= Sanitize.clean(res["board"])%>/</span>, for reason: <span class="redtext"><%= Sanitize.clean(res["reason"])%></span></div>
-        <div class="comment">The date of unban will be on: <span class="redtext"><%= Sanitize.clean(res["date_of_unban"])%></span></div>
+        <div class="comment">IP: <a href="/ip/<%= Awoo.clean(res["ip"])%>" style="display: inline-block;" class-"red"><%= Awoo.clean(res["ip"])%></a></div>
+        <div class="comment">Got banned from board <span class="redtext">/<%= Awoo.clean(res["board"])%>/</span>, for reason: <span class="redtext"><%= Awoo.clean(res["reason"])%></span></div>
+        <div class="comment">The date of unban will be on: <span class="redtext"><%= Awoo.clean(res["date_of_unban"])%></span></div>
         <hr />
       <% end %>
     </div>

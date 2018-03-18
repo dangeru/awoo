@@ -21,7 +21,7 @@
       <img src="<%= banner %>" alt="danger/u/">
       <div id="title" style="text-align: center;">/<%= path %>/ - Rules</div>
       <pre class="comment" id="rules">
-<%= Sanitize.clean(rules) %>
+<%= Awoo.clean(rules) %>
       </pre>
       <% if has_permission(session, "edit_rules") %>
         <form method="post" action="/<%= path %>/rules/edit" style="display:none;" id="editor">

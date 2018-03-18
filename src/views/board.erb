@@ -168,7 +168,7 @@
         <% if path == "all" then %>
           <span class="all_extra_board">/<%= res[:board] %>/</span>
         <% end %>
-        <%= Sanitize.clean(res[:title]) %>
+        <%= Awoo.clean(res[:title]) %>
       </a>
       <% if moderator and has_permission(session, "lock") %>
         <% if res[:is_locked] %>

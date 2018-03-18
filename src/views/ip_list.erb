@@ -44,7 +44,7 @@
     <a href="../../"><img src="/static/logo.png" alt="danger/u/" id="header" class="header-unbound"></a>
     <br />
     <div id="maincontainer">
-      <div class="title" class="red">Information for IP <%= Sanitize.clean(addr) %></div>
+      <div class="title" class="red">Information for IP <%= Awoo.clean(addr) %></div>
       <% if has_permission(session, "ban") %>
         <form action="/ban/<%= addr %>" method="post" id="ban-form" style="display: inline-block;">
           <select id="board" name="board">
@@ -55,7 +55,7 @@
           <input type="text" id="datepicker" name="date" placeholder="Date" class="special_styled"/>
           <input type="text" id="reason" name="reason" placeholder="Reason" class="special_styled"/>
         </form>
-        <button onClick="submit_form(document.getElementById('ban-form'), '/ban/<%= Sanitize.clean(addr) %>')" class="special_styled">Ban</button>
+        <button onClick="submit_form(document.getElementById('ban-form'), '/ban/<%= Awoo.clean(addr) %>')" class="special_styled">Ban</button>
         <br />
       <% end %>
       <% boards = session[:moderates].map do |f| con.escape(f) end %>
@@ -63,10 +63,10 @@
       <% query(con, "SELECT reason, board, date_of_unban FROM bans WHERE ip = ? AND board IN #{boards} AND date_of_unban > CURRENT_TIMESTAMP()", addr).each do |res| %>
         <% id = Digest::SHA256.hexdigest(res["board"] + res["reason"]) %>
         <h3 class="redtext">
-          Banned from <%= res["board"] %> until <%= res["date_of_unban"].strftime '%c' %> for reason "<%= Sanitize.clean(res["reason"]) %>"
+          Banned from <%= res["board"] %> until <%= res["date_of_unban"].strftime '%c' %> for reason "<%= Awoo.clean(res["reason"]) %>"
           <form id="<%= id %>" action="/unban/<%= addr %>" method="post"><input type="hidden" name="board" value="<%= res["board"] %>" /></form>
           <% if has_permission(session, "ban") %>
-            <button onClick="submit_form(document.getElementById('<%= id %>'), '/unban/<%= Sanitize.clean(addr) %>')">Unban</button>
+            <button onClick="submit_form(document.getElementById('<%= id %>'), '/unban/<%= Awoo.clean(addr) %>')">Unban</button>
           <% end %>
         </h3>
       <% end %>
@@ -91,15 +91,15 @@
           </div>
         </div>
         <div class="entry ip-note">
-          <pre class="comment"><%= Sanitize.clean(res["content"]).gsub("\n", "<br />") %></pre>
+          <pre class="comment"><%= Awoo.clean(res["content"]).gsub("\n", "<br />") %></pre>
         </div>
         <br />
       <% end %>
-      <form action="/ip_note/<%= Sanitize.clean(addr) %>" method="post" id="ip-note-form">
+      <form action="/ip_note/<%= Awoo.clean(addr) %>" method="post" id="ip-note-form">
         <textarea name="content" placeholder="New note for this IP"></textarea>
         <br />
       </form>
-      <button onClick="submit_form(document.getElementById('ip-note-form'), '/ip_note/<%= Sanitize.clean(addr) %>')" class="special_styled">Submit</button>
+      <button onClick="submit_form(document.getElementById('ip-note-form'), '/ip_note/<%= Awoo.clean(addr) %>')" class="special_styled">Submit</button>
     </div>
     <footer class="comment">
       <%= Config.get["footer"] %>, <a href="https://github.com/dangeru/awoo/" class="footer">Awoo <%= settings.awoo_version %></a>

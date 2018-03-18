@@ -46,4 +46,7 @@ class Awoo < Sinatra::Base
   get '/' do
     erb :index, :locals => {:con => make_con()}
   end
+  def self.clean(s)
+    Rack::Utils.escape_html s
+  end
 end

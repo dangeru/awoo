@@ -8,18 +8,18 @@
   </head>
 
   <body>
+    <a href="/"><img src="/static/logo.png" id="header" class="header-unbound"></a>
     <div id="sitecorner">
-      <a href="/"><img src="/static/logo.png"></a>
       <div id="title" style="text-align: center;">You are BANNED</div>
       <img src="/static/banned.jpg" alt="banned">
       <div class="comment" style="text-align: center;">
-        <% banned_from = "/#{Sanitize.clean(info["board"])}/" %>
+        <% banned_from = "/#{Awoo.clean(info["board"])}/" %>
         <% banned_from = "ALL BOARDS" if info["board"] == "all" %>
         You are banned from <span class="redtext"><%= banned_from %></span>,
         <br />
-        With reason: <span class="redtext"><%= Sanitize.clean(info["reason"])%></span>
+        With reason: <span class="redtext"><%= Awoo.clean(info["reason"])%></span>
         <br />
-        Estimated time of unban: <span class="redtext"><%= Sanitize.clean(info["date_of_unban"])%></span>
+        Estimated time of unban: <span class="redtext"><%= Awoo.clean(info["date_of_unban"])%></span>
       </div>
     </div>
     <footer class="comment">

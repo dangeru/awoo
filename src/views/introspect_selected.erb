@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <title>Introspecting <%= Sanitize.clean(mod) %></title>
+    <title>Introspecting <%= Awoo.clean(mod) %></title>
     <link rel="stylesheet" type="text/css" href="/static/dangeru.css">
     <link rel="shortcut icon" href="/static/favicon.ico">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -43,7 +43,7 @@
     <div id="sitecorner">
       <% ress = nil %>
       <% if mod != "_any" then %>
-        <div id="title">Introspecting <%= Sanitize.clean(mod) %></div>
+        <div id="title">Introspecting <%= Awoo.clean(mod) %></div>
         <button onClick='reset();'>Reset Password</button>
         <br />
         <% ress = query(con, "SELECT * FROM ip_notes WHERE actor = ? ORDER BY created DESC", mod) %>
@@ -62,7 +62,7 @@
           </div>
         </div>
         <div class="entry">
-          <pre class="comment"><%= Sanitize.clean(res["content"]).gsub("\n", "<br />") %></pre>
+          <pre class="comment"><%= Awoo.clean(res["content"]).gsub("\n", "<br />") %></pre>
         </div>
         <br />
       <% end %>

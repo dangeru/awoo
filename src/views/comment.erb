@@ -26,7 +26,7 @@
         line.split(">", -1).each do |x|
           # If we haven't hit the first > yet, then display it normally (no red text)
           if j == 0
-            %><%= Sanitize.clean(x) %><%
+            %><%= Awoo.clean(x) %><%
           else
             # If we've hit the second > in a row, and it's not immediately followed by a third >, it's a link to a thread
             # either in the format >>1234 or >>/board/1234, where the first one must be in the current thread and the second
@@ -42,16 +42,16 @@
                 if orig_target.match(/^[0-9a-fA-F]*$/) then
                   target[0] = target[0].to_i(16).to_s(16) # sanitize so they don't inject javascript
                   target[0] = target[0].rjust(orig_target.length, "0")
-                  %><a class="redtext referencer" data-refers-to="<%= target[0] %>" data-is="<%= res[:post_id] %>" onMouseOver='hover(<%= JSON.dump target[0] %>, <%= JSON.dump res[:post_id] %>, <%= JSON.dump board %>)' onMouseOut="unhover()" onClick='select(<%= JSON.dump target[0] %>, <%= JSON.dump res[:parent] %>, <%= JSON.dump board %>)'>&gt;<%= Sanitize.clean(orig_target) %></a> <%= Sanitize.clean(x_split[1..(x_split.length - 1)].join(" ")) %></a><%
+                  %><a class="redtext referencer" data-refers-to="<%= target[0] %>" data-is="<%= res[:post_id] %>" onMouseOver='hover(<%= JSON.dump target[0] %>, <%= JSON.dump res[:post_id] %>, <%= JSON.dump board %>)' onMouseOut="unhover()" onClick='select(<%= JSON.dump target[0] %>, <%= JSON.dump res[:parent] %>, <%= JSON.dump board %>)'>&gt;<%= Awoo.clean(orig_target) %></a> <%= Awoo.clean(x_split[1..(x_split.length - 1)].join(" ")) %></a><%
                 else
-                  %><span class="redtext redtext-<%= consecutive %>">&gt;<%= Sanitize.clean(x) %></span><%
+                  %><span class="redtext redtext-<%= consecutive %>">&gt;<%= Awoo.clean(x) %></span><%
                 end
               else
                 # it's in the format >>/board/1234, so extract `board` and `1234` and make the link
-                target_board = Sanitize.clean(target[1]).gsub("\"", "")
+                target_board = Awoo.clean(target[1]).gsub("\"", "")
                 target_thread = target[2].to_i.to_s
                 href = "/" + target_board.to_s + "/thread/" + target_thread.to_s
-                %><a class="redtext" style="display: inline-block;" href="<%= href %>">&gt;<%= Sanitize.clean(x_split[0]) %></a> <%= Sanitize.clean(x_split[1..(x_split.length - 1)].join(" ")) %></a><%
+                %><a class="redtext" style="display: inline-block;" href="<%= href %>">&gt;<%= Awoo.clean(x_split[0]) %></a> <%= Awoo.clean(x_split[1..(x_split.length - 1)].join(" ")) %></a><%
               end
             elsif x.length > 0 and consecutive == 4 then
               # If we've hit the third > in a row, and it's not immediately followed by a fourth >, it's a link to another board
@@ -65,10 +65,10 @@
                 target_board = target_board_split[0]
               end
               # make the link
-              %><a class="redtext" style="display: inline-block;" href="/<%= target_board %>">&gt;<%= Sanitize.clean(x_split[0]) %></a> <%= Sanitize.clean(x_split[1..(x_split.length - 1)].join(" ")) %></a><%
+              %><a class="redtext" style="display: inline-block;" href="/<%= target_board %>">&gt;<%= Awoo.clean(x_split[0]) %></a> <%= Awoo.clean(x_split[1..(x_split.length - 1)].join(" ")) %></a><%
             else
               # it's some other form of red text, just display it as red text
-              %><span class="redtext redtext-<%= consecutive %>">&gt;<%= Sanitize.clean(x) %></span><%
+              %><span class="redtext redtext-<%= consecutive %>">&gt;<%= Awoo.clean(x) %></span><%
             end
           end
           # calculations for the number of consecutive > characters

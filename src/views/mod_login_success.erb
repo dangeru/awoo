@@ -25,7 +25,7 @@
   <body>
     <div id="container_login">
       <a href="/"><img src="/static/logo.png" alt="danger/u/" id="modlogo"></a><br>
-      <span id="title" class="redtext">[Welcome <%= Sanitize.clean(session[:username]) %>]</span>
+      <span id="title" class="redtext">[Welcome <%= Awoo.clean(session[:username]) %>]</span>
       <br />
       <span class="redtext">[Your rank is: <%= allowed_capcodes(session)[0] %>]</span><br />
       <% if has_permission(session, "introspect") %>

@@ -266,15 +266,15 @@
           <% if path == "burg" then %>
             <div id="title">burg</div>
           <% else %>
-            <div id="title"><%= Sanitize.clean(res[:title]) %></div>
+            <div id="title"><%= Awoo.clean(res[:title]) %></div>
           <% end %>
           <script>
             window.board = <%= JSON.dump(res[:board]) %>;
             document.title = <%= JSON.dump(res[:title].gsub('</script>', "")) %> + " - danger/" + window.board + "/";
           </script>
           <%# I WILL MOVE IT LATER I PROMISE %>
-          <meta property="og:title" content="<%= Sanitize.clean(res[:title]) %> - /<%= res[:board] %>/">
-          <meta property="og:description" content="<%= Sanitize.clean(res[:comment]) %>">
+          <meta property="og:title" content="<%= Awoo.clean(res[:title]) %> - /<%= res[:board] %>/">
+          <meta property="og:description" content="<%= Awoo.clean(res[:comment]) %>">
           <% if moderator and res[:sticky] and has_permission(session, "sticky") then %>
             <form id="sticky-form" action="/sticky/<%= res[:post_id] %>" method="POST" class="comment-styled" style="display: inline-block;">
               <label for="stickyness">Adjust Stickyness </label>

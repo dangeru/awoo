@@ -20,7 +20,7 @@
       <br />
       <% Config.get["janitors"].each do |mod| %>
         <% username = mod["username"] %>
-        <a href="/introspect/<%= Sanitize.clean(username) %>"><%= Sanitize.clean(username) %></a>
+        <a href="/introspect/<%= Awoo.clean(username) %>"><%= Awoo.clean(username) %></a>
         <br />
       <% end %>
     </div>

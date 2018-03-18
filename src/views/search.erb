@@ -33,7 +33,7 @@
         <% boards.insert 0, ["all", "All Boards"] %>
         <select id="board_select" name="board_select" class="text_input">
           <% boards.each do |l| %>
-            <option value="<%= l[0] %>"><%= Sanitize.clean l[1] %></option>
+            <option value="<%= l[0] %>"><%= Awoo.clean l[1] %></option>
           <% end %>
         </select>
         <br />
