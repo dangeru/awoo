@@ -12,7 +12,8 @@
         if (xhr.status != 200) {
           alert("errno = -EINVAL; return;\n\n" + xhr.responseText)
         }
-        post_cache[key] = JSON.parse(xhr.responseText)["comment"];
+        var parsed = JSON.parse(xhr.responseText);
+        post_cache[key] = xhr.responseText[0] == '[' ? "Erorr: " + parsed[1] : parsed["comment"];
         if (key == global_key) {
           hover(id, hovered, board);
         }

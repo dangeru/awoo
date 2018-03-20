@@ -26,8 +26,7 @@
       <% ress.each do |res| %>
         <%= erb :multiview, :locals => {:board => res[:board], :res => res, :moderator => is_moderator(res[:board], session)} %>
       <% end %>
-    </div>
-    <%= erb :pagecounter, :locals => {:count => count, :page_url_generator => page_url_generator, :page => page, :path => "all"} %>
+      <%= erb :pagecounter, :locals => {:count => count, :page_url_generator => page_url_generator, :page => page, :path => "all"} %>
     </div>
     <footer class="comment-styled">
       <%= Config.get["footer"] %>, <a href="https://github.com/dangeru/awoo/" class="footer">Awoo <%= settings.awoo_version %></a>

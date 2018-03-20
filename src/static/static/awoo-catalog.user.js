@@ -61,16 +61,21 @@ var btnListener = function btnListener(forScroll) {
 			var added = 0;
 			var page_count_container = document.getElementById("pagecount_container");
 			if (page_count_container == null) return;
-			to_array(doc.getElementById("sitecorner").children).forEach(function(elem) {
-				if (elem.tagName != "A" && elem.tagName != "I") return;
+			var sitecorner = doc.getElementById("sitecorner")
+			if (sitecorner == null) sitecorner = doc.getElementById("maincontainer") // advanced_search_results page
+			to_array(sitecorner.children).forEach(function(elem) {
+				if (!(elem.tagName == "DIV" && (elem.classList.contains("entry") || elem.classList.contains("comment")))) {
+					if (elem.tagName != "A" && elem.tagName != "I") return;
+				}
 				console.log(elem.href)
 				if (elem.tagName == "A" && !(elem.hasAttribute("data-replies") || elem.href.indexOf("/ip/") >= 0)) return;
-				var newa = document.createElement("a");
+				var newa = document.createElement(elem.tagName);
 				to_array(elem.attributes).forEach(function (attr) {
 					newa.setAttribute(attr.nodeName, attr.value);
 				});
 				newa.innerHTML = elem.innerHTML;
 				var sc = document.getElementById("sitecorner");
+				if (sc == null) sc = document.getElementById("maincontainer");
 				if (elem.tagName == "A" && elem.href.indexOf("/ip/") < 0) {
 					if (page_count_container.previousElementSibling.tagName.toUpperCase() != "BR")
 						sc.insertBefore(document.createElement("br"), page_count_container);
@@ -79,7 +84,7 @@ var btnListener = function btnListener(forScroll) {
 				if (elem.tagName == "A") {
 					added++;
 					doTheThing(newa);
-				} else {
+				} else if (elem.tagName == "I") {
 					var space = document.createElement("span");
 					space.innerText = " ";
 					sc.insertBefore(space, newa);
