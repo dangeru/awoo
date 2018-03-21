@@ -295,3 +295,19 @@ a.footer {
 .referencer {
   display: inline-block;
 }
+.spoiler:hover {
+  color: #FFFFFF;
+  border-bottom: 1px solid #eeeeee;
+}
+.spoiler {
+  color: #000000;
+  border-bottom: 1px solid #333;
+}
+.redtext > .spoiler:hover {
+  color: #ED145B;
+  border-bottom: 1px solid #ED145B;
+}
+.redtext > .spoiler {
+  border-bottom: 1px solid #401;
+}
+
