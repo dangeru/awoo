@@ -140,6 +140,7 @@
               if (typeof(unitedPropertiesIf) != "undefined") {
                 try {
                   unitedPropertiesIf.watchThread(window.id.toString());
+                  unitedPropertiesIf.addPosted(window.id.toString());
                 } catch (e) {
                   // Must be on an old version of the app
                   unitedPropertiesIf.toast("Your version of the app appears to be out of date; The thread could not be added to the thread watcher");
@@ -237,6 +238,11 @@
                 if (xhr.readyState == 4) {
                   if (xhr.status != 200) {
                     alert("errno = -EINVAL; return;\n\n" + xhr.responseText)
+                  }
+                  try {
+                    unitedPropertiesIf.addPosted(xhr.responseText.split("/")[1])
+                  } catch (e) {
+                    // drop
                   }
                   window.location.reload();
                 }
