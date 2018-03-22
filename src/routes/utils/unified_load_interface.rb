@@ -268,7 +268,9 @@ def get_notifier_replies(params, con, session)
   con = make_con()
   begin
     ids = JSON.parse(params[:list])
+    hashes = JSON.parse(params[:hashes])
   rescue
+    puts "error"
     return []
   end
   if ids.length == 0 then return [] end
@@ -276,7 +278,10 @@ def get_notifier_replies(params, con, session)
   allowed_boards = "(" + (allowed_boards.reduce([]) do |acc, k| acc.push("'" + con.escape(k) + "'") end.join ",") + ")"
   where_clause = ids.map do |id| 'content like ?' end
   where_params = ids.map do |id| '%>>' + id.to_i.to_s + '%' end
+  hashes.map do |h| where_clause << '(parent = ? and content like ?)' end
+  hashes.map do |h| where_params += [h["op"], '%>>' + h["hash"] + '%'] end
   where_clause = where_clause.join(" OR ")
+  puts where_clause
   results = []
   query(con, "SELECT post_id FROM posts WHERE board IN #{allowed_boards} AND (#{where_clause});", *where_params).each do |res|
     results.push(res["post_id"])
