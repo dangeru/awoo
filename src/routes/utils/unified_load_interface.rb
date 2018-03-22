@@ -118,7 +118,7 @@ end
 
 def get_all(params, session, offset)
   con = make_con()
-  allowed_boards = Config.get["boards"].select do |k, v| session[:moderates] or not v["hidden"] end.map do |k, v| k end
+  allowed_boards = get_viewable_boards(session, Config.get["boards"].map { |k, v| k })
   allowed_boards = "(" + (allowed_boards.reduce([]) do |acc, k| acc.push("'" + con.escape(k) + "'") end.join ",") + ")"
   # make a thread object for each returned row and return the list of all the thread objects
   results = []
@@ -264,3 +264,23 @@ def get_viewable_boards(session, boards)
   end
   return boards.select do |b| not Config.get["boards"][b]["hidden"] end
 end
+def get_notifier_replies(params, con, session)
+  con = make_con()
+  begin
+    ids = JSON.parse(params[:list])
+  rescue
+    return []
+  end
+  if ids.length == 0 then return [] end
+  allowed_boards = get_viewable_boards(session, Config.get["boards"].map { |k, v| k })
+  allowed_boards = "(" + (allowed_boards.reduce([]) do |acc, k| acc.push("'" + con.escape(k) + "'") end.join ",") + ")"
+  where_clause = ids.map do |id| 'content like ?' end
+  where_params = ids.map do |id| '%>>' + id.to_i.to_s + '%' end
+  where_clause = where_clause.join(" OR ")
+  results = []
+  query(con, "SELECT post_id FROM posts WHERE board IN #{allowed_boards} AND (#{where_clause});", *where_params).each do |res|
+    results.push(res["post_id"])
+  end
+  return results
+end
+

@@ -93,6 +93,11 @@ module Sinatra
               (ress, _) = get_search_results(params, con, offset, session, true)
               return JSON.dump(ress);
             end
+            get "/replies/?" do
+              con = make_con()
+              ress = get_notifier_replies(params, con, session)
+              return JSON.dump(ress);
+            end
           end
         end
       end
