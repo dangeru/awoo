@@ -18,12 +18,22 @@
     <span class="post_number" style="display: none;">Post number #<span class="id_link a-like" onClick='reply_box_add(">>" + this.innerText)'><%= res[:post_id] %></span>, <span onClick='select_id(<%= JSON.dump res[:hash] %>)'>ID: </span><span class="hash" style="color: #<%= res[:hash] %>;" onClick="reply_box_add('>>' + this.innerText)"><%= res[:hash] %></span></span><br />
     |
     <%
-      opening_tag = "[spoiler]"
-      closing_tag = "[&#x2F;spoiler]"
       clean = ->(text) do
         text = Awoo.clean(text)
-        while text.include?(opening_tag) and text.include?(closing_tag) and text.index(opening_tag) < text.index(closing_tag) do
-          text = text.sub(opening_tag, "<span class='spoiler'>").sub(closing_tag, '</span>')
+        apply_tag = ->(tag, span_contents, text) do
+          opening_tag = "[#{tag}]"
+          closing_tag = "[&#x2F;#{tag}]"
+          while text.include?(opening_tag) and text.include?(closing_tag) and text.index(opening_tag) < text.index(closing_tag) do
+            text = text.sub(opening_tag, "<span #{span_contents}>").sub(closing_tag, '</span>')
+          end
+          return text
+        end
+        text = apply_tag.call("spoiler", "class='spoiler'", text)
+        if res[:capcode] then
+          text = apply_tag.call("i", "style='font-style: italic'", text)
+          text = apply_tag.call("b", "style='font-weight: bold'", text)
+          text = apply_tag.call("u", "style='text-decoration: underline'", text)
+          text = apply_tag.call("s", "style='text-decoration: line-through'", text)
         end
         text
       end
