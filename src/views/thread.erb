@@ -147,6 +147,11 @@
                 }
               }
             <% end %>
+            // Android 4.4.4 doesn't have the padStart method on strings so we have to do it ourselves
+            var padStart = function padStart(str, len, char) {
+              while (str.length < len) str = char + str;
+              return str;
+            }
             // If userscript is disabled, update prop here. Otherwise it will be updated by the userscript
             if (typeof(unitedPropertiesIf) != "undefined" && unitedPropertiesIf.getProperty("userscript").toUpperCase() != "TRUE") {
               unitedPropertiesIf.setProperty(window.board + ":" + window.id, total_number_of_posts.toString());
@@ -166,7 +171,7 @@
                   if (!color.match(RegExp("[0-9a-fA-F]{6}"))) {
                     return;
                   }
-                  color = "#" + color.padStart(6, "0");
+                  color = "#" + padStart(color, 6, "0");
                   elem.style.color = color;
                   elem.previousSibling.style.color = color;
                   elem.addEventListener("click", function() {
