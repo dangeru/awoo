@@ -16,7 +16,7 @@ var unstickyPost = function unlockPost(id) {
 var unban = function unban(addr, board) {
 	alert("You tried to unban " + addr + " from the board " + board + ", but it's not implemented yet");
 }
-var doWordcount = function doWordcount(comment_id) {
+var doWordcount = function doWordcount(comment_id, mod) {
 	var comment = document.getElementById(comment_id);
 	if (comment == null) return;
 	comment.addEventListener("keyup", function() {
@@ -24,7 +24,7 @@ var doWordcount = function doWordcount(comment_id) {
 		var len = (comment.value.length * 1.03) | 0;
 		var wc = document.getElementById("wordcount");
 		var submit = document.getElementById("submit");
-		if (len > 500) {
+		if (len > 500 && !mod) {
 			wc.classList.add("red");
 			wc.classList.remove("comment-styled");
 		} else {
@@ -32,9 +32,9 @@ var doWordcount = function doWordcount(comment_id) {
 			wc.classList.add("comment-styled");
 		}
 		if (submit != null) {
-			submit.disabled = len > 500 ? true : false;
-			submit.className = len > 500 ? "special_styled" : "button_styled";
+			submit.disabled = (len > 500 && !mod) ? true : false;
+			submit.className = (len > 500 && !mod) ? "special_styled" : "button_styled";
 		}
-		wc.innerText = len + "/500";
+		wc.innerText = len + "/" + (mod ? "Unlimited" : "500");
 	});
 }

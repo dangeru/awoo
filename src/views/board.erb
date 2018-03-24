@@ -44,7 +44,7 @@
       }
       var ol = function ol() {
         document.getElementById("draggable").style.display = "none";
-        doWordcount("comment");
+        doWordcount("comment", <%= JSON.dump(session[:moderates] ? true : false) %>);
         Array.prototype.slice.call(document.getElementsByClassName("fa"), 0).forEach(function(elem) {
           elem.onmousemove = function(e) { move(e) }; // SHOULDN'T NEED THE WRAPPING FUNCTION BUT I DO
           elem.onmouseover = function() {hover(elem);};
@@ -135,7 +135,7 @@
               <%= erb :capcode_dropdown, :locals => {:config => Config.get, :session => session} %>
               <br />
             <% end %>
-            <div id="wordcount" class="comment" style="float: left;">0/500</div><br />
+            <div id="wordcount" class="comment" style="float: left;"></div><br />
           <% end %>
           <input type="submit" id="submit" name="submit" class="button_styled" value="Send" /><br />
         </form>

@@ -204,7 +204,7 @@
             });
             var e = document.getElementById("redirect");
             if (e != null) e.value = "false";
-            doWordcount("reply_box");
+            doWordcount("reply_box", <%= JSON.dump(session[:moderates] ? true : false) %>);
           }
           var makeClickable = function makeClickable(elem) {
             var child = elem.firstChild;
@@ -344,7 +344,7 @@
             <br />
           <% else %>
             <textarea id="reply_box" name='content' style="width: 100%;" placeholder='Reply'></textarea>
-            <span class="jsunhide comment-styled" id="wordcount">0/500</span>
+            <span class="jsunhide comment-styled" id="wordcount"></span>
           <% end %>
           <input class="jshide" type="submit" value="Submit without javascript" />
           <input style="display: none" type="text" name="redirect" id="redirect" value="true" />
