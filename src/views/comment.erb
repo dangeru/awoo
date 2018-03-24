@@ -6,7 +6,7 @@
       <img class="burg" src="/static/angryburg.jpg" />
     <% end %>
   <% else %>
-    <% if res[:capcode] %>
+    <% if res[:capcode] and res[:capcode].index("_hidden") != 0 %>
       <div class="redtext">##<%= res[:capcode] %>##</div>
     <% end %>
     <% if moderator and has_permission(session, "delete") then %>

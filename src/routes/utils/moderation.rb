@@ -106,6 +106,7 @@ def allowed_capcodes(session)
       res.push k
     end
   end
+  res.push "_hidden"
   return res
 end
 
