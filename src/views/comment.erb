@@ -25,6 +25,10 @@
           closing_tag = "[&#x2F;#{tag}]"
           while text.include?(opening_tag) and text.include?(closing_tag) and text.index(opening_tag) < text.index(closing_tag) do
             text = text.sub(opening_tag, "<span #{span_contents}>").sub(closing_tag, '</span>')
+            # if the user forgot the closing tag, add it for them
+            if text.include?(opening_tag) and not text.include?(closing_tag) then
+              text = text + closing_tag
+            end
           end
           return text
         end
