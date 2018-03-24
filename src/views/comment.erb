@@ -20,24 +20,45 @@
     <%
       clean = ->(text) do
         text = Awoo.clean(text)
-        apply_tag = ->(tag, span_contents, text) do
+        apply_tag = ->(tag, span_contents, text, needs_arg) do
           opening_tag = "[#{tag}]"
           closing_tag = "[&#x2F;#{tag}]"
-          while text.include?(opening_tag) and text.include?(closing_tag) and text.index(opening_tag) < text.index(closing_tag) do
-            text = text.sub(opening_tag, "<span #{span_contents}>").sub(closing_tag, '</span>')
+          if needs_arg
+            opening_tag = "\\[#{tag}(,.*)?\\]"
+            matched_opening = text.match(opening_tag)
+          end
+          # if the user forgot the closing tag, add it for them
+          if (needs_arg ? text.match(opening_tag) : text.include?(opening_tag)) and not text.include?(closing_tag) then
+            text = text + closing_tag
+          end
+          while
+              (needs_arg ? matched_opening : text.include?(opening_tag)) and
+              text.include?(closing_tag) and
+              (needs_arg ? matched_opening.begin(0) : text.index(opening_tag)) < text.index(closing_tag) do
+            if needs_arg then
+              arg = matched_opening[1]
+              arg = arg[1..arg.length-1]
+            end
+            t_span_contents = (needs_arg and arg) ? span_contents.sub('?', Awoo.clean(arg)) : span_contents
+            to_sub = needs_arg ? matched_opening[0] : opening_tag
+            text = text.sub(to_sub, "<span #{t_span_contents}>").sub(closing_tag, '</span>')
             # if the user forgot the closing tag, add it for them
-            if text.include?(opening_tag) and not text.include?(closing_tag) then
+            if (needs_arg ? text.match(opening_tag) : text.include?(opening_tag)) and not text.include?(closing_tag) then
               text = text + closing_tag
             end
           end
           return text
         end
-        text = apply_tag.call("spoiler", "class='spoiler'", text)
+        text = apply_tag.call("spoiler", "class='spoiler'", text, false)
         if res[:capcode] then
-          text = apply_tag.call("i", "style='font-style: italic'", text)
-          text = apply_tag.call("b", "style='font-weight: bold'", text)
-          text = apply_tag.call("u", "style='text-decoration: underline'", text)
-          text = apply_tag.call("s", "style='text-decoration: line-through'", text)
+          text = apply_tag.call("i", "style='font-style: italic'", text, false)
+          text = apply_tag.call("b", "style='font-weight: bold'", text, false)
+          text = apply_tag.call("u", "style='text-decoration: underline'", text, false)
+          text = apply_tag.call("s", "style='text-decoration: line-through'", text, false)
+          text = apply_tag.call("c", "style='color: ?'", text, true)
+          text = apply_tag.call("bg", "style='background-color: ?'", text, true)
+          text = apply_tag.call("g", "style='?'", text, true)
+          text = apply_tag.call("gg", "?", text, true)
         end
         text
       end
