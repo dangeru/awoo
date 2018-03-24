@@ -38,6 +38,7 @@ var btnListener = function btnListener(forScroll) {
 	var regex_connector = connector == "?" ? "\\?" : connector
 	var regex = new RegExp(regex_connector + "page=[0-9]+");
 	var url = href.replace(regex, connector + "page=" + page);
+	var prev_page_url = href.replace(regex, connector + "page=" + (page - 1));
 	console.log(url);
 	page++;
 	btn.innerText = "Loading...";
@@ -48,8 +49,8 @@ var btnListener = function btnListener(forScroll) {
 		if (this.readyState === done) {
 			console.log("Request done");
 			// only replace state on mobile
-			if (typeof(UnitedPropertiesIf) != 'undefined')
-				history.replaceState({}, window.title, url);
+			if (typeof(unitedPropertiesIf) != 'undefined')
+				history.replaceState({}, window.title, prev_page_url);
 			var parser = new DOMParser();
 			var doc = parser.parseFromString(xhr.responseText, "text/html");
 			// Fix for android pre-4.4.4
