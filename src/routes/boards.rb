@@ -37,7 +37,7 @@ module Sinatra
             ip = get_ip(request, env);
             if looks_like_spam(con, ip, env) then
               return [429, "Flood detected, post discarded"]
-            elsif title.length > 180 or content.length > 500 then
+            elsif (title.length > 180 or content.length > 500) and not session[:moderates] then
               return [431, "Post or title too long (over 500 characters)"]
             elsif Config.get["boards"][board]["hidden"] and not session[:username]
               return [403, "You have no janitor permissions"]
@@ -76,7 +76,7 @@ module Sinatra
             if make_metadata(con, parent, session)[:number_of_replies] >= Config.get["bump_limit"]
               return [400, "Bump limit reached"]
             end
-            if content.length > 500 then
+            if content.length > 500 and not session[:moderates] then
               return [431, "Reply too long (over 500 characters)"]
             end
             # Pull the IP address and check if it looks like spam
