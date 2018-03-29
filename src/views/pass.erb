@@ -1,0 +1,21 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>april fools</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" type="text/css" href="static/dangeru.css">
+    <link rel="shortcut icon" href="static/favicon.ico">
+  </head>
+
+  <body>
+    <a href="/"><img src="/static/logo.png" id="header" class="header-unbound"></a>
+    <div id="sitecorner">
+      <div id="title" style="text-align: center;">april fools</div>
+      <a onclick="window.history.back()">go back</a>
+    </div>
+    <footer class="comment">
+      <%= Config.get["footer"] %>, <a href="https://github.com/dangeru/awoo/" class="footer">Awoo <%= settings.awoo_version %></a>
+    </footer>
+  </body>
+</html>
+

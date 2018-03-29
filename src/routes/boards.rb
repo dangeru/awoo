@@ -553,6 +553,9 @@ module Sinatra
             end
             system("git pull")
           end
+          app.get "/pass/?" do
+            erb :pass
+          end
           app.after do
             if (Random.rand * 100).round == 92 then
               start = Time.new
