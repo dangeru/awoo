@@ -73,7 +73,7 @@ div {
     position: relative;
     padding: 20px;
 }
-textarea, #draggable > form > input[type='text'], .text_input {
+.textarea, textarea, #draggable > form > input[type='text'], .text_input {
     resize: none;
     background-color: #262626;
     color: white;
@@ -208,6 +208,12 @@ hr {
   height: 5px;
   border-top: 1px solid #343434;
 }
+#ad {
+  width: 20%;
+  position: fixed;
+  top: 0;
+  right: 0;
+}
 /* mobile beautifier */
 @media only screen and (max-width: 479px) {
     #maincontainer {
@@ -215,13 +221,13 @@ hr {
       border: none;
       padding: 0;
       borderRadius: 0;
-      width: 100%;
+      width: 80%;
     }
     #sitecorner {
       margin: 0;
       border: none;
       padding: 0;
-      width: 100%;
+      width: 80%;
     }
     img {
       width: 100%;

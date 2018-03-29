@@ -263,6 +263,9 @@
         </script>
   </head>
   <body onLoad='ol();'>
+    <a href="/pass">
+  <img id="ad" src="/static/ad.png" />
+    </a>
     <div id="sitecorner">
       <a href="/<%= path %>"><img src="<%= banner %>" alt="danger/u/"></a>
       <% if archived then %>
@@ -348,6 +351,12 @@
           <% end %>
           <input class="jshide" type="submit" value="Submit without javascript" />
           <input style="display: none" type="text" name="redirect" id="redirect" value="true" />
+            <div class="comment-styled">Enter the text below:</div>
+            <div style="text-align: center;">
+              <img src="<%= gen_capcha() %>" />
+            </div>
+            <input class="textarea" type="text" placeholder="Enter the text above" /><br />
+            <div style="font-size: 20px;" class="comment-styled">Bypass the capcha with a <a style="display: inline-block;" href="/pass">donger/u/ pass</a>!</div>
         </form>
         <button class="button_styled jsunhide" style="display: none;" onClick='submit_form(document.getElementById("form"), "/reply")' id="submit">Submit</button><br />
         <% if moderator and has_permission(session, "lock") %>

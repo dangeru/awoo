@@ -39,6 +39,15 @@ def new_banner(board)
     return "/static/logo.png"
   end
 end
+def gen_capcha()
+  # glob all banners from all boards
+  dirs = Dir['./static/static/capchas/*']
+  banner = dirs.select {|f| !File.directory? f}.sample
+
+  # gsub `./static` out of it
+  banner.sub! "./static", ""
+  return banner
+end
 
 # this function tries to get the IP from the request, and if we're behind a reverse proxy it tries to get it from the environment variables
 def get_ip(request, env)
