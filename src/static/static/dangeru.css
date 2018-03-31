@@ -209,8 +209,9 @@ hr {
   border-top: 1px solid #343434;
 }
 #ad {
-  width: 20%;
   position: fixed;
+  float: right;
+  width: 20%;
   top: 0;
   right: 0;
 }

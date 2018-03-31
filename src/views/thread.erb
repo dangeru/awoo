@@ -298,6 +298,7 @@
             <button class="button_styled" onClick="submit_form(document.getElementById('sticky-form'), '/sticky/<%= res[:post_id] %>')">Submit</button>
           <% end %>
         <% end %>
+        <a href="/pass" style="float: right;"><img style="max-width: 15px; max-height: 15px; display: inline;" src="/static/up.png"><img style="max-width: 15px; max-height: 15px; display: inline;" src="/static/down.png"></a>
         <%= erb :comment, :locals => {:board => path, :res => res, :moderator => moderator} %>
         <% last_date_modified = res[:date_posted] %>
         <% i += 1 %>
