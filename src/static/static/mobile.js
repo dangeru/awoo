@@ -49,6 +49,7 @@ if (typeof(unitedPropertiesIf) != "undefined") {
   }
   // This looks fragile
   var header = document.getElementsByTagName("img")[0];
+  if (header.id == "ad") header = document.getElementsByTagName("img")[1];
   if (header != null) {
     // Scale to the device width rather than a fixed 395px
     header.style.width = "100%";
