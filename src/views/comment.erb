@@ -24,7 +24,7 @@
           opening_tag = "[#{tag}]"
           closing_tag = "[&#x2F;#{tag}]"
           if needs_arg
-            opening_tag = "\\[#{tag}(,.*)?\\]"
+            opening_tag = "\\[#{tag}(,.*?)?\\]"
             matched_opening = text.match(opening_tag)
           end
           # if the user forgot the closing tag, add it for them
@@ -41,6 +41,11 @@
             end
             t_span_contents = (needs_arg and arg) ? span_contents.sub('?', Awoo.clean(arg)) : span_contents
             to_sub = needs_arg ? matched_opening[0] : opening_tag
+            if not text.include?(to_sub) or not text.include?(closing_tag) then
+              puts "ERROR"
+              puts "Could not find to_sub #{to_sub} or closing_tag #{closing_tag} in text #{text}"
+              break
+            end
             text = text.sub(to_sub, "<span #{t_span_contents}>").sub(closing_tag, '</span>')
             # if the user forgot the closing tag, add it for them
             if (needs_arg ? text.match(opening_tag) : text.include?(opening_tag)) and not text.include?(closing_tag) then
