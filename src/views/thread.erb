@@ -243,6 +243,7 @@
                 if (xhr.readyState == 4) {
                   if (xhr.status != 200) {
                     alert("errno = -EINVAL; return;\n\n" + xhr.responseText)
+                    return; // do not reload the page if there was an error
                   }
                   try {
                     var post_id = xhr.responseText.split("/")[1]
