@@ -32,14 +32,14 @@ var capcodePost = function capcodePost(id) {
 <div style="z-index: 100; font-size: 1em; font-family: sans-serif; background-color: #ddd; color: black; position: fixed; top: 10%; left: 10%; width: 60%; padding: 10%;" id="capcode_dialog">
 	Select the capcode for the post with id <span id="capcode_dialog_post_id"></span><br />
 	<select name="capcode" id="capcode_dialog_capcode">
-	  <option value="_hidden">None</option>
+	  <option value="_hidden">Hidden</option>
 	</select>
 	<br />
 	<button id="capcode_dialog_save">Go</button>
 	<button id="capcode_dialog_dismiss">Cancel</button>
 </div>
 */
-			dialog.outerHTML = "<div style=\"z-index: 100; font-size: 1em; font-family: sans-serif; background-color: #ddd; color: black; position: fixed; top: 10%; left: 10%; width: 60%; padding: 10%;\" id=\"capcode_dialog\">\n\tSelect the capcode for the post with id <span id=\"capcode_dialog_post_id\"></span><br />\n\t<select name=\"capcode\" id=\"capcode_dialog_capcode\">\n\t  <option value=\"_hidden\">None</option>\n\t</select>\n\t<br />\n\t<button id=\"capcode_dialog_save\">Go</button>\n\t<button id=\"capcode_dialog_dismiss\">Cancel</button>\n</div>\n"
+			dialog.outerHTML = "<div style=\"z-index: 100; font-size: 1em; font-family: sans-serif; background-color: #ddd; color: black; position: fixed; top: 10%; left: 10%; width: 60%; padding: 10%;\" id=\"capcode_dialog\">\n\tSelect the capcode for the post with id <span id=\"capcode_dialog_post_id\"></span><br />\n\t<select name=\"capcode\" id=\"capcode_dialog_capcode\">\n\t  <option value=\"_hidden\">Hidden</option>\n\t</select>\n\t<br />\n\t<button id=\"capcode_dialog_save\">Go</button>\n\t<button id=\"capcode_dialog_dismiss\">Cancel</button>\n</div>\n"
 			document.getElementById("capcode_dialog_post_id").innerText = id;
 			var dropdown = document.getElementById("capcode_dialog_capcode");
 			list.forEach(function(elem) {

@@ -1,6 +1,6 @@
 <span class="comment-styled">Capcode: </span>
 <select name="capcode" id="capcode">
-  <option value="_hidden">None</option>
+  <option value="_hidden">Hidden</option>
   <% allowed_capcodes(session).each do |code| %>
     <% if code == "_hidden" then next end %>
     <option value="<%= code %>"><%= code %></option>
