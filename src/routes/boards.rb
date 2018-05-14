@@ -5,7 +5,6 @@
 #
 
 require 'mysql2'
-require 'sanitize'
 
 require_relative 'utils'
 

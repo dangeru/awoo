@@ -72,6 +72,7 @@
           }
           var confirm_reload = function confirm_reload() {
             var span = document.createElement("span");
+            // TODO extract these styles into a class so they can be themed later
             span.style.backgroundColor = "black";
             span.style.border = "4px solid #ED145B";
             span.style.padding = "6px";
@@ -147,11 +148,6 @@
                 }
               }
             <% end %>
-            // Android 4.4.4 doesn't have the padStart method on strings so we have to do it ourselves
-            var padStart = function padStart(str, len, char) {
-              while (str.length < len) str = char + str;
-              return str;
-            }
             // If userscript is disabled, update prop here. Otherwise it will be updated by the userscript
             if (typeof(unitedPropertiesIf) != "undefined" && unitedPropertiesIf.getProperty("userscript").toUpperCase() != "TRUE") {
               unitedPropertiesIf.setProperty(window.board + ":" + window.id, total_number_of_posts.toString());
@@ -171,7 +167,15 @@
                   if (!color.match(RegExp("[0-9a-fA-F]{6}"))) {
                     return;
                   }
-                  color = "#" + padStart(color, 6, "0");
+                  // Only color it if this ID exists on this page.
+                  var coloring_allowed = false;
+                  Array.prototype.slice.call(document.getElementsByClassName("hash")).forEach(function(hash_elem) {
+                    if (hash_elem.innerText == color)
+                      coloring_allowed = true;
+                  });
+                  if (!coloring_allowed) return;
+                  // don't need to pad to to 6 characters because we matched {6} above
+                  color = "#" + color;
                   elem.style.color = color;
                   elem.previousSibling.style.color = color;
                   elem.addEventListener("click", function() {
