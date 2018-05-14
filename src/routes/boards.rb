@@ -445,6 +445,31 @@ module Sinatra
               return [403, "You have no janitor privileges or you don't have the permissions to perform this action."]
             end
           end
+          app.get "/capcode/:post/?" do |post|
+            if not session[:moderates] then
+              return [403, "You have no janitor privileges or you don't have the permissions to perform this action."]
+            end
+            if not params[:capcode] then
+              return [400, "Missing capcode parameter"]
+            end
+            if not allowed_capcodes(session).include?(params[:capcode]) then
+              return [403, "You do not have the permission to use any capcode other than these: " + JSON.dump(allowed_capcodes(session))]
+            end
+            post = post.to_i
+            con = make_con()
+            res = nil
+            query(con, "select * from posts where post_id = ?", post).each do |ress| res = ress end
+            if not res
+              return [400, "That post does not exist"]
+            end
+            res = make_metadata_from_hash(res, session);
+            capcode = params[:capcode]
+            if capcode != "_hidden" then
+              capcode += ":" + session[:username]
+            end
+            query(con, "update posts set janitor = ? where post_id = ?", capcode, post)
+            return redirect("/" + res[:board] + "/thread/" + (res[:parent] ? res[:parent] : post).to_s + "#comment-" + post.to_s)
+          end
 
           # Ban / Unban an IP
           app.post "/ban/:ip" do |ip|

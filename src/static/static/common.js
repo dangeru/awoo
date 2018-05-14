@@ -13,11 +13,52 @@ var stickyPost = function unlockPost(id) {
 var unstickyPost = function unlockPost(id) {
 	window.location.href = "/unsticky/" + id.toString();
 }
-var uncapcode = function uncapcode(id) {
+var uncapcodePost = function uncapcodePost(id) {
 	window.location.href = "/uncapcode/" + id.toString();
 }
-var unban = function unban(addr, board) {
-	alert("You tried to unban " + addr + " from the board " + board + ", but it's not implemented yet");
+var capcodePost = function capcodePost(id) {
+	var xhr = new XMLHttpRequest();
+	xhr.onreadystatechange = function() {
+		if (xhr.readyState == 4) {
+			if (xhr.status != 200) {
+				alert("errno = -EINVAL; return;\n\n" + xhr.responseText)
+			}
+			var list = JSON.parse(xhr.responseText);
+			var existing_dialog = document.getElementById("capcode_dialog");
+			if (existing_dialog != null) existing_dialog.outerHTML = "";
+			var dialog = document.createElement("div");
+			document.body.appendChild(dialog);
+			/*
+<div style="z-index: 100; font-size: 1em; font-family: sans-serif; background-color: #ddd; color: black; position: fixed; top: 10%; left: 10%; width: 60%; padding: 10%;" id="capcode_dialog">
+	Select the capcode for the post with id <span id="capcode_dialog_post_id"></span><br />
+	<select name="capcode" id="capcode_dialog_capcode">
+	  <option value="_hidden">None</option>
+	</select>
+	<br />
+	<button id="capcode_dialog_save">Go</button>
+	<button id="capcode_dialog_dismiss">Cancel</button>
+</div>
+*/
+			dialog.outerHTML = "<div style=\"z-index: 100; font-size: 1em; font-family: sans-serif; background-color: #ddd; color: black; position: fixed; top: 10%; left: 10%; width: 60%; padding: 10%;\" id=\"capcode_dialog\">\n\tSelect the capcode for the post with id <span id=\"capcode_dialog_post_id\"></span><br />\n\t<select name=\"capcode\" id=\"capcode_dialog_capcode\">\n\t  <option value=\"_hidden\">None</option>\n\t</select>\n\t<br />\n\t<button id=\"capcode_dialog_save\">Go</button>\n\t<button id=\"capcode_dialog_dismiss\">Cancel</button>\n</div>\n"
+			document.getElementById("capcode_dialog_post_id").innerText = id;
+			var dropdown = document.getElementById("capcode_dialog_capcode");
+			list.forEach(function(elem) {
+				if (elem == "_hidden") return;
+				var option = document.createElement("option")
+				option.value = elem;
+				option.innerText = elem;
+				dropdown.appendChild(option);
+			});
+			document.getElementById("capcode_dialog_save").addEventListener("click", function() {
+				window.location.href = "/capcode/" + id + "?capcode=" + encodeURIComponent(dropdown.selectedOptions[0].value);
+			});
+			document.getElementById("capcode_dialog_dismiss").addEventListener("click", function() {
+				document.getElementById("capcode_dialog").outerHTML = "";
+			});
+		}
+	}
+	xhr.open("GET", "/api/v2/allowed_capcodes");
+	xhr.send();
 }
 var doWordcount = function doWordcount(comment_id, mod) {
 	var comment = document.getElementById(comment_id);
@@ -35,7 +76,7 @@ var doWordcount = function doWordcount(comment_id, mod) {
 			wc.classList.add("comment-styled");
 		}
 		if (submit != null) {
-			submit.disabled = (len > 500 && !mod) ? true : false;
+			submit.disabled = len > 500 && !mod;
 			submit.className = (len > 500 && !mod) ? "special_styled" : "button_styled";
 		}
 		wc.innerText = len + "/" + (mod ? "Unlimited" : "500");

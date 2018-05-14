@@ -98,6 +98,9 @@ module Sinatra
               ress = get_notifier_replies(params, con, session)
               return JSON.dump(ress);
             end
+            get "/allowed_capcodes/?" do
+              return JSON.dump(allowed_capcodes(session));
+            end
           end
         end
       end
