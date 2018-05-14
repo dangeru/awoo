@@ -102,7 +102,7 @@
     <span <%= hide_newthread %> id="newthread"><%= newthread_text %></span>
     <div id="draggable" class="ui-widget-content">
       <% if not archive %>
-        <form action="/post" method="post" name="newthread">
+        <form action="/post" method="post" name="newthread" onSubmit='var submit = document.getElementById("submit"); submit.disabled = true; submit.classList.remove("button_styled"); submit.classList.add("special_styled")'>
           <% if path == "all" %>
             Post to:
             <select name="board" id="board">
