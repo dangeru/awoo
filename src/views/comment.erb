@@ -6,11 +6,14 @@
       <img class="burg" src="/static/angryburg.jpg" />
     <% end %>
   <% else %>
-    <% if res[:capcode] and res[:capcode].index("_hidden") != 0 %>
+    <% if res[:capcode] and res[:capcode] != "_hidden" %>
       <div class="redtext">##<%= res[:capcode] %>##</div>
     <% end %>
     <% if moderator and has_permission(session, "delete") then %>
       <i class="fa fa-trash offset-left" aria-hidden="true" onClick='deletePost(<%= res[:post_id] %>)'></i>
+    <% end %>
+    <% if moderator and res[:capcode] and ((res[:capcode] == "_hidden" and res[:ip] == get_ip(request, env)) or res[:capcode].split(":")[1] == session[:username]) %>
+      <i style="text-decoration: line-through;" class="fa fa-bold offset-left" aria-hidden="true" onClick='uncapcode(<%= res[:post_id] %>)'></i>
     <% end %>
     <% if moderator and has_permission(session, "view_ips") then %>
       <a style="display: inline-block; font-size: 50%;" href="/ip/<%= res[:ip] %>"><%= res[:ip] %></a>

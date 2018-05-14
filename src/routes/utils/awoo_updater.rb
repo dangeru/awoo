@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS archived_posts (
     end
     con.query "SET sql_notes = 1;"
     query(con, "UPDATE archived_posts SET burg_total = ?, burg_burg = ? WHERE board != ?", 0, 0, "burg")
+    query(con, "UPDATE posts SET janitor = ? WHERE janitor like ?", "_hidden", "_hidden:%")
   end
   def self.userscript_pull()
     #system("git -C #{File.dirname(__FILE__) + "/../../static/static/awoo-catalog"} pull")

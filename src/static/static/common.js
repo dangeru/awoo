@@ -13,6 +13,9 @@ var stickyPost = function unlockPost(id) {
 var unstickyPost = function unlockPost(id) {
 	window.location.href = "/unsticky/" + id.toString();
 }
+var uncapcode = function uncapcode(id) {
+	window.location.href = "/uncapcode/" + id.toString();
+}
 var unban = function unban(addr, board) {
 	alert("You tried to unban " + addr + " from the board " + board + ", but it's not implemented yet");
 }

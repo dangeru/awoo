@@ -423,6 +423,25 @@ module Sinatra
             con = make_con()
             sticky_unsticky(post_id, false, con, session)
           end
+          app.get "/uncapcode/:post/?" do |post|
+            if not session[:moderates] then
+              return [403, "You have no janitor privileges or you don't have the permissions to perform this action."]
+            end
+            post = post.to_i
+            con = make_con()
+            res = nil
+            query(con, "select * from posts where post_id = ?", post).each do |ress| res = ress end
+            if not res
+              return [400, "That post does not exist"]
+            end
+            res = make_metadata_from_hash(res, session);
+            if ((res[:capcode] == "_hidden" and res[:ip] == get_ip(request, env)) or res[:capcode].split(":")[1] == session[:username]) then
+              query(con, "update posts set janitor = null where post_id = ?", post)
+              return redirect("/" + res[:board] + "/thread/" + (res[:parent] ? res[:parent] : post).to_s + "#comment-" + post.to_s)
+            else
+              return [403, "You have no janitor privileges or you don't have the permissions to perform this action."]
+            end
+          end
 
           # Ban / Unban an IP
           app.post "/ban/:ip" do |ip|
