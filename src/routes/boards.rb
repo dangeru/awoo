@@ -52,7 +52,9 @@ module Sinatra
             end
             # Insert the new post into the database
             if params[:capcode] and params[:capcode].length > 0 and allowed_capcodes(session).include? params[:capcode] and session[:username] then
-              query(con, "INSERT INTO posts (board, title, content, ip, janitor) VALUES (?, ?, ?, ?, ?)", board, title, content, ip, params[:capcode] + ":" + session[:username]);
+              capcode = params[:capcode];
+              capcode += capcode == "_hidden" ? "" : (":" + session[:username])
+              query(con, "INSERT INTO posts (board, title, content, ip, janitor) VALUES (?, ?, ?, ?, ?)", board, title, content, ip, capcode);
             else
               query(con, "INSERT INTO posts (board, title, content, ip) VALUES (?, ?, ?, ?)", board, title, content, ip);
             end
@@ -101,7 +103,9 @@ module Sinatra
             end
             # Insert the new reply
             if params[:capcode] and params[:capcode].length > 0 and allowed_capcodes(session).include? params[:capcode] and session[:username] then
-              query(con, "INSERT INTO posts (board, parent, content, ip, title, janitor) VALUES (?, ?, ?, ?, NULL, ?)", board, parent, content, ip, params[:capcode] + ":" + session[:username])
+              capcode = params[:capcode];
+              capcode += capcode == "_hidden" ? "" : (":" + session[:username])
+              query(con, "INSERT INTO posts (board, parent, content, ip, title, janitor) VALUES (?, ?, ?, ?, NULL, ?)", board, parent, content, ip, capcode)
             else
               query(con, "INSERT INTO posts (board, parent, content, ip, title) VALUES (?, ?, ?, ?, NULL)", board, parent, content, ip)
             end
