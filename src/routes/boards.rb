@@ -238,6 +238,7 @@ module Sinatra
             parent = nil
             ip = post_content = title = nil
             # First, figure out which board that post is on
+            # TODO refactor to use the unified load interface
             query(con, "SELECT content, title, ip, board, parent FROM posts WHERE post_id = ?", post_id).each do |res|
               board = res["board"]
               parent = res["parent"]
@@ -257,9 +258,11 @@ module Sinatra
             content = ""
             if title then
               content += "Post deleted\n"
+              content += "Board: " + board + "\n"
               content += wrap("title", title)
             else
               content += "Reply deleted\n"
+              content += "Was a reply to /" + board + "/" + parent.to_s + "\n"
             end
             content += wrap("comment", post_content)
             query(con, "INSERT INTO ip_notes (ip, content, actor) VALUES (?, ?, ?)", ip, content, session[:username]) unless ip.nil?
