@@ -161,7 +161,12 @@ module Sinatra
                 return [404, erb(:notfound)]
               end
               if does_thread_exist(id, path, con)
-                erb :thread, :locals => {:config => Config.get, :path => path, :id => id, :con => con, :banner => new_banner(path), :moderator => is_moderator(path, session), :session => session, :params => params, :replies => get_thread_replies(id.to_i.to_s, session, con), :archived => false, :your_hash => make_hash(get_ip(request, env), id)}
+                # if the user is a moderator, they should be able to add capcodes to posts made by their IP
+                # but IPs aren't returned from get_thread_replies unless the user is a moderator of that board
+                # so we pass bypass=true to get_thread_replies to force it to include IPs if the user is a moderator
+                # These IPs are not displayed to the user in the view unless :moderator is set to true, so we still don't
+                # leak IP data out to moderators who don't moderate this board
+                erb :thread, :locals => {:config => Config.get, :path => path, :id => id, :con => con, :banner => new_banner(path), :moderator => is_moderator(path, session), :session => session, :params => params, :replies => get_thread_replies(id.to_i.to_s, session, con, session[:moderates]), :archived => false, :your_hash => make_hash(get_ip(request, env), id)}
               elsif does_archived_thread_exist(id, path, con)
                 erb :thread, :locals => {:config => Config.get, :path => path, :id => id, :con => con, :banner => new_banner(path), :moderator => false, :session => Hash.new, :params => Hash.new, :replies => get_archived_thread_replies(id.to_i), :archived => true, :your_hash => "FFFFFF"}
               else

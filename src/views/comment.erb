@@ -12,10 +12,11 @@
     <% if moderator and has_permission(session, "delete") then %>
       <i class="fa fa-trash offset-left" aria-hidden="true" onClick='deletePost(<%= res[:post_id] %>)'></i>
     <% end %>
-    <% if moderator and res[:capcode] and ((res[:capcode] == "_hidden" and res[:ip] == get_ip(request, env)) or res[:capcode].split(":")[1] == session[:username]) %>
+    <% puts get_ip(request, env), res[:ip] %>
+    <% if session[:moderates] and res[:capcode] and ((res[:capcode] == "_hidden" and res[:ip] == get_ip(request, env)) or res[:capcode].split(":")[1] == session[:username]) %>
       <i style="text-decoration: line-through; color: red;" class="fa fa-bold offset-left" aria-hidden="true" onClick='uncapcodePost(<%= res[:post_id] %>)'></i>
     <% end %>
-    <% if moderator and not res[:capcode] and res[:ip] == get_ip(request, env) %>
+    <% if session[:moderates] and not res[:capcode] and res[:ip] == get_ip(request, env) %>
       <i class="fa fa-bold offset-left" aria-hidden="true" onClick='capcodePost(<%= res[:post_id] %>)'></i>
     <% end %>
     <% if moderator and has_permission(session, "view_ips") then %>
