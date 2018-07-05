@@ -1,11 +1,11 @@
 <% if res[:parent] then %>
-  <div class="comment">Reply to
+  <div class="comment-styled">Reply to
   <%# Links directly to highlight that reply in the thread %>
   <a style='display: inline-block;' href="/<%= res[:board] %>/thread/<%= res[:parent] %>#comment-<%= res[:post_id] %>">
     <%= Awoo.clean(res[:linked_title]) %>
   </a>
 <% else %>
-  <div class="comment">OP with title <a style='display: inline-block;' href="/<%= res[:board] %>/thread/<%= res[:post_id] %>"><%= Awoo.clean res[:title] %></a>
+  <div class="comment-styled">OP with title <a style='display: inline-block;' href="/<%= res[:board] %>/thread/<%= res[:post_id] %>"><%= Awoo.clean res[:title] %></a>
 <% end %>
 in /<%= res[:board] %>/ on <%= (res[:date_posted] != 0) ? Time.at(res[:date_posted]).strftime('%c') : "???" %>.
 </div>

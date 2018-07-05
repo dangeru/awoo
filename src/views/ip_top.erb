@@ -18,7 +18,7 @@
       <form action="/ips" method="GET">
         Showing posts in the last
         <input name="days" id="days" value="<%= Awoo.clean days %>" /> days
-        <input type="submit" class="button" />
+        <input type="submit" class="button_styled" />
       </form>
       <% query(con, "SELECT ip, count(*) as count from posts where board in (#{(["?"] * boards.length).join ","}) and unix_timestamp(date_posted) > ? group by ip order by count desc", *boards, Time.new.to_i - (days.to_i * 24 * 60 * 60)).each do |res| %>
         <div class="comment-styled">IP: <a href="/ip/<%= Awoo.clean(res["ip"])%>" style="display: inline-block;" class-"red"><%= Awoo.clean(res["ip"])%></a></div>
