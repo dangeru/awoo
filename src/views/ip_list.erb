@@ -30,7 +30,7 @@
         xhr.onreadystatechange = function() {
             if (xhr.readyState == 4) {
               if (xhr.status != 200) {
-                alert("errno = -EINVAL; return;\n\n" + xhr.responseText)
+                //alert("errno = -EINVAL; return;\n\n" + xhr.responseText)
               }
               window.location.reload();
             }
