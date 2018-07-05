@@ -1,0 +1,33 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>Awoo - Ban List</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" type="text/css" href="static/dangeru.css">
+    <link rel="shortcut icon" href="static/favicon.ico">
+  </head>
+  <body>
+    <br />
+    <a href="/"><img src="/static/logo.png" alt="danger/u/" id="header" class="header-unbound"></a>
+    <div id="maincontainer">
+      <div class="title" class="red">Showing Global IP List by posts</div>
+      <br>
+      <% boards = session[:moderates] %>
+      <% if is_moderator("all", session) then boards = Config.get["boards"].keys; end %>
+      <% days = params["days"] || 365 * 15 %>
+      <form action="/ips" method="GET">
+        Showing posts in the last
+        <input name="days" id="days" value="<%= Awoo.clean days %>" /> days
+        <input type="submit" class="button" />
+      </form>
+      <% query(con, "SELECT ip, count(*) as count from posts where board in (#{(["?"] * boards.length).join ","}) and unix_timestamp(date_posted) > ? group by ip order by count desc", *boards, Time.new.to_i - (days.to_i * 24 * 60 * 60)).each do |res| %>
+        <div class="comment-styled">IP: <a href="/ip/<%= Awoo.clean(res["ip"])%>" style="display: inline-block;" class-"red"><%= Awoo.clean(res["ip"])%></a></div>
+        <div class="comment-styled">Total posts to your boards: <span class="redtext"><%= res["count"] %></span></div>
+        <hr />
+      <% end %>
+    </div>
+    <footer class="comment">
+      <%= Config.get["footer"] %>, <a href="https://github.com/dangeru/awoo/" class="footer">Awoo <%= settings.awoo_version %></a>
+    </footer>
+  </body>
+</html>

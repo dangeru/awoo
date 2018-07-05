@@ -38,6 +38,37 @@
         xhr.open("POST", route);
         xhr.send(data);
       }
+      var delete_all = function delete_all() {
+        var str = Math.random().toString(36).substr(2, 8);
+        var comments = [];
+        if (confirm("ARE YOU REALLY SURE - THIS WILL DELETE ALL POSTS YOU CAN SEE") && prompt("Type " + str + " to confirm you want to delete all visible posts by this user. Posts on boards you do not moderate will not be deleted.") == str) {
+          Array.prototype.slice.call(document.getElementsByClassName("comment"), 0).forEach(function(c) {
+            if (c.id && c.id.indexOf("comment-") == 0) {
+              var cid = c.id.replace("comment-", "");
+              comments.push(cid);
+            }
+          })
+        } else {
+          return;
+        }
+        var done = 0;
+        comments.forEach(function(id) {
+          var xhr = new XMLHttpRequest();
+          xhr.onreadystatechange = function() {
+            if (xhr.readyState == 4) {
+              if (xhr.status != 200) {
+                alert("errno = -EINVAL; return;\n\n" + xhr.responseText)
+              }
+              done += 1;
+              if (done == comments.length) {
+                window.location.reload();
+              }
+            }
+          };
+          xhr.open("GET", "/delete/" + id);
+          xhr.send();
+        })
+      }
     </script>
   </head>
   <body>
@@ -69,6 +100,9 @@
             <button onClick="submit_form(document.getElementById('<%= id %>'), '/unban/<%= Awoo.clean(addr) %>')">Unban</button>
           <% end %>
         </h3>
+      <% end %>
+      <% if has_permission(session, "delete") %>
+        <button onClick="delete_all()">Delete all posts</button>
       <% end %>
       <%# We're actually left joining the table `posts` on itself here to get the title of the OP the comment is replying to, if there is one %>
       <span id="hover" class="comment" style="display: none"></span>

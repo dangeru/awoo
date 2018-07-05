@@ -496,13 +496,21 @@ module Sinatra
             end
           end
           app.post "/unban/:ip" do |ip|
-            con = make_con()
             if is_moderator(params[:board], session) and has_permission(session, "ban") then
+              con = make_con()
               board = params[:board]
               # delete the ban and insert the ip note
               query(con, "DELETE FROM bans WHERE ip = ? AND board = ?", ip, board)
               query(con, "INSERT INTO ip_notes (ip, content, actor) VALUES (?, ?, ?)", ip, "Unbanned from /" + board + "/", session[:username])
               return "OK"
+            else
+              return [403, "You have no janitor privileges or you don't have the permissions to perform this action."]
+            end
+          end
+          app.get "/ips" do
+            if session[:moderates] and has_permission(session, "view_ips") then
+              con = make_con();
+              erb :ip_top, :locals => {:con => con}
             else
               return [403, "You have no janitor privileges or you don't have the permissions to perform this action."]
             end

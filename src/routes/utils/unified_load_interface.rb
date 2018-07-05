@@ -274,7 +274,7 @@ def get_notifier_replies(params, con, session)
     return []
   end
   if ids.length == 0 then return [] end
-  allowed_boards = get_viewable_boards(session, Config.get["boards"].map { |k, v| k })
+  allowed_boards = get_viewable_boards(session, Config.get["boards"].keys)
   allowed_boards = "(" + (allowed_boards.reduce([]) do |acc, k| acc.push("'" + con.escape(k) + "'") end.join ",") + ")"
   where_clause = ids.map do |id| 'content like ?' end
   where_params = ids.map do |id| '%>>' + id.to_i.to_s + '%' end
