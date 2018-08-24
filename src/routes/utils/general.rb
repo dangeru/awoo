@@ -42,12 +42,7 @@ end
 
 # this function tries to get the IP from the request, and if we're behind a reverse proxy it tries to get it from the environment variables
 def get_ip(request, env)
-  ip = request.ip
-  if ip == "127.0.0.1"
-    ip = env["HTTP_X_FORWARDED_FOR"]
-  end
-  ip = "127.0.0.1" if ip.nil?
-  return ip
+  env["HTTP_CF_CONNECTING_IP"] || env["HTTP_X_FORWARDED_FOR"] || request.ip
 end
 
 # read mobile.js into a string so the client on the phone doesn't have to make an extra request for it
