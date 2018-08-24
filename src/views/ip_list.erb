@@ -62,6 +62,7 @@
         <br />
       <% end %>
       <% boards = session[:moderates].map do |f| con.escape(f) end %>
+      <% if boards.include?("all") then boards = Config.get["boards"].keys; end %>
       <% boards = "('" + boards.join("', '") + "')" %>
       <% query(con, "SELECT reason, board, date_of_unban FROM bans WHERE ip = ? AND board IN #{boards} AND date_of_unban > CURRENT_TIMESTAMP()", addr).each do |res| %>
         <% id = Digest::SHA256.hexdigest(res["board"] + res["reason"]) %>

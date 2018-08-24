@@ -285,13 +285,18 @@ module Sinatra
             con = make_con()
             # Check if the currently logged in user has permission to moderate that board
             if not session[:moderates] or not has_permission(session, "delete")
-              return [403, "You are not logged in or you do not have permissions to perform this action on board " + board]
+              return [403, "You are not logged in or you do not have permissions to perform this action"]
             end
             # Insert an IP note
-            content = "ALL POSTS DELETED"
+            boards = session[:moderates]
+            if boards.include? "all"
+              boards = Config.get["boards"].keys
+            end
+            content = "ALL POSTS DELETED FROM THE FOLLOWING BOARDS: " + (boards.join(", "))
+            qmarks = (["?"] * boards.length).join(",")
             query(con, "INSERT INTO ip_notes (ip, content, actor) VALUES (?, ?, ?)", ip, content, session[:username])
             # delete the posts
-            query(con, "DELETE FROM posts WHERE ip = ?", ip)
+            query(con, "DELETE FROM posts WHERE ip = ? AND board IN (" + qmarks + ")", ip, *boards)
             return redirect("/ip/" + ip)
           end
 
