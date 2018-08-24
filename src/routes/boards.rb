@@ -281,6 +281,20 @@ module Sinatra
             end
           end
 
+          app.get "/ip/:ip/delete_all" do |ip|
+            con = make_con()
+            # Check if the currently logged in user has permission to moderate that board
+            if not session[:moderates] or not has_permission(session, "delete")
+              return [403, "You are not logged in or you do not have permissions to perform this action on board " + board]
+            end
+            # Insert an IP note
+            content = "ALL POSTS DELETED"
+            query(con, "INSERT INTO ip_notes (ip, content, actor) VALUES (?, ?, ?)", ip, content, session[:username])
+            # delete the posts
+            query(con, "DELETE FROM posts WHERE ip = ?", ip)
+            return redirect("/ip/" + ip)
+          end
+
           app.get "/mobile/?" do
             redirect("/", 303);
           end

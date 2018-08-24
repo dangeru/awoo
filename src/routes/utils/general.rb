@@ -8,7 +8,7 @@ require 'mysql2'
 
 # Helper function for connecting to the database
 def make_con()
-  return Mysql2::Client.new(:host => "localhost", :username => "awoo", :password => "awoo", :database => "awoo")
+  return Mysql2::Client.new(:host => "localhost", :username => "awoo", :password => "awoo123roseCodaRaspAnvil!", :database => "awoo")
 end
 
 def query(con, stmt, *args)

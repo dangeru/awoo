@@ -39,35 +39,7 @@
         xhr.send(data);
       }
       var delete_all = function delete_all() {
-        var str = Math.random().toString(36).substr(2, 8);
-        var comments = [];
-        if (confirm("ARE YOU REALLY SURE - THIS WILL DELETE ALL POSTS YOU CAN SEE") && prompt("Type " + str + " to confirm you want to delete all visible posts by this user. Posts on boards you do not moderate will not be deleted.") == str) {
-          Array.prototype.slice.call(document.getElementsByClassName("comment"), 0).forEach(function(c) {
-            if (c.id && c.id.indexOf("comment-") == 0) {
-              var cid = c.id.replace("comment-", "");
-              comments.push(cid);
-            }
-          })
-        } else {
-          return;
-        }
-        var done = 0;
-        comments.forEach(function(id) {
-          var xhr = new XMLHttpRequest();
-          xhr.onreadystatechange = function() {
-            if (xhr.readyState == 4) {
-              if (xhr.status != 200) {
-                alert("errno = -EINVAL; return;\n\n" + xhr.responseText)
-              }
-              done += 1;
-              if (done == comments.length) {
-                window.location.reload();
-              }
-            }
-          };
-          xhr.open("GET", "/delete/" + id);
-          xhr.send();
-        })
+        window.location.href = window.location.href + "/delete_all"
       }
     </script>
   </head>
