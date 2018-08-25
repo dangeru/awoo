@@ -35,6 +35,7 @@ class Awoo < Sinatra::Base
     set :port, config['port']
     set :awoo_version, '1.0.0'
     set :public_folder, File.dirname(__FILE__) + '/static'
+	set :xsrf, {}
     ThreadGC.prune!
   end
   set :root, File.dirname(__FILE__)

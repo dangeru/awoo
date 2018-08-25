@@ -352,6 +352,7 @@
           <% end %>
           <input class="jshide" type="submit" value="Submit without javascript" />
           <input style="display: none" type="text" name="redirect" id="redirect" value="true" />
+          <input style="display: none" type="text" name="xsrf" id="xsrf" value="<%= Xsrf.reply(path, id.to_i).token %>" />
         </form>
         <button class="button_styled jsunhide" style="display: none;" onClick='submit_form(document.getElementById("form"), "/reply")' id="submit">Submit</button><br />
         <% if moderator and has_permission(session, "lock") %>
