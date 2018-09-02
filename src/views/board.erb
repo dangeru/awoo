@@ -137,7 +137,7 @@
             <% end %>
             <div id="wordcount" class="comment" style="float: left;"></div><br />
           <% end %>
-          <input style="display: none" type="text" name="xsrf" id="xsrf" value="<%= Xsrf.board(path).token %>" />
+          <%= erb :captcha, :locals => {:value => Xsrf.board(path)} %>
           <input type="submit" id="submit" name="submit" class="button_styled" value="Send" /><br />
         </form>
       <% end %>

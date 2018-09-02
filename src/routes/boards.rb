@@ -42,8 +42,8 @@ module Sinatra
               return [403, "You have no janitor permissions"]
             elsif board == "all"
               return [400, "stop that"]
-            elsif !Xsrf.validate(board, 0, params[:xsrf])
-              return [400, "Cross-site request forgery detected, post discarded"]
+            elsif !session[:moderates] && !Xsrf.validate(board, 0, params[:xsrf], params[:captcha])
+              return [400, "Captcha incorrect, post discarded"]
             end
             title = apply_word_filters(board, title)
             content = apply_word_filters(board, content)
@@ -82,8 +82,8 @@ module Sinatra
             if content.length > 500 and not session[:moderates] then
               return [431, "Reply too long (over 500 characters)"]
             end
-            if !Xsrf.validate(board, parent, params[:xsrf])
-              return [400, "Cross-site request forgery detected, post discarded"]
+            if !session[:moderates] && !Xsrf.validate(board, parent, params[:xsrf], params[:captcha])
+              return [400, "Captcha incorrect, post discarded"]
             end
             # Pull the IP address and check if it looks like spam
             ip = get_ip(request, env);

@@ -247,6 +247,8 @@
                 if (xhr.readyState == 4) {
                   if (xhr.status != 200) {
                     alert("errno = -EINVAL; return;\n\n" + xhr.responseText)
+                    document.getElementById("submit").innerText = "Submit";
+                    document.getElementById("submit").disabled = false;
                     return; // do not reload the page if there was an error
                   }
                   try {
@@ -352,7 +354,7 @@
           <% end %>
           <input class="jshide" type="submit" value="Submit without javascript" />
           <input style="display: none" type="text" name="redirect" id="redirect" value="true" />
-          <input style="display: none" type="text" name="xsrf" id="xsrf" value="<%= Xsrf.reply(path, id.to_i).token %>" />
+          <%= erb :captcha, :locals => {:value => Xsrf.reply(path, id.to_i)} %>
         </form>
         <button class="button_styled jsunhide" style="display: none;" onClick='submit_form(document.getElementById("form"), "/reply")' id="submit">Submit</button><br />
         <% if moderator and has_permission(session, "lock") %>

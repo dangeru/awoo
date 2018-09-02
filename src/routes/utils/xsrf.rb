@@ -1,4 +1,4 @@
-XsrfToken = Struct.new(:token, :type, :board, :parent, :expiry)
+XsrfToken = Struct.new(:token, :type, :board, :parent, :expiry, :text)
 XsrfTTL = 60 * 60
 class Xsrf
   def self.gensym
@@ -6,34 +6,49 @@ class Xsrf
   end
 
   def self.reply(board, parent)
-    token = gensym
-    Awoo.xsrf[token] = XsrfToken.new(token, :reply, board, parent, Time.new.to_i + XsrfTTL)
+    if !Config.get[:captcha]
+      return false
+    end
+    sym = gensym
+    text = make_text
+    token = XsrfToken.new(sym, :reply, board, parent, Time.new.to_i + XsrfTTL, text[0])
+    Awoo.xsrf[sym] = token
+    [token, text[1]]
   end
 
   def self.board(board)
-    token = gensym
-    Awoo.xsrf[token] = XsrfToken.new(token, :reply, board, 0, Time.new.to_i + XsrfTTL)
+    if !Config.get[:captcha]
+      return false
+    end
+    sym = gensym
+    text = make_text
+    token = XsrfToken.new(sym, :reply, board, 0, Time.new.to_i + XsrfTTL, text[0])
+    Awoo.xsrf[sym] = token
+    [token, text[1]]
   end
 
-  def self._validate(board, parent, token)
+  def self._validate(board, parent, token, text)
     token = Awoo.xsrf[token]
     if token.nil? || token.expiry < Time.new.to_i
       return false
     end
     if token[:type] == :board && token[:board] == "all"
-      return true
+      return text == token.text
     end
     if token[:type] == :board && token[:board] == board
-      return true
+      return text == token.text
     end
     if token[:type] == :reply && token[:parent] == parent
-      return true
+      return text == token.text
     end
     return false
   end
   
-  def self.validate(board, parent, token)
-    result = _validate(board, parent, token)
+  def self.validate(board, parent, token, text)
+    if !Config.get[:captcha]
+      return true
+    end
+    result = _validate(board, parent, token, text)
     if result
       Awoo.xsrf.delete token
     end
