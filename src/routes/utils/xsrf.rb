@@ -6,7 +6,7 @@ class Xsrf
   end
 
   def self.reply(board, parent)
-    if !Config.get[:captcha]
+    if !Config.get["captcha"]
       return false
     end
     sym = gensym
@@ -17,7 +17,7 @@ class Xsrf
   end
 
   def self.board(board)
-    if !Config.get[:captcha]
+    if !Config.get["captcha"]
       return false
     end
     sym = gensym
@@ -45,7 +45,7 @@ class Xsrf
   end
   
   def self.validate(board, parent, token, text)
-    if !Config.get[:captcha]
+    if !Config.get["captcha"]
       return true
     end
     result = _validate(board, parent, token, text)
