@@ -1,5 +1,6 @@
 var deletePost = function deletePost(id) {
-	window.open("/delete/" + id.toString());
+	//window.open("/delete/" + id.toString());
+	window.location.href = "/delete/" + id.toString();
 }
 var lockPost = function lockPost(id) {
 	window.location.href = "/lock/" + id.toString();
