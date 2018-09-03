@@ -1,5 +1,5 @@
 <% if !session[:moderates] && value %>
   <input style="display: none" type="text" name="xsrf" id="xsrf" value="<%= value[0].token %>" />
   <img src="data:image/png;base64,<%= Base64.encode64(value[1]) %>" />
-  <input type="text" name="captcha" id="captcha" class="text_input" placeholder="Enter captcha" />
+  <input type="text" name="captcha" id="captcha" class="text_input" placeholder="Enter captcha" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
 <% end %>
