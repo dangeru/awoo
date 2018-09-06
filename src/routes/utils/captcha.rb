@@ -24,7 +24,7 @@ def make_text
 		img.size "450x60"
 		img << "xc:black"
 		img.fill "rgb(#{rr.call}, #{rr.call}, #{rr.call})"
-		img.stroke "rgb(#{rr.call}, #{rr.call}, #{rr.call})"
+		#img.stroke "rgb(#{rr.call}, #{rr.call}, #{rr.call})"
 		img.pointsize "40"
 		img.gravity "center"
 		img.font font
