@@ -3,7 +3,7 @@ require 'mini_magick'
 Encoding.default_internal = Encoding::UTF_8
 Encoding.default_external = Encoding::UTF_8
 #Fonts = %x[convert -list font].split("\n")
-Fonts = %w(ZXX-Bold ZXX-Camo ZXX-Noise ZXX-Sans ZXX-Xed)
+Fonts = %w(ZXX-Camo ZXX-Noise ZXX-Xed)
 #Fonts.select! do |f| f.strip.split[0] == "Font:" end.map! do |f| f.strip.split[1] end
 Wordlist = "/usr/share/dict/words"
 Words = File.read(Wordlist).split("\n").select! do |w| !w.include?("'") && w.length <= 5 && w.length >= 3 end.map! do |w| w.downcase end
