@@ -3,6 +3,7 @@ require 'mini_magick'
 Encoding.default_internal = Encoding::UTF_8
 Encoding.default_external = Encoding::UTF_8
 #Fonts = %x[convert -list font].split("\n")
+Fonts = %w(ZXX-Bold ZXX-Camo ZXX-Noise ZXX-Sans ZXX-Xed)
 #Fonts.select! do |f| f.strip.split[0] == "Font:" end.map! do |f| f.strip.split[1] end
 Wordlist = "/usr/share/dict/words"
 Words = File.read(Wordlist).split("\n").select! do |w| !w.include?("'") && w.length <= 5 && w.length >= 3 end.map! do |w| w.downcase end
@@ -11,7 +12,7 @@ def make_text
 		127 + Random.rand(127);
 	end
 	text = "#{Words.sample} #{Words.sample} #{Words.sample}"
-	#font = Fonts.sample
+	font = Fonts.sample
 	filename = "/dev/shm/"
 	text.each_codepoint do |x|
 		if x >= 97 && x <= 122
@@ -26,7 +27,7 @@ def make_text
 		img.stroke "rgb(#{rr.call}, #{rr.call}, #{rr.call})"
 		img.pointsize "40"
 		img.gravity "center"
-		#img.font font
+		img.font font
 		img.draw "text 0,0 '#{text}'"
 		img << filename
 	end
