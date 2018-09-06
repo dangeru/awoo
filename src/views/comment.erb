@@ -116,7 +116,8 @@
               # If we've hit the third > in a row, and it's not immediately followed by a fourth >, it's a link to another board
               # in the format >>/board/ or >>board
               x_split = x.split(" ")
-              target_board_split = Awoo.clean(x_split[0]).split("/")
+              #target_board_split = Awoo.clean(x_split[0]).split("/")
+              target_board_split = Awoo.clean(x_split[0]).split("&#x2F;")
               # Assume >>/board/ at first
               target_board = target_board_split[1]
               if target_board_split.length == 1 then
