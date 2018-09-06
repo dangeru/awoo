@@ -12,7 +12,7 @@ def make_text
 		127 + Random.rand(127);
 	end
 	text = "#{Words.sample} #{Words.sample} #{Words.sample}"
-	font = Fonts.sample
+	#font = Fonts.sample
 	filename = "/dev/shm/"
 	text.each_codepoint do |x|
 		if x >= 97 && x <= 122
@@ -27,7 +27,8 @@ def make_text
 		#img.stroke "rgb(#{rr.call}, #{rr.call}, #{rr.call})"
 		img.pointsize "40"
 		img.gravity "center"
-		img.font font
+		#img.font font
+		img.font "ZXX-Xed"
 		img.draw "text 0,0 '#{text}'"
 		img << filename
 	end
