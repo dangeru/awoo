@@ -33,13 +33,13 @@ class Xsrf
       return false
     end
     if token[:type] == :board && token[:board] == "all"
-      return text == token.text
+      return text.downcase == token.text
     end
     if token[:type] == :board && token[:board] == board
-      return text == token.text
+      return text.downcase == token.text
     end
     if token[:type] == :reply && token[:parent] == parent
-      return text == token.text
+      return text.downcase == token.text
     end
     return false
   end

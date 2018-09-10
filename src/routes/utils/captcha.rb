@@ -14,13 +14,16 @@ def make_text
 	end
 	text = "#{Words.sample} #{Words.sample} #{Words.sample}"
 	font = Fonts.sample
-	filename = "/dev/shm/"
+	realtext = ""
 	text.each_codepoint do |x|
-		if x >= 97 && x <= 122
-			filename += x.chr
+		# keep only ascii lowercase letters and spaces
+		# sometimes something comes along with an é or ñ or something and
+		# it shows up as a question mark in the zxx font, and nobody can type the captcha
+		if (x >= 97 && x <= 122) || x == 0x20
+			realtext += x.chr
 		end
 	end
-	filename += ".png"
+	filename = "/dev/shm/#{realtext}.png"
 	MiniMagick::Tool::Convert.new do |img|
 		img.size "450x60"
 		img << "xc:black"
@@ -29,7 +32,7 @@ def make_text
 		img.pointsize "40"
 		img.gravity "center"
 		img.font font
-		img.draw "text 0,0 '#{text}'"
+		img.draw "text 0,0 '#{realtext}'"
 		img << filename
 	end
 	bytes = File.read filename
