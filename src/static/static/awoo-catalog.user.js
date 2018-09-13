@@ -276,7 +276,16 @@ var doTheThing = function doTheThing(a) {
 		return;
 	}
 	if (oldreplies == "hide") {
-		a.nextElementSibling.outerHTML = ""; // <br />
+		// when not logged in, a.nextElementSibling is <br />
+		// but when logged in, there are several annoying elements in the way
+		var next = a.nextElementSibling;
+		while (next.tagName != "BR") {
+			var next_next = next.nextElementSibling;
+			next.outerHTML = "";
+			next = next_next;
+		}
+		next.outerHTML = "";
+		//a.nextElementSibling.outerHTML = ""; // <br />
 		a.outerHTML = ""; // <a ...>...</a>
 		return;
 	}
