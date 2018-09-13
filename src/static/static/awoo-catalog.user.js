@@ -275,6 +275,10 @@ var doTheThing = function doTheThing(a) {
 		elem.innerHTML = red(a.getAttribute("data-replies"));
 		return;
 	}
+	if (oldreplies == "hide") {
+		a.outerHTML = "";
+		return;
+	}
 	comparison_and_update_elem(key, replies, a, elem, closed, oldreplies);
 };
 
@@ -490,6 +494,7 @@ var draw_bar = function draw_bar(old_read_count, scroll_to) {
 var replies_page_update_key = function replies_page_update_key() {
 	var key = window.board + ":" + window.id;
 	var old_read_count = GM_getValue(key, -1);
+	if (old_read_count == "hide") return;
 	GM_setValue(key, total_number_of_posts);
 	if (old_read_count == total_number_of_posts) old_read_count = -1;
 	return old_read_count;
