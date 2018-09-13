@@ -276,7 +276,8 @@ var doTheThing = function doTheThing(a) {
 		return;
 	}
 	if (oldreplies == "hide") {
-		a.outerHTML = "";
+		a.nextElementSibling.outerHTML = ""; // <br />
+		a.outerHTML = ""; // <a ...>...</a>
 		return;
 	}
 	comparison_and_update_elem(key, replies, a, elem, closed, oldreplies);
