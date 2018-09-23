@@ -97,4 +97,7 @@ if (typeof(unitedPropertiesIf) != "undefined") {
     }
     init_settings_button("Enable Userscript", enable);
   }
+  var s = document.createElement("script");
+  s.src = "/static/thread-watcher.js";
+  document.head.appendChild(s);
 }

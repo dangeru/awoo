@@ -310,4 +310,28 @@ a.footer {
 .redtext > .spoiler {
   border-bottom: 1px solid #401;
 }
-
+#thread_watcher {
+  z-index: 440;
+  border: 1px solid white;
+  position: fixed;
+  top: 50px;
+  right: 50px;
+  color: white;
+  font-family: CyberpunkWaifus;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  background-color: black;
+}
+.thread_watcher_padding {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+#thread_watcher_box > div {
+  border-top: 1px solid white;
+  border-bottom: 1px solid white;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+.thread_watcher_new {
+  color: #ED145B;
+}
