@@ -122,8 +122,9 @@ var apply_defaults = function apply_defaults() {
 	apply_one_default("wide", "false");
 	apply_one_default("invert", "false");
 	apply_one_default("infscroll", "true");
-	apply_one_default("bar", "false");
-	apply_one_default("scroll_to_bar", "false");
+	apply_one_default("bar", "true");
+	apply_one_default("scroll_to_bar", "true");
+	apply_one_default("show_yous", "true");
 }
 
 var onload = function() {
