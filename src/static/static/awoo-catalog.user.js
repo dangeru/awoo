@@ -439,9 +439,10 @@ var open_options = function open_options() {
 	<button id="disable_userscript">Disable userscript</button><br />
 	<button id="userscript_close">Save and reload</button>
 	<button id="read_all">Mark all visible posts as read</button>
+	<span id="all_options_last"></span>
 </div>
 	 */
-	all_options.innerHTML = "<div style=\"z-index: 100; font-size: 1em; font-family: sans-serif; background-color: #ddd; color: black; position: fixed; top: 10%; left: 10%; width: 60%; padding: 10%;\">\n\tChanges will take effect when you reload the page.<br />\n\t<input type=\"checkbox\" id=\"enable_wide\" name=\"enable_wide\" /><label for=\"enable_wide\">Wide mode</label><br />\n\t<input type=\"checkbox\" id=\"enable_invert\" name=\"enable_invert\" /><label for=\"enable_invert\">Invert colors</label><br />\n\t<input type=\"checkbox\" id=\"enable_infscroll\" name=\"enable_infscroll\" /><label for=\"enable_infscroll\">Infinite scrolling</label><br />\n\t<input type=\"checkbox\" id=\"enable_bar\" name=\"enable_bar\" /><label for=\"enable_bar\">Draw bar at beginning of new replies</label><br />\n\t<input type=\"checkbox\" id=\"enable_scroll_to_bar\" name=\"enable_scroll_to_bar\" /><label for=\"enable_scroll_to_bar\">Jump to bar on load</label><br />\n\t<input type=\"checkbox\" id=\"enable_show_yous\" name=\"enable_show_yous\" /><label for=\"enable_show_yous\">Display (You)s and (OP)s</label><br />\n\t<input type=\"checkbox\" id=\"enable_display_my_id\" name=\"enable_display_my_id\" /><label for=\"enable_display_my_id\">Show me my ID</label><br />\n\t<button id=\"disable_userscript\">Disable userscript</button><br />\n\t<button id=\"userscript_close\">Save and reload</button>\n\t<button id=\"read_all\">Mark all visible posts as read</button>\n</div>\n";
+	all_options.innerHTML = "<div style=\"z-index: 100; font-size: 1em; font-family: sans-serif; background-color: #ddd; color: black; position: fixed; top: 10%; left: 10%; width: 60%; padding: 10%;\">\n\tChanges will take effect when you reload the page.<br />\n\t<input type=\"checkbox\" id=\"enable_wide\" name=\"enable_wide\" /><label for=\"enable_wide\">Wide mode</label><br />\n\t<input type=\"checkbox\" id=\"enable_invert\" name=\"enable_invert\" /><label for=\"enable_invert\">Invert colors</label><br />\n\t<input type=\"checkbox\" id=\"enable_infscroll\" name=\"enable_infscroll\" /><label for=\"enable_infscroll\">Infinite scrolling</label><br />\n\t<input type=\"checkbox\" id=\"enable_bar\" name=\"enable_bar\" /><label for=\"enable_bar\">Draw bar at beginning of new replies</label><br />\n\t<input type=\"checkbox\" id=\"enable_scroll_to_bar\" name=\"enable_scroll_to_bar\" /><label for=\"enable_scroll_to_bar\">Jump to bar on load</label><br />\n\t<input type=\"checkbox\" id=\"enable_show_yous\" name=\"enable_show_yous\" /><label for=\"enable_show_yous\">Display (You)s and (OP)s</label><br />\n\t<input type=\"checkbox\" id=\"enable_display_my_id\" name=\"enable_display_my_id\" /><label for=\"enable_display_my_id\">Show me my ID</label><br />\n\t<button id=\"disable_userscript\">Disable userscript</button><br />\n\t<button id=\"userscript_close\">Save and reload</button>\n\t<button id=\"read_all\">Mark all visible posts as read</button>\n\t<span id=\"all_options_last\"></span>\n</div>\n";
 	document.body.appendChild(all_options);
 	add_handler("invert");
 	add_handler("wide");
@@ -473,6 +474,18 @@ var open_options = function open_options() {
 			document.location.reload();
 		})
 	});
+	if (window.id != null && window.board != null) {
+		var btn = document.createElement("button");
+		btn.innerText = "Hide Thread";
+		btn.addEventListener("click", function() {
+			GM_setValue(window.board + ":" + window.id, "hide");
+			window.history.back();
+			// if there was nothing in the history to go back to, this thread was opened in a new tab, so just close
+			window.close();
+		});
+		var last = document.getElementById("all_options_last");
+		last.parentElement.insertBefore(btn, last);
+	}
 };
 var draw_bar = function draw_bar(old_read_count, scroll_to) {
 	var submit = document.getElementById("submit");

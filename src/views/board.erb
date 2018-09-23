@@ -46,9 +46,9 @@
         document.getElementById("draggable").style.display = "none";
         doWordcount("comment", <%= JSON.dump(session[:moderates] ? true : false) %>);
         Array.prototype.slice.call(document.getElementsByClassName("fa"), 0).forEach(function(elem) {
-          elem.onmousemove = function(e) { move(e) }; // SHOULDN'T NEED THE WRAPPING FUNCTION BUT I DO
-          elem.onmouseover = function() {hover(elem);};
-          elem.onmouseout = function() { unhover() };
+          elem.onmousemove = function(e) { move(e); }; // SHOULDN'T NEED THE WRAPPING FUNCTION BUT I DO
+          elem.onmouseover = function() { hover(elem); };
+          elem.onmouseout = function() { unhover(); };
         });
         var hover = function(elem) {
           var tooltip = document.getElementById("hover");

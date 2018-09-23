@@ -55,7 +55,7 @@ def get_search_results(params, con, offset, session, advanced = false)
   args += restrict_args
   args += args
   args.insert(0, args[0]) if advanced
-  puts first_query, args.join(",")
+  #puts first_query, args.join(",")
   query(con, first_query, *args).each do |res|
     results << make_metadata_from_hash(res, session).tap do |x| x[:is_locked] = false end
   end
@@ -91,7 +91,7 @@ def get_search_results(params, con, offset, session, advanced = false)
     args += args
   end
   second_query = make_query.call where_clause, false, first_only_where_clause
-  puts second_query, args.join(",")
+  #puts second_query, args.join(",")
   query(con, second_query, *args).each do |res|
     results << make_metadata_from_hash(res, session).tap do |x| x[:is_locked] = false end
   end
