@@ -125,6 +125,7 @@ var apply_defaults = function apply_defaults() {
 	apply_one_default("bar", "true");
 	apply_one_default("scroll_to_bar", "true");
 	apply_one_default("show_yous", "true");
+	apply_one_default("thread_watcher", "true");
 }
 
 var onload = function() {
@@ -413,7 +414,7 @@ var add_handler = function add_handler(prop) {
 	elem.checked = GM_getValue(prop, "false").toLowerCase() == "true";
 	elem.addEventListener("change", function() {
 		GM_setValue(prop, elem.checked.toString());
-	})
+	});
 }
 
 var open_options = function open_options() {
@@ -436,13 +437,14 @@ var open_options = function open_options() {
 	<input type="checkbox" id="enable_scroll_to_bar" name="enable_scroll_to_bar" /><label for="enable_scroll_to_bar">Jump to bar on load</label><br />
 	<input type="checkbox" id="enable_show_yous" name="enable_show_yous" /><label for="enable_show_yous">Display (You)s and (OP)s</label><br />
 	<input type="checkbox" id="enable_display_my_id" name="enable_display_my_id" /><label for="enable_display_my_id">Show me my ID</label><br />
+	<input type="checkbox" id="enable_thread_watcher" name="enable_thread_watcher" /><label for="enable_thread_watcher">Thread Watcher</label><br />
 	<button id="disable_userscript">Disable userscript</button><br />
 	<button id="userscript_close">Save and reload</button>
 	<button id="read_all">Mark all visible posts as read</button>
 	<span id="all_options_last"></span>
 </div>
 	 */
-	all_options.innerHTML = "<div style=\"z-index: 100; font-size: 1em; font-family: sans-serif; background-color: #ddd; color: black; position: fixed; top: 10%; left: 10%; width: 60%; padding: 10%;\">\n\tChanges will take effect when you reload the page.<br />\n\t<input type=\"checkbox\" id=\"enable_wide\" name=\"enable_wide\" /><label for=\"enable_wide\">Wide mode</label><br />\n\t<input type=\"checkbox\" id=\"enable_invert\" name=\"enable_invert\" /><label for=\"enable_invert\">Invert colors</label><br />\n\t<input type=\"checkbox\" id=\"enable_infscroll\" name=\"enable_infscroll\" /><label for=\"enable_infscroll\">Infinite scrolling</label><br />\n\t<input type=\"checkbox\" id=\"enable_bar\" name=\"enable_bar\" /><label for=\"enable_bar\">Draw bar at beginning of new replies</label><br />\n\t<input type=\"checkbox\" id=\"enable_scroll_to_bar\" name=\"enable_scroll_to_bar\" /><label for=\"enable_scroll_to_bar\">Jump to bar on load</label><br />\n\t<input type=\"checkbox\" id=\"enable_show_yous\" name=\"enable_show_yous\" /><label for=\"enable_show_yous\">Display (You)s and (OP)s</label><br />\n\t<input type=\"checkbox\" id=\"enable_display_my_id\" name=\"enable_display_my_id\" /><label for=\"enable_display_my_id\">Show me my ID</label><br />\n\t<button id=\"disable_userscript\">Disable userscript</button><br />\n\t<button id=\"userscript_close\">Save and reload</button>\n\t<button id=\"read_all\">Mark all visible posts as read</button>\n\t<span id=\"all_options_last\"></span>\n</div>\n";
+	all_options.innerHTML = "<div style=\"z-index: 100; font-size: 1em; font-family: sans-serif; background-color: #ddd; color: black; position: fixed; top: 10%; left: 10%; width: 60%; padding: 10%;\">\n\tChanges will take effect when you reload the page.<br />\n\t<input type=\"checkbox\" id=\"enable_wide\" name=\"enable_wide\" /><label for=\"enable_wide\">Wide mode</label><br />\n\t<input type=\"checkbox\" id=\"enable_invert\" name=\"enable_invert\" /><label for=\"enable_invert\">Invert colors</label><br />\n\t<input type=\"checkbox\" id=\"enable_infscroll\" name=\"enable_infscroll\" /><label for=\"enable_infscroll\">Infinite scrolling</label><br />\n\t<input type=\"checkbox\" id=\"enable_bar\" name=\"enable_bar\" /><label for=\"enable_bar\">Draw bar at beginning of new replies</label><br />\n\t<input type=\"checkbox\" id=\"enable_scroll_to_bar\" name=\"enable_scroll_to_bar\" /><label for=\"enable_scroll_to_bar\">Jump to bar on load</label><br />\n\t<input type=\"checkbox\" id=\"enable_show_yous\" name=\"enable_show_yous\" /><label for=\"enable_show_yous\">Display (You)s and (OP)s</label><br />\n\t<input type=\"checkbox\" id=\"enable_display_my_id\" name=\"enable_display_my_id\" /><label for=\"enable_display_my_id\">Show me my ID</label><br />\n\t<input type=\"checkbox\" id=\"enable_thread_watcher\" name=\"enable_thread_watcher\" /><label for=\"enable_thread_watcher\">Thread Watcher</label><br />\n\t<button id=\"disable_userscript\">Disable userscript</button><br />\n\t<button id=\"userscript_close\">Save and reload</button>\n\t<button id=\"read_all\">Mark all visible posts as read</button>\n\t<span id=\"all_options_last\"></span>\n</div>\n";
 	document.body.appendChild(all_options);
 	add_handler("invert");
 	add_handler("wide");
@@ -451,6 +453,7 @@ var open_options = function open_options() {
 	add_handler("scroll_to_bar");
 	add_handler("show_yous");
 	add_handler("display_my_id");
+	add_handler("thread_watcher");
 	document.getElementById("disable_userscript").addEventListener("click", function() {
 		if (typeof(unitedPropertiesIf) != "undefined") {
 			unitedPropertiesIf.toast("To disable userscript on mobile, click the three dots in the top right then click Settings.");
