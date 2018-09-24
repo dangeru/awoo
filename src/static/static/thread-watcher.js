@@ -82,7 +82,7 @@ thread_watcher_header.addEventListener("click", function() {
 		thread_watcher_toggle.style.display = "none";
 		thread_watcher_warning.style.display = "none";
 	}
-	var special = thread_watcher_box.style.display == "block" && thread_watcher_toggle.parentNode == null;
+	var special = thread_watcher_box.style.display == "block" && thread_watcher_toggle.parentNode == null && thread_watcher_warning.style.display == "none";
 	thread_watcher_wrapper.style.paddingBottom = special ? "0px" : "10px";
 	thread_watcher_updated_first = true;
 })
