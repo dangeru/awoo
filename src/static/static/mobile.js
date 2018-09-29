@@ -97,7 +97,7 @@ if (typeof(unitedPropertiesIf) != "undefined") {
     }
     init_settings_button("Enable Userscript", enable);
   }
-  if (localStorage.getItem("thread_watcher", "false").toUpperCase() == "TRUE") {
+  if ((localStorage.getItem("thread_watcher", "false") || "false").toUpperCase() == "TRUE") {
     var s = document.createElement("script");
     s.src = "/static/thread-watcher.js";
     document.head.appendChild(s);
