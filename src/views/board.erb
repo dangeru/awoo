@@ -93,6 +93,9 @@
           cbox.style.clear = "both";
           cbox.style.height = "40px";
           cbox.classList.add("bnd-cbox")
+          if (a.innerText.toLowerCase().indexOf("reol") >= 0) {
+            cbox.checked = true;
+          }
           a.style.minHeight = "40px";
           a.parentNode.insertBefore(cbox, a);
         });
