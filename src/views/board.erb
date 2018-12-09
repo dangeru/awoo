@@ -92,6 +92,7 @@
           cbox.style.float = "left";
           cbox.style.clear = "both";
           cbox.style.height = "40px";
+          cbox.classList.add("bnd-cbox")
           a.style.minHeight = "40px";
           a.parentNode.insertBefore(cbox, a);
         });
@@ -103,7 +104,24 @@
         newbtn.classList.add("button_styled")
         newbtn.innerText = "Delete & Ban";
         newbtn.addEventListener("click", function() {
-          // TODO
+          var to_delete = [];
+          Array.prototype.slice.call(document.getElementsByClassName("bnd-cbox"), 0).forEach(function(cbox) {
+            if (cbox.checked) {
+              to_delete.push(cbox.getAttribute("data-thread"));
+            }
+          });
+          var xhr = new XMLHttpRequest();
+          xhr.onreadystatechange = function() {
+            if (xhr.readyState == 4) {
+              if (xhr.status != 200) {
+                alert("errno = -EINVAL; return;\n\n" + xhr.responseText)
+              } else {
+                window.location.reload();
+              }
+            }
+          }
+          xhr.open("POST", "/bnd");
+          xhr.send("posts=" + encodeURIComponent(JSON.stringify(to_delete)));
         });
         nextnode.parentElement.insertBefore(newbtn, nextnode);
       }

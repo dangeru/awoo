@@ -28,12 +28,12 @@
         var data = new FormData(form);
         var xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
-            if (xhr.readyState == 4) {
-              if (xhr.status != 200) {
-                //alert("errno = -EINVAL; return;\n\n" + xhr.responseText)
-              }
-              window.location.reload();
+          if (xhr.readyState == 4) {
+            if (xhr.status != 200) {
+              //alert("errno = -EINVAL; return;\n\n" + xhr.responseText)
             }
+            window.location.reload();
+          }
         }
         xhr.open("POST", route);
         xhr.send(data);

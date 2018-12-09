@@ -243,47 +243,11 @@ module Sinatra
           # Route for moderators to delete a post (and all of its replies, if it's an OP)
           app.get "/delete/:post_id" do |post_id|
             con = make_con()
-            board = nil;
-            post_id = post_id.to_i
-            parent = nil
-            ip = post_content = title = nil
-            # First, figure out which board that post is on
-            # TODO refactor to use the unified load interface
-            query(con, "SELECT content, title, ip, board, parent FROM posts WHERE post_id = ?", post_id).each do |res|
-              board = res["board"]
-              parent = res["parent"]
-              title = res["title"]
-              ip = res["ip"]
-              board = res["board"]
-              post_content = res["content"]
+            result = delete_post(session, con, post_id)
+            if result[0] >= 300 && result[0] < 399 then
+              return redirect(result[1], result[0])
             end
-            if board.nil? then
-              return [400, "Could not find a post with that ID"]
-            end
-            # Then, check if the currently logged in user has permission to moderate that board
-            if not is_moderator(board, session) or not has_permission(session, "delete")
-              return [403, "You are not logged in or you do not have permissions to perform this action on board " + board]
-            end
-            # Insert an IP note with the content of the deleted post
-            content = ""
-            if title then
-              content += "Post deleted\n"
-              content += "Board: " + board + "\n"
-              content += wrap("title", title)
-            else
-              content += "Reply deleted\n"
-              content += "Was a reply to /" + board + "/" + parent.to_s + "\n"
-            end
-            content += wrap("comment", post_content)
-            query(con, "INSERT INTO ip_notes (ip, content, actor) VALUES (?, ?, ?)", ip, content, session[:username]) unless ip.nil?
-            # Finally, delete the post
-            query(con, "DELETE FROM posts WHERE post_id = ? OR parent = ?", post_id, post_id)
-            if parent != nil then
-              href = "/" + board + "/thread/" + parent.to_s
-              redirect(href, 303);
-            else
-              return "Success, probably."
-            end
+            return result
           end
 
           app.get "/ip/:ip/delete_all" do |ip|
@@ -292,16 +256,21 @@ module Sinatra
             if not session[:moderates] or not has_permission(session, "delete")
               return [403, "You are not logged in or you do not have permissions to perform this action"]
             end
-            # Insert an IP note
             boards = session[:moderates]
             if boards.include? "all"
               boards = Config.get["boards"].keys
             end
-            content = "ALL POSTS DELETED FROM THE FOLLOWING BOARDS: " + (boards.join(", "))
             qmarks = (["?"] * boards.length).join(",")
-            query(con, "INSERT INTO ip_notes (ip, content, actor) VALUES (?, ?, ?)", ip, content, session[:username])
-            # delete the posts
-            query(con, "DELETE FROM posts WHERE ip = ? AND board IN (" + qmarks + ")", ip, *boards)
+            ids = []
+            query(con, "SELECT post_id, parent FROM posts WHERE ip = ? AND board in (" + qmarks + ")", ip, *boards).each do |r|
+              ids << [r["post_id"], r["parent"]]
+            end
+            # sort threads with parents to the beginning, so we delete replies before OPs
+            # ensuring that if they replied to one of their own threads, we delete the reply first,
+            # so that all IP notes get created correctly
+            ids.sort_by do |r| r[1] == nil ? 1 : 0 end.each do |r|
+              delete_post(session, con, r[0])
+            end
             return redirect("/ip/" + ip)
           end
 

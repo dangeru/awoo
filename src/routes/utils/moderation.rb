@@ -110,3 +110,46 @@ def allowed_capcodes(session)
   return res
 end
 
+def delete_post(session, con, post_id)
+  board = nil;
+  post_id = post_id.to_i
+  parent = nil
+  ip = post_content = title = nil
+  # First, figure out which board that post is on
+  # TODO refactor to use the unified load interface
+  query(con, "SELECT content, title, ip, board, parent FROM posts WHERE post_id = ?", post_id).each do |res|
+    board = res["board"]
+    parent = res["parent"]
+    title = res["title"]
+    ip = res["ip"]
+    board = res["board"]
+    post_content = res["content"]
+  end
+  if board.nil? then
+    return [400, "Could not find a post with that ID"]
+  end
+  # Then, check if the currently logged in user has permission to moderate that board
+  if not is_moderator(board, session) or not has_permission(session, "delete")
+    return [403, "You are not logged in or you do not have permissions to perform this action on board " + board]
+  end
+  # Insert an IP note with the content of the deleted post
+  content = ""
+  if title then
+    content += "Post deleted\n"
+    content += "Board: " + board + "\n"
+    content += wrap("title", title)
+  else
+    content += "Reply deleted\n"
+    content += "Was a reply to /" + board + "/" + parent.to_s + "\n"
+  end
+  content += wrap("comment", post_content)
+  query(con, "INSERT INTO ip_notes (ip, content, actor) VALUES (?, ?, ?)", ip, content, session[:username]) unless ip.nil?
+  # Finally, delete the post
+  query(con, "DELETE FROM posts WHERE post_id = ? OR parent = ?", post_id, post_id)
+  if parent != nil then
+    href = "/" + board + "/thread/" + parent.to_s
+    return [303, href]
+  else
+    return [200, "Success, probably."]
+  end
+end
