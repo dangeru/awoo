@@ -79,6 +79,34 @@
         }
         <%= mobile_js %>
       }
+      var begin_multiban = function begin_multiban() {
+        // stop infinite scrolling, maybe?
+        document.getElementById("pagecount_container").outerHTML = "";
+        Array.prototype.slice.call(document.getElementsByClassName("threada"), 0).forEach(function(a) {
+          a.style.maxWidth = "80%";
+          var cbox = document.createElement("input");
+          cbox.type = "checkbox";
+          cbox.setAttribute("data-thread", a.getAttribute("data-thread"));
+          cbox.style.margin = "0";
+          cbox.style.width = "20%";
+          cbox.style.float = "left";
+          cbox.style.clear = "both";
+          cbox.style.height = "40px";
+          a.style.minHeight = "40px";
+          a.parentNode.insertBefore(cbox, a);
+        });
+        var oldbtn = document.getElementById("begin_multiban");
+        var parent = oldbtn.parentElement;
+        var nextnode = oldbtn.nextElementSibling;
+        oldbtn.outerHTML = "";
+        var newbtn = document.createElement("button");
+        newbtn.classList.add("button_styled")
+        newbtn.innerText = "Delete & Ban";
+        newbtn.addEventListener("click", function() {
+          // TODO
+        });
+        nextnode.parentElement.insertBefore(newbtn, nextnode);
+      }
     </script>
     <script src="/static/common.js"></script>
     <link rel="stylesheet" type="text/css" href="/static/dangeru.css">
@@ -146,6 +174,10 @@
       <hr />
       <a href="/<%= path %>/word-filter">Edit word filters</a>
     <% end %>
+    <% if moderator and has_permission(session, "delete") and has_permission(session, "ban") %>
+      <hr />
+      <button class="button_styled" id="begin_multiban" onclick='begin_multiban()'>Begin Multi-Ban &amp; Delete</button>
+    <% end %>
     <% if page != 0 %>
       <hr />
       <div class="comment-styled">You are viewing older posts</div>
@@ -158,14 +190,14 @@
     <% end %>
     <hr />
     <% ress.each do |res| %>
-      <% classes = [] %>
+      <% classes = ["threada"] %>
       <% if res[:is_locked] then classes.push "locked" end %>
       <% if res[:stickyness] then
            classes.push("sticky-" + res[:stickyness].to_s)
            classes.delete_if do |x| x == "locked" end
       end %>
       <% if path == "burg" then res[:title] = "burg" end %>
-      <a style="display: inline-block;" data-replies="<%= res[:number_of_replies] %>" href="/<%= res[:board] %>/thread/<%= res[:post_id] %>" class="<%= classes.join(" ") %>">
+        <a style="display: inline-block;" data-replies="<%= res[:number_of_replies] %>" href="/<%= res[:board] %>/thread/<%= res[:post_id] %>" class="<%= classes.join(" ") %>" data-thread="<%= res[:post_id] %>">
         <% if path == "all" then %>
           <span class="all_extra_board">/<%= res[:board] %>/</span>
         <% end %>
