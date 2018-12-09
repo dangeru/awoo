@@ -121,6 +121,7 @@
             }
           }
           xhr.open("POST", "/bnd");
+          xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
           xhr.send("posts=" + encodeURIComponent(JSON.stringify(to_delete)));
         });
         nextnode.parentElement.insertBefore(newbtn, nextnode);

@@ -274,6 +274,41 @@ module Sinatra
             return redirect("/ip/" + ip)
           end
 
+          # ban & delete interface
+          app.post "/bnd/?" do
+            if not (session[:moderates] and has_permission(session, "delete") and has_permission(session, "ban"))
+              return [403, "You are not logged in or you do not have permissions to perform this action"]
+            end
+            posts = JSON.load(params[:posts]).map(&:to_i)
+            con = make_con()
+            ips = []
+            qmarks = (["?"] * posts.length).join(",")
+            query(con, "SELECT DISTINCT ip FROM posts WHERE post_id IN ("+qmarks+")", *posts).each do |r|
+              ips << r["ip"]
+            end
+            posts = []
+            qmarks = (["?"] * ips.length).join(",")
+            query(con, "SELECT post_id, parent FROM posts WHERE ip IN ("+qmarks+")", *ips).each do |r|
+              posts << [r["post_id"], r["parent"]]
+            end
+            # sort for the same reason as the delete_all case
+            posts.sort_by do |r| r[1] == nil ? 1 : 0 end.each do |r|
+              delete_post(session, con, r[0])
+            end
+            ips.each do |ip|
+              # Insert the ban
+              board = "all"
+              date = "2030-01-01 00:00:00"
+              reason = "Moderator ban and delete all"
+              query(con, "INSERT INTO bans (ip, board, date_of_unban, reason) VALUES (?, ?, ?, ?)", ip, board, date, reason);
+              # Insert the IP note
+              content = "Banned from /" + board + "/ until " + date + " via ban-and-delete\n"
+              content += wrap("reason", reason)
+              query(con, "INSERT INTO ip_notes (ip, content, actor) VALUES (?, ?, ?)", ip, content, session[:username])
+            end
+            return posts.length.to_s + " posts deleted. " + ips.length.to_s + " IPs banned."
+          end
+
           app.get "/mobile/?" do
             redirect("/", 303);
           end
