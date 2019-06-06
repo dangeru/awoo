@@ -281,6 +281,7 @@ a.footer {
   font-size: 18px;
   display: inline-block;
   text-align: left;
+  word-break: break-all;
 }
 .center {
   text-align: center;
