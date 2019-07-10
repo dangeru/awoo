@@ -3,6 +3,10 @@
   "port": 8080,
   "seconds_until_archival": 43200,
   "footer": "",
+  "news": {
+    "text": "We've installed awoo!",
+    "timestamp": 65536
+  },
 
   "boards": {
     "test": {
@@ -95,7 +99,8 @@
     "sticky": 2,
     "view_all_bans": 2,
     "view_ips": 1,
-    "lock": 1
+    "lock": 1,
+    "edit_index_news": 3
   },
   "captcha": true
 }

@@ -27,7 +27,7 @@
     <img src="static/logo.png" alt="danger/u/" id="header" class="header-unbound">
     <div id="index-news">
       <span class="comment">Latest news:</span>
-      <span class="redtext">02/09/17: we switched to Awoo! The new app is finally up too!</span>
+      <span class="redtext"><%= format_news(Config.get["news"]) %></span>
     </div>
     <br>
     <div id="maincontainer">
@@ -44,14 +44,14 @@
           Currently serving <span style="font-weight: bold;"><%= res["ops"] %></span>
           threads bumped in the last 20 days, with <span style="font-weight: bold;"><%= res["total"] - res["ops"] %></span>
           replies, as well as <span style="font-weight: bold;"><%= res["archived"] %></span> <a href="/archive">archived threads</a>
-          and <span style="font-weight: bold;"><%= (res["archived_posts"] - res["archived"]).to_i %></span>
+          and <span style="font-weight: bold;"><% (res["archived_posts"] - res["archived"]).to_i %></span>
           archived replies.
           <br /><br />
           <a class="boarda" href="/search">Search for posts</a>
           <br />
           <br />
           There are <span style="font-weight: bold;"><%= res["burg_burg"].to_i %></span>
-          burgs and <span style="font-weight: bold;"><%= (res["burg_total"] - res["burg_burg"]).to_i %></span>
+          burgs and <span style="font-weight: bold;"><% (res["burg_total"] - res["burg_burg"]).to_i %></span>
           angry burgs.
         <% end %>
       </div>

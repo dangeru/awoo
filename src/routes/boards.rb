@@ -584,6 +584,28 @@ module Sinatra
             end
             return [200, "OK"]
           end
+          # Edit the news line on the main page
+          app.get "/edit_updates" do
+            if not has_permission(session, "edit_index_news") then
+              return [403, "You don't have permissions to perform this action."]
+            end
+
+            erb :edit_updates, :locals => {:config => Config.get}
+          end
+          app.post "/edit_updates" do
+            if not has_permission(session, "edit_index_news") then
+              return [403, "You don't have permissions to perform this action."]
+            end
+
+            Config.get["news"]["text"] = params[:news]
+            Config.get["news"]["timestamp"] = Time.now.to_i
+            Config.rewrite!
+
+            File.open("_watch", "w") do |f|
+              f.write(Random.rand.hash.to_s)
+            end
+            return redirect("/")
+          end
           app.get "/search/?" do
             erb :search, :locals => {:banner => new_banner("all")}
           end

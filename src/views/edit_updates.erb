@@ -1,0 +1,24 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>Awoo - Update News</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" type="text/css" href="static/dangeru.css">
+    <link rel="shortcut icon" href="static/favicon.ico">
+  </head>
+  <body>
+    <br />
+    <a href="/"><img src="/static/logo.png" alt="danger/u/" id="header" class="header-unbound"></a>
+    <div id="maincontainer">
+      <div class="title" class="red">Editing the index news bar</div>
+      <br>
+      <div class="comment">Current: <span class="redtext"><%= format_news(config["news"]) %></span></div>
+      <form action="/edit_updates" method="POST" id="news_container">
+        <div class="comment">New: <input type="text" class="text_input" placeholder="Type here" name="news"><input type="submit" value="Update!"></div>
+      </form>
+    </div>
+    <footer class="comment">
+      <%= config["footer"] %>, <a href="https://github.com/dangeru/awoo/" class="footer">Awoo <%= settings.awoo_version %></a>
+    </footer>
+  </body>
+</html>

@@ -33,6 +33,10 @@
         <a href="/introspect">&gt;Begin introspection?&lt;</a>
         <br />
       <% end %>
+      <% if has_permission(session, "edit_index_news") %>
+        <a href="/edit_updates">&gt;Update the news?&lt;</a>
+        <br />
+      <% end %>
       <span class="redtext">[You moderate:]</span><br />
       <% Config.get["boards"].select do |board, v| session[:moderates].include? board end.each do |board, v| %>
         <span id="<%= board %>" onClick="showActions(this.id)" class="comment-styled a-like">/<%= board %>/</span>

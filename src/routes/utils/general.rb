@@ -40,6 +40,10 @@ def new_banner(board)
   end
 end
 
+def format_news(news)
+  return DateTime.strptime(news["timestamp"].to_s, "%s").strftime("%d/%m/%y") + ": " + news["text"]
+end
+
 # this function tries to get the IP from the request, and if we're behind a reverse proxy it tries to get it from the environment variables
 def get_ip(request, env)
   env["HTTP_CF_CONNECTING_IP"] || env["HTTP_X_FORWARDED_FOR"] || request.ip
