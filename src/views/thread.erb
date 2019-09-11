@@ -123,6 +123,19 @@
             xhr.send();
           }
           var ol = function ol() {
+            var submit_function = function() { submit_form(document.getElementById("form"), "/reply") };
+            document.getElementById("submit").addEventListener("click", submit_function);
+            var captcha = document.getElementById("captcha");
+            if (captcha) {
+              captcha.addEventListener("keydown", function(e) {
+                if (e.keyIdentifier == "U+000A" || e.keyIdentifier == 'Enter' || e.keyCode == 13) {
+                  e.preventDefault();
+                  submit_function();
+                  return false;
+                }
+                return true;
+              });
+            }
             setInterval(fetch_number, 60000); // 60 seconds
             try {
               if (window.location.hash.indexOf("comment-") == 1) {
@@ -356,7 +369,7 @@
           <input style="display: none" type="text" name="redirect" id="redirect" value="true" />
           <%= erb :captcha, :locals => {:value => Xsrf.reply(path, id.to_i)} %>
         </form>
-        <button class="button_styled jsunhide" style="display: none;" onClick='submit_form(document.getElementById("form"), "/reply")' id="submit">Submit</button><br />
+        <button class="button_styled jsunhide" style="display: none;" id="submit">Submit</button><br />
         <% if moderator and has_permission(session, "lock") %>
           <br />
           <i class="fa fa-unlock-alt thread-lock" aria-hidden="true" onClick='lockPost(<%= id.to_i.to_s %>)'></i>
