@@ -10,7 +10,9 @@ def make_text
 		127 + Random.rand(127);
 	end
 	word = -> () do
-		Random.rand(4) != 0 ? Words.sample : Memes.sample
+		# Disabled until it can be fixed
+		# Random.rand(4) != 0 ? Words.sample : Memes.sample
+		Words.sample
 	end
 	text = "#{word.call} #{word.call} #{word.call}"
 	realtext = ""
