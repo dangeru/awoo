@@ -124,7 +124,10 @@
           }
           var ol = function ol() {
             var submit_function = function() { submit_form(document.getElementById("form"), "/reply") };
-            document.getElementById("submit").addEventListener("click", submit_function);
+            var submit_el = document.getElementById("submit");
+            if (submit_el) {
+              submit_el.addEventListener("click", submit_function);
+            }
             var captcha = document.getElementById("captcha");
             if (captcha) {
               captcha.addEventListener("keydown", function(e) {
