@@ -1,7 +1,7 @@
 # awoo
 Awoo is a textboard engine based on the Sinatra micro-framework
 
-You'll need the `sinatra`, `sinatra-contrib`, `mysql2`, and `rerun` gems, as well as a mysql server set up using the `create.sql` file.
+You'll need the `sinatra`, `sinatra-contrib`, `mysql2`, `mini_magick` and `rerun` gems, as well as a mysql server set up using the `create.sql` file. You'll also need to install `imagemagick` for the CAPTCHA support.
 
 Running `sudo make install` will make a user named `awoo`, copy `src` to `/opt/awoo`, set up your database and put a service file in /etc/systemd/system so you can run `sudo systemctl start awoo` to start the server on port 8080
 
@@ -14,7 +14,3 @@ If you want to test against a production environment but are worried about secur
 The tests depend on the `http-cookie` gem
 
 ![awoo in use](/meta/awoo.PNG)
-
-## Todo List
-
-- On `/ip/:addr`, maybe let people select more than one board at a time to ban the IP from?
