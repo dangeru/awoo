@@ -342,7 +342,7 @@ module Sinatra
                 :name => Config.get["boards"][params[:board]]["name"],
                 :url => "https://" + hostname + "/" + params[:board]
               }], :threads => []}
-              get_board(params[:board], params, session).each do |res|
+              get_board(params[:board], params, session, 0).each do |res|
                 result[:threads].push({
                   :id => res[:post_id],
                   :title => res[:title],

@@ -44,14 +44,14 @@
           Currently serving <span style="font-weight: bold;"><%= res["ops"] %></span>
           threads bumped in the last 20 days, with <span style="font-weight: bold;"><%= res["total"] - res["ops"] %></span>
           replies, as well as <span style="font-weight: bold;"><%= res["archived"] %></span> <a href="/archive">archived threads</a>
-          and <span style="font-weight: bold;"><%= (res["archived_posts"] - res["archived"]).to_i %></span>
+          and <span style="font-weight: bold;"><% if res["archived_posts"] != nil %><%= (res["archived_posts"] - res["archived"]).to_i %><% else %>0<% end %></span>
           archived replies.
           <br /><br />
           <a class="boarda" href="/search">Search for posts</a>
           <br />
           <br />
           There are <span style="font-weight: bold;"><%= res["burg_burg"].to_i %></span>
-          burgs and <span style="font-weight: bold;"><%= (res["burg_total"] - res["burg_burg"]).to_i %></span>
+          burgs and <span style="font-weight: bold;"><% if res["burg_total"] != nil %><%= (res["burg_total"] - res["burg_burg"]).to_i %><% else %>0<% end %></span>
           angry burgs.
         <% end %>
       </div>
