@@ -125,7 +125,8 @@
           var ol = function ol() {
             var submit_function = function() { submit_form(document.getElementById("form"), "/reply") };
             var submit_el = document.getElementById("submit");
-            if (submit_el) {
+            var is_userscript_enabled = (localStorage != null && localStorage.getItem("userscript") !== null && localStorage.getItem("userscript").toUpperCase() !== "FALSE");
+            if (submit_el && !is_userscript_enabled) {
               submit_el.addEventListener("click", submit_function);
             }
             var captcha = document.getElementById("captcha");
