@@ -125,8 +125,9 @@
           var ol = function ol() {
             var submit_function = function() { submit_form(document.getElementById("form"), "/reply") };
             var submit_el = document.getElementById("submit");
-            var is_userscript_enabled = (localStorage != null && localStorage.getItem("userscript") !== null && localStorage.getItem("userscript").toUpperCase() !== "FALSE");
-            if (submit_el && !is_userscript_enabled) {
+            var GetItem = function(name) { var val = localStorage.getItem(name); return val == null ? "false" : val;};
+            var is_draw_bar_enabled = (localStorage != null && GetItem("userscript").toLowerCase() == "true" && GetItem("bar").toLowerCase() == "true"); // This causes a minor race condition, where if "bar" was null before and you enable userscript afterwards, it still stays at null and makes this false.
+            if (submit_el && !is_draw_bar_enabled) {
               submit_el.addEventListener("click", submit_function);
             }
             var captcha = document.getElementById("captcha");
