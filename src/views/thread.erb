@@ -126,10 +126,6 @@
             var submit_function = function() { submit_form(document.getElementById("form"), "/reply") };
             var submit_el = document.getElementById("submit");
             var GetItem = function(name) { var val = localStorage.getItem(name); return val == null ? "false" : val;};
-            var is_draw_bar_enabled = (localStorage != null && GetItem("userscript").toLowerCase() == "true" && GetItem("bar").toLowerCase() == "true"); // This causes a minor race condition, where if "bar" was null before and you enable userscript afterwards, it still stays at null and makes this false.
-            if (submit_el && !is_draw_bar_enabled) {
-              submit_el.addEventListener("click", submit_function);
-            }
             var captcha = document.getElementById("captcha");
             if (captcha) {
               captcha.addEventListener("keydown", function(e) {
@@ -153,6 +149,10 @@
               // drop
             }
             <%= mobile_js %>
+            var is_draw_bar_enabled = window.GM_getValue("bar", "false").toLowerCase() == "true" ? true : false; // hopefully this works on mobile
+            if (submit_el && !is_draw_bar_enabled) {
+              submit_el.addEventListener("click", submit_function);
+            }
             window.id = <%= id.to_i %>;
             window.your_hash = <%= JSON.dump(your_hash); %>;
             <% if params[:watch] %>
