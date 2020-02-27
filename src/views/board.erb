@@ -77,6 +77,19 @@
         var unhover = function() {
           document.getElementById("hover").style.display = "none";
         }
+        var boardselector = document.getElementById("board");
+        var submitbtn = document.getElementById("submit");
+        <% if path == "all" %>submitbtn.disabled = true;
+        submitbtn.className = "special_styled";<% end %>
+        boardselector.addEventListener("change", function(){ //only because of the russian spammers
+          if (boardselector.value != "nowhere") {
+            submitbtn.disabled = false;
+            submitbtn.className = "button_styled";
+          } else {
+            submitbtn.disabled = true;
+            submitbtn.className = "special_styled";
+          }
+        });
         <%= mobile_js %>
       }
       var begin_multiban = function begin_multiban() {
@@ -156,6 +169,7 @@
           <% if path == "all" %>
             Post to:
             <select name="board" id="board">
+              <option value="nowhere">* SELECT A BOARD *</option>
               <% Config.get["boards"].select do |key, value| session[:username] or not value["hidden"] end.each do |key, value| %>
                 <% if key == "all" then next end %>
                 <option value="<%= key %>">

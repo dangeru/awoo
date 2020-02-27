@@ -69,6 +69,11 @@ var doWordcount = function doWordcount(comment_id, mod) {
 		var len = (comment.value.length * 1.03) | 0;
 		var wc = document.getElementById("wordcount");
 		var submit = document.getElementById("submit");
+		var board_selector = document.getElementById("board");
+		var is_valid_board = true;
+		if (board_selector != null) {
+			is_valid_board = (board_selector.value != "nowhere");
+		}
 		if (len > 500 && !mod) {
 			wc.classList.add("red");
 			wc.classList.remove("comment-styled");
@@ -77,8 +82,8 @@ var doWordcount = function doWordcount(comment_id, mod) {
 			wc.classList.add("comment-styled");
 		}
 		if (submit != null) {
-			submit.disabled = len > 500 && !mod;
-			submit.className = (len > 500 && !mod) ? "special_styled" : "button_styled";
+			submit.disabled = !is_valid_board || (len > 500 && !mod);
+			submit.className = (!is_valid_board || (len > 500 && !mod)) ? "special_styled" : "button_styled";
 		}
 		wc.innerText = len + "/" + (mod ? "Unlimited" : "500");
 		var lines = comment.value.split("\n");

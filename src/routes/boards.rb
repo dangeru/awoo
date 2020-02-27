@@ -38,6 +38,8 @@ module Sinatra
               return [429, "Flood detected, post discarded"]
             elsif (title.length > 180 or content.length > 500) and not session[:moderates] then
               return [431, "Post or title too long (over 500 characters)"]
+            elsif board == "nowhere" # i fucking swear fuck off you all retarded russian spammers
+              redirect("/all", 303)
             elsif Config.get["boards"][board]["hidden"] and not session[:username]
               return [403, "You have no janitor permissions"]
             elsif board == "all"
