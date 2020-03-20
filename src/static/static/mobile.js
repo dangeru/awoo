@@ -81,13 +81,16 @@ if (typeof(unitedPropertiesIf) != "undefined") {
 } else {
   // We're not on mobile
   var userscript = localStorage.getItem("userscript") == "true";
-  // If we're on desktop and the user has enabled userscript, set up the functions anda dd the script
+  // If we're on desktop and the user has enabled userscript set up the script
+  // (PREF) The functions should persist no matter what imo, it's not like two more things inside of window will kill anything.
+  // plus the anti-doubleposting script relies on this being present in global
+  window.GM_setValue = function GM_setValue(k, v) { localStorage.setItem(k, v); };
+  window.GM_getValue = function GM_getValue(k, d) { 
+    var value = localStorage.getItem(k);
+    return value == null ? d : value;
+  };
+
   if (userscript) {
-    window.GM_setValue = function GM_setValue(k, v) { localStorage.setItem(k, v); };
-    window.GM_getValue = function GM_getValue(k, d) { 
-      var value = localStorage.getItem(k);
-      return value == null ? d : value;
-    };
     add_script();
   } else {
     // Create the "enable userscript" button in the bottom left
