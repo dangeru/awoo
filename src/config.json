@@ -2,6 +2,10 @@
   "title": "Awoo test board",
   "bind": "0.0.0.0",
   "port": 8080,
+  "mysql_host": "localhost:3306",
+  "mysql_user": "awoo",
+  "mysql_password": "awoo",
+  "mysql_database": "awoo",
   "seconds_until_archival": 43200,
   "footer": "",
   "news": {
