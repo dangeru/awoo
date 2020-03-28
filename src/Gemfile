@@ -1,0 +1,8 @@
+source "https://rubygems.org"
+
+gem "sinatra"
+gem "sinatra-contrib"
+gem "mysql2"
+gem "mini_magick" 
+gem "rerun"
+gem "json"
