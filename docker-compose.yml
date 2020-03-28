@@ -1,0 +1,55 @@
+version: '3.7'
+
+networks:
+  app-awoo:
+
+volumes:
+  awoo-db-storage:
+
+services:
+  awoo-db:
+    image: percona:5.7
+    container_name: awoo-db
+    hostname: awoo-db
+    restart: unless-stopped
+    volumes:
+      - awoo-db-storage:/var/lib/mysql
+      - ./docker/mysql.cnf:/etc/my.cnf.d/custom.cnf
+    environment:
+      - MYSQL_ROOT_PASSWORD=awooroot
+      - MYSQL_PASSWORD=awoo
+      - MYSQL_DATABASE=awoo
+      - MYSQL_USER=awoo
+    networks:
+      app-awoo:
+
+
+  awoo-nginx:
+    image: nginx:1.17
+    container_name: awoo-nginx
+    hostname: awoo-nginx
+    restart: unless-stopped
+    volumes:
+      - ./docker/nginx.conf:/etc/nginx/conf.d/awoo.conf
+    depends_on:
+      - awoo-app
+    ports:
+      - 80:80
+    networks:
+      app-awoo:
+
+  awoo-app:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    container_name: awoo-app
+    hostname: awoo-app
+    environment:
+      - MYSQL_USER=awoo
+      - MYSQL_PASSWORD=awoo
+      - MYSQL_HOST=awoo-db
+      - MYSQL_DATABASE=awoo
+      - PORT=8080
+    restart: unless-stopped
+    networks:
+      app-awoo:
