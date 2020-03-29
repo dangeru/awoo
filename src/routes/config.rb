@@ -22,3 +22,21 @@ class Config
     end
   end
 end
+
+class ConfigInfra
+  include Singleton
+  attr_accessor :obj
+
+  def self.get
+    instance.obj
+  end
+  def initialize
+    config_raw = File.read('config_infra.json')
+    @obj = JSON.parse(config_raw)
+  end
+  def self.rewrite!
+    File.open("config_infra.json", "w") do |f|
+      f.write(JSON.pretty_generate(Config.get))
+    end
+  end
+end

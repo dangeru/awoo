@@ -31,8 +31,8 @@ class Awoo < Sinatra::Base
     File.open("/tmp/awoo.pid", "w") do |f|
       f.write Process.pid
     end
-    set :bind, config['bind']
-    set :port, config['port']
+    set :bind, ConfigInfra.get["bind"]
+    set :port, ConfigInfra.get["port"]
     set :awoo_version, '1.0.0'
     set :public_folder, File.dirname(__FILE__) + '/static'
 	set :xsrf, {}
