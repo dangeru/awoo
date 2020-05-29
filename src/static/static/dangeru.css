@@ -28,6 +28,12 @@ a {
     font-family: 'CyberpunkWaifus';
     color: #FFF;
 }
+.boardcontainer-item {
+    text-align: center;
+    font-size: 17px;
+    font-family: 'CyberpunkWaifus';
+    color: #FFF;
+}
 .boardb {
     text-align: right;
 }
@@ -101,8 +107,6 @@ textarea, #draggable > form > input[type='text'], .text_input {
 }
 #boardcontainer {
     text-align: center;
-    height: 20px;
-    width: auto;
 }
 #boardid {
     display: inline;
@@ -226,9 +230,6 @@ hr {
     img {
       width: 100%;
       height: auto;
-    }
-    #boardcontainer {
-      margin-bottom: 25px;
     }
 }
 #header {

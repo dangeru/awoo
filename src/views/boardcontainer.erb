@@ -1,12 +1,12 @@
 <div id="boardcontainer">
-    <span class="boarda comment-styled"><a href="/" style='display: inline-block;'><%= Config.get['title'] %></a>
+    <span class="boardcontainer-item comment-styled"><a href="/" style='display: inline-block;'><%= Config.get['title'] %></a>
         [
         <%= Config.get['boards'].select do |key, val|
             session[:username] or not val["hidden"]
         end.map do |k, v|
             k
         end.insert(0, "search").push("popular").map do |k|
-            "<a href='/" + k + "/' style='display: inline-block;' class='boarda'>" + k + "</a>"
+            "<a href='/" + k + "/' style='display: inline-block;' class='boardcontainer-item'>" + k + "</a>"
         end.join " / " %>
         ]
     </span>
