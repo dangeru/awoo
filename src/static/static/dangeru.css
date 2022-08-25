@@ -337,3 +337,6 @@ a.footer {
 .thread_watcher_new {
   color: #ED145B;
 }
+.threada {
+  word-wrap: anywhere;
+}
