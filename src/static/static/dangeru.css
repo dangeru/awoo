@@ -92,6 +92,7 @@ textarea, #draggable > form > input[type='text'], .text_input {
     font-family: 'CyberpunkWaifus';
     font-weight: 900;
     padding-bottom: 15px;
+    word-wrap: anywhere;
 }
 .comment, .comment-styled {
     font-size: 18px;
