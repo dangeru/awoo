@@ -184,6 +184,9 @@ def get_archived_thread_replies(id)
   obj = nil
   File.open 'archive/' + id.to_s + '.json' do |contents|
     obj = JSON.parse contents.read, {:symbolize_names => true}
+    for item in obj
+      item.delete :ip
+    end
   end
   obj
 end
