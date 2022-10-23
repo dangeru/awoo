@@ -47,6 +47,13 @@
           <% if has_permission(session, "edit_rules") %>
             <a href="/<%= board %>/rules">Edit rules</a>
           <% end %>
+          <% if has_permission(session, "change_captcha") %>
+            <% if Config.get["boards"][board]["captcha"] %>
+              <a href="/<%= board %>/set_captcha?value=false">Turn off CAPTCHA</a>
+            <% else %>
+              <a href="/<%= board %>/set_captcha?value=true">Turn on CAPTCHA</a>
+            <% end %>
+          <% end %>
           <a href="/<%= board %>/">Go to board</a>
         </div><br />
       <% end %>

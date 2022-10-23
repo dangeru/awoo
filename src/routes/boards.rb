@@ -230,6 +230,26 @@ module Sinatra
                 return [403, "You have no janitor privileges or you don't have the permissions to perform this action."]
               end
             end
+
+            app.get "/" + path + "/set_captcha" do
+              if not is_moderator(path, session) or not has_permission(session, "change_captcha") then
+                return [404, erb(:notfound)]
+              end
+
+              enabled = params[:value] == "true"
+
+              content = "Changed the CAPTCHA for /" + path + "/\nNew value is: " + enabled.to_s
+              con = make_con()
+              query(con, "INSERT INTO ip_notes (ip, content, actor) VALUES (?, ?, ?)", "_meta", content, session[:username])
+              
+              Config.get["boards"][path]["captcha"] = enabled
+              Config.rewrite!
+
+              File.open("_watch", "w") do |f|
+                f.write(Random.rand.hash.to_s)
+              end
+              return redirect("/")
+            end
           end
 
           app.get "/archive/?" do

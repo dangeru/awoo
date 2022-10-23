@@ -14,6 +14,7 @@
       "name": "test",
       "desc": "Awoo testing grounds",
       "rules": "1. Test out stuff.\r\n2. Report bugs.\r\n3. Repeat.",
+      "captcha": false,
       "word-filter": {
         "new": "new2"
       }
@@ -22,6 +23,7 @@
       "name": "burg",
       "desc": "burg best board",
       "rules": "1. burg\n2. angry burg",
+      "captcha": true,
       "word-filter": {
         "fillerdata": "fillerdata"
       }
@@ -31,6 +33,7 @@
       "desc": "staff",
       "rules": "asdjfads",
       "hidden": true,
+      "captcha": false,
       "word-filter": {
         "fillerdata": "fillerdata"
       }
@@ -39,6 +42,7 @@
       "name": "all",
       "desc": "all",
       "rules": "",
+      "captcha": false,
       "word-filter": {
       }
     }
@@ -101,7 +105,7 @@
     "view_all_bans": 2,
     "view_ips": 1,
     "lock": 1,
-    "edit_index_news": 3
-  },
-  "captcha": true
+    "edit_index_news": 3,
+    "change_captcha": 3
+  }
 }
