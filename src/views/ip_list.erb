@@ -48,10 +48,12 @@
     <br />
     <div id="maincontainer">
       <div class="title" class="red">Information for IP <%= Awoo.clean(addr) %></div>
+      <% boards = session[:moderates].map do |f| con.escape(f) end %>
+      <% if boards.include?("all") then boards = Config.get["boards"].keys; end %>
       <% if has_permission(session, "ban") %>
         <form action="/ban/<%= addr %>" method="post" id="ban-form" style="display: inline-block;">
           <select id="board" name="board">
-            <% session[:moderates].each do |board| %>
+            <% boards.each do |board| %>
               <option value="<%= board %>"><%= board %></option>
             <% end %>
           </select>
@@ -61,8 +63,6 @@
         <button onClick="submit_form(document.getElementById('ban-form'), '/ban/<%= Awoo.clean(addr) %>')" class="special_styled">Ban</button>
         <br />
       <% end %>
-      <% boards = session[:moderates].map do |f| con.escape(f) end %>
-      <% if boards.include?("all") then boards = Config.get["boards"].keys; end %>
       <% boards = "('" + boards.join("', '") + "')" %>
       <% query(con, "SELECT reason, board, date_of_unban FROM bans WHERE ip = ? AND board IN #{boards} AND date_of_unban > CURRENT_TIMESTAMP()", addr).each do |res| %>
         <% id = Digest::SHA256.hexdigest(res["board"] + res["reason"]) %>

@@ -38,7 +38,9 @@
         <br />
       <% end %>
       <span class="redtext">[You moderate:]</span><br />
-      <% Config.get["boards"].select do |board, v| session[:moderates].include? board end.each do |board, v| %>
+      <% boards = session[:moderates] %>
+      <% if boards.include?("all") then boards = Config.get["boards"].keys; end %>
+      <% boards.each do |board, v| %>
         <span id="<%= board %>" onClick="showActions(this.id)" class="comment-styled a-like">/<%= board %>/</span>
         <div id="actions-<%= board %>" style="display: none;">
           <% if has_permission(session, "edit_wordfilters") %>
